@@ -15,7 +15,7 @@
   }else{document.querySelectorAll('.reveal').forEach(function(el){el.classList.add('in');});}
   // form submit → Vercel function (validates, blocks spam, emails the lead to invest@vitabahn.com)
   // ▸ DEPLOY STEP: replace the URL below with your deployed Vercel endpoint (see form-backend/README.md).
-  var LEAD_ENDPOINT='https://REPLACE-WITH-YOUR-PROJECT.vercel.app/api/lead';
+  var LEAD_ENDPOINT='https://vita-bahn-web.vercel.app/api/lead';
   if(LEAD_ENDPOINT.indexOf('REPLACE-WITH-YOUR-PROJECT')>-1){console.warn('VitaBahn: LEAD_ENDPOINT is not configured — form submissions will fail. Set it to your Vercel endpoint (see form-backend/README.md).');}
   var f=document.getElementById('drForm'),note=document.getElementById('drNote');
   if(f){var btn=f.querySelector('button[type="submit"]');f.addEventListener('submit',function(ev){ev.preventDefault();var bad=null;
