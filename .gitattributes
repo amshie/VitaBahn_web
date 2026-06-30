@@ -1,0 +1,14 @@
+# Normalize text line endings in the repo; keep binary assets untouched.
+* text=auto eol=lf
+
+# Fonts & images are binary — never run EOL/CRLF conversion on them.
+*.woff2 binary
+*.woff  binary
+*.ttf   binary
+*.otf   binary
+*.png   binary
+*.jpg   binary
+*.jpeg  binary
+*.webp  binary
+*.ico   binary
+*.pdf   binary

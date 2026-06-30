@@ -1,0 +1,20 @@
+VitaBahn — HADP Investor Brief
+Copyright (c) 2026 VitaBahn. All rights reserved.
+
+This repository and its contents (the "Materials") — including the page copy,
+figures, design, and source code — are CONFIDENTIAL and PROPRIETARY to VitaBahn.
+
+No license or right to copy, distribute, publish, or create derivative works is
+granted, except to people explicitly authorized by VitaBahn for the purpose of
+building and operating this investor brief. Do not share or redistribute the
+Materials without written permission.
+
+-------------------------------------------------------------------------------
+Third-party components (NOT covered by the proprietary terms above):
+
+- IBM Plex fonts in fonts/ (*.woff2) are licensed separately under the
+  SIL Open Font License, Version 1.1 — see fonts/OFL.txt.
+  Copyright (c) 2017 IBM Corp. with Reserved Font Name "Plex".
+
+- The form backend depends on nodemailer (MIT License), installed from
+  form-backend/package.json at deploy time.

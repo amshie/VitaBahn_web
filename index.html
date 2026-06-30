@@ -1,0 +1,745 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<meta name="robots" content="noindex, nofollow"/>
+<meta name="theme-color" content="#0D4D47"/>
+<title>VitaBahn — Investor Brief · HADP</title>
+<meta name="description" content="VitaBahn’s HADP (Healthspan Architecture Decision Platform): the contextual, governed interpretation infrastructure for physician-led longevity & healthspan medicine. Confidential investor brief."/>
+<!-- Open Graph / Twitter — built only from existing on-page content. og:url left blank until the final domain is set; no og:image yet (would be a new asset). -->
+<meta property="og:type" content="website"/>
+<meta property="og:site_name" content="VitaBahn"/>
+<meta property="og:title" content="VitaBahn — Investor Brief · HADP"/>
+<meta property="og:description" content="VitaBahn’s HADP (Healthspan Architecture Decision Platform): the contextual, governed interpretation infrastructure for physician-led longevity & healthspan medicine. Confidential investor brief."/>
+<meta property="og:url" content=""/>
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="VitaBahn — Investor Brief · HADP"/>
+<meta name="twitter:description" content="VitaBahn’s HADP (Healthspan Architecture Decision Platform): the contextual, governed interpretation infrastructure for physician-led longevity & healthspan medicine. Confidential investor brief."/>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA2NCA2NCI+PHJlY3Qgd2lkdGg9IjY0IiBoZWlnaHQ9IjY0IiByeD0iMTYiIGZpbGw9IiMwRDRENDciLz48ZyBmaWxsPSJub25lIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS13aWR0aD0iNSI+PHBhdGggZD0iTTIwIDIyVjQwYzAgNS0xLjYgNy01LjYgOSIgc3Ryb2tlPSIjRjdGNEVFIi8+PHBhdGggZD0iTTMyIDE5VjQ5IiBzdHJva2U9IiNBRUM5QzEiLz48cGF0aCBkPSJNNDQgMjJWNDBjMCA1IDEuNiA3IDUuNiA5IiBzdHJva2U9IiNDOEE4NkUiLz48L2c+PGNpcmNsZSBjeD0iMjAiIGN5PSIxNyIgcj0iNS4yIiBmaWxsPSIjRjdGNEVFIi8+PGNpcmNsZSBjeD0iMzIiIGN5PSIxNCIgcj0iNS4yIiBmaWxsPSIjQUVDOUMxIi8+PGNpcmNsZSBjeD0iNDQiIGN5PSIxNyIgcj0iNS4yIiBmaWxsPSIjQzhBODZFIi8+PC9zdmc+"/>
+<link rel="stylesheet" href="styles.css"/>
+</head>
+<body>
+
+<a class="skip" href="#thesis">Skip to content</a>
+<div class="topbar"><svg class="lock" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#0D4D47" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>Confidential · VitaBahn investor brief <span class="tb-meta">· Pre-Seed ·</span><a href="#contact">Request data room →</a></div>
+
+<header class="site">
+  <div class="wrap">
+    <nav class="nav" id="nav">
+      <a class="brand" href="#top" aria-label="VitaBahn"><svg aria-hidden="true" class="brand-mark" viewBox="0 0 123 152">
+<g fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-width="4">
+  <path d="M38 34 V86 C38 98 46 100 46 111 C46 127 29 129 22 139 H14" stroke="#0D4D47"/>
+  <path d="M44 122 C40.5 126 38 130 37.5 136" stroke="#0D4D47" stroke-width="3.2"/>
+  <path d="M61.5 28 V140" stroke="#6D948C"/>
+  <path d="M85 34 V86 C85 98 77 100 77 111 C77 127 94 129 101 139 H109" stroke="#C8A86E"/>
+  <path d="M79 122 C82.5 126 85 130 85.5 136" stroke="#C8A86E" stroke-width="3.2"/>
+</g>
+<path d="M56 140 L67 140 L65 143.6 L58 143.6 Z" fill="#6D948C"/>
+<circle cx="38" cy="26" r="7" fill="#0D4D47"/>
+<circle cx="61.5" cy="20" r="7" fill="#6D948C"/>
+<circle cx="85" cy="26" r="7" fill="#C8A86E"/>
+<circle cx="50.0" cy="71" r="2.2" fill="#0D4D47"/><circle cx="50.4" cy="81" r="2.2" fill="#0D4D47"/><circle cx="50.8" cy="91" r="2.2" fill="#0D4D47"/><circle cx="51.2" cy="101" r="2.2" fill="#0D4D47"/><circle cx="51.6" cy="111" r="2.2" fill="#0D4D47"/>
+<circle cx="33.0" cy="92" r="2.2" fill="#0D4D47"/><circle cx="33.6" cy="101" r="2.2" fill="#0D4D47"/><circle cx="34.2" cy="110" r="2.2" fill="#0D4D47"/><circle cx="34.8" cy="119" r="2.2" fill="#0D4D47"/>
+<circle cx="73.0" cy="71" r="2.2" fill="#C8A86E"/><circle cx="72.6" cy="81" r="2.2" fill="#C8A86E"/><circle cx="72.2" cy="91" r="2.2" fill="#C8A86E"/><circle cx="71.8" cy="101" r="2.2" fill="#C8A86E"/><circle cx="71.4" cy="111" r="2.2" fill="#C8A86E"/>
+<circle cx="90.0" cy="92" r="2.2" fill="#C8A86E"/><circle cx="89.4" cy="101" r="2.2" fill="#C8A86E"/><circle cx="88.8" cy="110" r="2.2" fill="#C8A86E"/><circle cx="88.2" cy="119" r="2.2" fill="#C8A86E"/>
+</svg><span><svg class="brand-word" viewBox="0 0 2226 426" aria-hidden="true"><g transform="translate(0.000000,426.000000) scale(0.100000,-0.100000)"
+fill="currentColor" stroke="none">
+<path d="M16720 3979 c-40 -41 -40 -41 -40 -1851 0 -1810 0 -1810 39 -1849 39
+-39 39 -39 196 -39 157 0 157 0 201 44 43 44 43 44 40 692 -2 357 -2 729 2
+827 5 169 7 181 30 215 14 21 29 53 34 72 6 19 18 44 28 55 9 11 23 31 30 45
+21 41 173 200 197 206 12 3 33 19 47 35 20 23 35 29 65 29 27 0 49 8 76 30 38
+30 38 30 239 30 200 0 202 0 236 -25 19 -14 51 -30 72 -35 20 -6 50 -21 65
+-34 15 -12 35 -27 44 -32 23 -12 85 -96 94 -125 4 -13 21 -39 36 -57 22 -24
+29 -43 29 -73 0 -25 11 -60 30 -96 30 -56 30 -56 30 -917 0 -657 3 -865 12
+-874 17 -17 379 -17 396 0 9 9 12 240 12 979 0 968 0 968 -30 989 -28 20 -30
+25 -30 90 0 65 -2 70 -30 90 -24 17 -30 29 -30 57 0 32 -12 48 -135 169 -121
+121 -138 134 -169 134 -27 0 -39 7 -56 30 -20 28 -25 30 -89 30 -62 0 -70 2
+-96 30 -30 31 -30 31 -285 28 -256 -3 -256 -3 -289 -30 -28 -24 -41 -28 -96
+-28 -58 0 -67 -3 -95 -30 -17 -16 -41 -30 -54 -30 -23 0 -78 -35 -125 -80
+-162 -155 -161 -154 -178 -138 -14 15 -15 85 -14 702 2 687 2 687 -43 731 -44
+45 -44 45 -200 45 -156 0 -156 0 -196 -41z"/>
+<path d="M3326 3962 c-118 -3 -118 -3 -162 -47 -37 -37 -44 -50 -44 -83 0 -24
+-6 -45 -16 -53 -26 -21 -44 -66 -44 -108 0 -33 -6 -46 -30 -68 -25 -22 -30
+-34 -30 -70 0 -46 -18 -90 -44 -112 -10 -9 -16 -30 -16 -57 0 -36 -5 -46 -29
+-63 -25 -18 -29 -28 -33 -85 -3 -55 -8 -69 -31 -90 -21 -20 -27 -34 -27 -67 0
+-33 -6 -50 -26 -70 -19 -20 -28 -42 -33 -88 -6 -49 -12 -64 -34 -81 -20 -16
+-27 -30 -27 -57 0 -26 -7 -41 -30 -61 -26 -23 -30 -33 -30 -78 0 -42 -5 -58
+-30 -89 -21 -27 -30 -49 -30 -75 0 -26 -9 -48 -30 -75 -25 -31 -30 -47 -30
+-91 0 -47 -3 -55 -30 -74 -24 -17 -30 -29 -30 -59 0 -29 -7 -46 -30 -69 -25
+-27 -30 -40 -30 -82 0 -41 -5 -55 -30 -83 -24 -28 -30 -44 -30 -79 0 -35 -7
+-54 -30 -83 -23 -29 -30 -48 -30 -81 0 -36 -5 -46 -30 -64 -25 -18 -30 -28
+-30 -63 0 -30 -9 -55 -30 -87 -18 -27 -30 -58 -30 -77 0 -22 -10 -44 -30 -66
+-25 -29 -30 -43 -30 -85 0 -39 -6 -57 -25 -80 -14 -17 -32 -51 -39 -76 -8 -25
+-23 -57 -35 -72 -11 -15 -21 -35 -21 -44 0 -10 -7 -24 -16 -31 -14 -11 -18
+-10 -30 6 -8 10 -14 25 -14 32 0 7 -13 26 -30 43 -21 22 -30 40 -30 64 0 22
+-10 46 -30 71 -25 31 -30 47 -30 91 0 47 -3 55 -30 74 -26 18 -30 28 -30 66 0
+47 -17 91 -44 113 -10 8 -16 29 -16 53 0 31 -7 49 -30 75 -20 22 -30 44 -30
+66 0 19 -12 50 -30 77 -22 34 -30 57 -30 91 0 30 -6 51 -16 60 -25 20 -44 65
+-44 104 0 25 -8 44 -30 67 -22 23 -30 41 -30 67 0 28 -7 43 -30 63 -24 21 -30
+34 -30 66 0 29 -8 49 -30 77 -23 29 -30 48 -30 83 0 35 -6 51 -30 79 -20 23
+-30 44 -30 67 0 20 -12 50 -30 77 -21 31 -30 56 -30 86 0 33 -5 46 -27 63 -22
+17 -28 32 -34 80 -5 43 -14 68 -33 90 -19 23 -26 43 -26 75 0 26 -6 47 -16 56
+-26 21 -44 66 -44 108 0 33 -6 46 -30 68 -22 20 -30 35 -30 61 0 24 -9 45 -30
+69 -20 22 -30 45 -30 66 0 19 -13 50 -30 76 -22 31 -30 56 -30 86 0 34 -6 47
+-30 68 -24 22 -30 35 -30 69 0 27 -8 54 -23 77 -13 20 -31 48 -41 64 -16 27
+-16 27 -234 27 -156 0 -221 -3 -230 -12 -23 -23 -14 -92 18 -139 21 -31 30
+-56 30 -86 0 -35 5 -45 30 -63 24 -17 30 -29 30 -59 0 -27 9 -49 30 -76 25
+-31 30 -47 30 -91 0 -47 3 -55 30 -74 24 -17 30 -29 30 -57 0 -25 9 -45 30
+-70 20 -23 30 -44 30 -67 0 -22 10 -46 30 -71 24 -30 30 -47 30 -86 0 -41 4
+-50 29 -68 24 -17 29 -29 33 -74 3 -34 12 -64 27 -84 13 -17 26 -52 28 -77 5
+-37 12 -51 34 -67 23 -16 29 -28 29 -58 0 -27 9 -49 30 -76 25 -31 30 -47 30
+-91 0 -47 3 -55 30 -74 24 -17 30 -29 30 -59 0 -28 7 -44 30 -66 26 -25 30
+-36 30 -82 0 -44 5 -58 30 -86 21 -25 30 -45 30 -70 0 -28 6 -40 30 -57 26
+-19 30 -28 30 -68 0 -35 7 -58 30 -92 20 -30 30 -58 30 -83 0 -28 7 -44 26
+-62 17 -16 28 -38 31 -67 6 -48 24 -88 47 -107 10 -8 16 -29 16 -52 0 -31 6
+-45 30 -66 24 -21 30 -34 30 -68 0 -26 6 -48 16 -56 26 -21 44 -66 44 -110 0
+-32 7 -49 30 -76 17 -19 30 -45 30 -61 0 -15 14 -47 30 -71 17 -24 30 -53 30
+-65 0 -12 14 -41 30 -66 20 -30 30 -57 30 -84 0 -28 8 -47 30 -73 20 -23 30
+-44 30 -67 0 -18 9 -45 20 -59 11 -14 27 -45 35 -68 9 -24 22 -50 29 -59 8 -8
+22 -33 33 -55 18 -40 18 -40 177 -43 104 -2 163 1 172 8 7 6 16 26 20 43 3 18
+17 45 30 60 16 19 24 41 24 67 0 32 6 43 30 60 27 19 30 27 30 74 0 44 5 60
+30 91 21 27 30 49 30 76 0 30 6 42 29 58 21 16 30 31 34 66 4 25 18 65 32 89
+16 27 25 58 25 84 0 34 5 44 30 62 24 17 30 29 30 59 0 29 7 44 30 64 25 22
+30 35 30 70 0 33 7 53 30 83 18 24 30 51 30 72 0 22 9 42 30 64 22 23 30 40
+30 69 0 26 8 47 26 68 17 21 28 49 33 86 6 40 15 63 34 83 20 21 27 38 27 69
+0 25 6 46 16 54 22 18 44 64 44 92 0 13 13 44 30 68 16 24 30 56 30 71 0 16
+13 42 30 61 19 22 30 46 30 64 0 19 10 39 29 57 23 22 30 38 33 81 3 39 12 62
+31 85 19 22 27 43 27 71 0 31 6 44 30 66 23 20 30 35 30 63 0 28 7 43 30 63
+25 22 30 35 30 71 0 33 7 52 30 81 23 29 30 48 30 81 0 36 5 46 30 64 25 18
+30 28 30 61 0 30 6 46 26 64 19 17 28 39 33 78 5 37 16 65 34 87 19 22 27 43
+27 69 0 29 7 44 30 64 23 21 30 35 30 66 0 26 10 52 30 82 20 29 30 57 30 81
+0 29 7 44 30 65 28 24 30 31 30 93 0 42 -5 71 -12 78 -16 12 -111 18 -262 14z"/>
+<path d="M4256 3934 c-14 -16 -40 -29 -62 -33 -31 -5 -43 -14 -66 -51 -44 -71
+-47 -82 -50 -201 -3 -114 -3 -114 41 -171 40 -53 47 -58 82 -58 30 0 42 -6 59
+-30 20 -28 25 -30 90 -30 65 0 70 2 90 29 16 24 29 31 63 33 35 3 44 8 57 33
+8 17 25 46 38 66 20 33 22 49 22 163 0 128 0 128 -44 172 -25 24 -49 44 -54
+44 -5 0 -29 13 -53 30 -39 26 -53 30 -116 30 -65 0 -75 -3 -97 -26z"/>
+<path d="M10513 3948 c-6 -7 -13 -29 -16 -48 -7 -36 -8 -632 -7 -2412 0 -726
+-3 -1000 -12 -1032 -10 -36 -9 -56 6 -120 10 -41 24 -80 31 -86 9 -7 279 -10
+866 -8 854 3 854 3 914 30 40 19 77 28 112 28 44 0 57 5 83 30 25 24 39 30 74
+30 33 0 52 7 81 30 21 17 41 30 45 30 4 0 24 14 45 30 21 17 46 30 57 30 10 0
+63 45 122 103 80 80 105 111 110 139 3 19 17 45 31 58 13 12 27 37 31 54 3 17
+16 41 27 54 14 14 23 43 28 82 5 43 14 68 33 90 26 32 26 32 26 229 0 198 0
+198 -30 236 -24 30 -30 47 -30 86 0 36 -6 55 -24 76 -14 16 -28 43 -32 59 -4
+16 -20 44 -36 62 -15 18 -28 44 -28 57 0 17 -23 47 -79 102 -96 95 -147 133
+-177 133 -14 0 -31 12 -44 30 -17 25 -28 30 -60 30 -31 0 -43 5 -56 25 -9 14
+-30 27 -50 31 -66 12 -68 55 -3 68 17 3 46 18 65 33 18 16 57 47 87 70 29 23
+60 55 67 70 8 15 28 44 45 65 48 58 75 106 86 156 6 26 20 57 32 70 20 21 23
+37 28 170 3 81 3 205 0 277 -6 125 -7 133 -33 164 -19 21 -28 44 -28 66 0 26
+-7 39 -29 54 -16 12 -32 32 -35 45 -20 82 -192 256 -252 256 -14 0 -31 12 -44
+30 -17 24 -29 30 -58 30 -26 0 -44 8 -64 27 -25 24 -40 29 -107 34 -66 4 -84
+10 -111 32 -32 27 -32 27 -855 27 -646 0 -825 -3 -832 -12z m1595 -378 c24
+-21 43 -30 68 -30 31 0 47 -12 138 -104 69 -69 106 -113 110 -133 4 -17 18
+-45 32 -64 24 -32 24 -36 24 -247 0 -213 0 -215 -24 -247 -14 -18 -28 -43 -31
+-56 -3 -13 -37 -56 -76 -94 -39 -39 -85 -85 -103 -102 -23 -24 -42 -33 -65
+-33 -23 0 -40 -8 -59 -29 -27 -30 -27 -30 -472 -41 -323 -9 -471 -9 -542 -1
+-111 13 -124 16 -133 39 -9 21 -18 1064 -10 1109 12 66 -19 63 573 63 538 0
+538 0 570 -30z m-403 -1575 c88 -8 239 -15 336 -15 176 0 176 0 207 -30 21
+-20 42 -30 62 -30 20 0 39 -9 53 -24 12 -13 38 -30 57 -38 19 -8 65 -45 102
+-81 49 -48 69 -76 74 -102 4 -23 16 -43 35 -56 27 -19 29 -25 29 -89 0 -52 6
+-81 25 -122 33 -71 33 -145 0 -213 -20 -41 -25 -65 -25 -132 0 -79 -1 -82 -29
+-102 -17 -13 -32 -35 -36 -54 -12 -54 -146 -187 -189 -187 -13 0 -35 -13 -49
+-30 -24 -26 -34 -30 -82 -30 -47 0 -58 -4 -85 -30 -31 -30 -31 -30 -613 -28
+-582 3 -582 3 -596 33 -13 25 -15 119 -16 570 -1 619 4 752 31 772 11 8 49 13
+103 14 47 0 104 4 126 8 66 14 310 12 480 -4z"/>
+<path d="M5592 3528 c-6 -8 -11 -144 -14 -351 -3 -282 -6 -340 -18 -347 -8 -6
+-99 -10 -201 -10 -180 0 -186 -1 -206 -22 -35 -39 -43 -64 -43 -134 0 -60 3
+-71 35 -115 20 -26 44 -50 53 -52 9 -2 64 -5 122 -6 101 -2 222 -23 248 -43 9
+-8 12 -193 12 -862 0 -851 0 -851 30 -896 19 -29 30 -58 30 -80 0 -29 10 -47
+54 -95 29 -33 61 -67 70 -75 9 -8 45 -43 80 -77 35 -35 73 -63 83 -63 11 0 37
+-14 58 -30 32 -25 47 -30 94 -30 43 0 71 -7 116 -30 57 -28 66 -29 193 -30
+120 0 138 2 194 26 34 14 92 29 129 33 51 5 75 13 92 30 14 12 37 25 53 29 20
+6 35 20 48 47 17 33 18 44 8 82 -7 24 -12 81 -12 126 0 115 -23 134 -95 77
+-28 -23 -48 -30 -80 -30 -33 0 -47 -6 -70 -30 -29 -30 -29 -30 -185 -30 -157
+0 -157 0 -195 30 -21 16 -44 30 -52 30 -8 0 -47 34 -88 75 -67 66 -75 78 -75
+111 0 25 -9 52 -27 78 -28 39 -28 39 -31 811 -2 698 -1 773 14 785 11 10 55
+14 147 15 73 1 233 5 357 9 200 6 227 9 244 26 16 16 19 35 20 148 1 96 -3
+133 -13 145 -12 15 -50 17 -380 17 -272 0 -370 3 -379 12 -9 9 -12 100 -12
+348 0 248 -3 339 -12 348 -17 17 -382 17 -396 0z"/>
+<path d="M8219 2864 c-23 -28 -67 -44 -122 -44 -45 0 -61 -5 -92 -30 -21 -16
+-48 -30 -60 -30 -12 0 -39 -13 -60 -30 -21 -16 -43 -30 -50 -30 -7 0 -26 -13
+-43 -30 -18 -16 -42 -30 -54 -30 -15 0 -52 -27 -100 -73 -78 -74 -78 -74 -78
+-137 0 -63 0 -63 55 -117 31 -30 64 -72 75 -94 20 -38 46 -59 74 -59 8 0 66
+51 128 113 110 110 209 187 240 187 8 0 34 13 59 29 40 26 54 29 159 34 63 3
+191 3 284 0 161 -6 171 -7 192 -30 12 -12 36 -26 55 -29 25 -5 53 -27 102 -78
+38 -39 75 -84 84 -101 9 -16 24 -41 34 -54 11 -14 19 -40 19 -64 0 -30 7 -48
+31 -74 30 -35 30 -35 27 -179 -2 -101 -7 -147 -16 -156 -10 -9 -42 -12 -120
+-10 -95 3 -111 6 -143 28 -36 25 -36 25 -405 22 -369 -3 -369 -3 -401 -27 -23
+-17 -50 -26 -101 -30 -51 -5 -80 -14 -108 -32 -22 -15 -66 -32 -99 -39 -51
+-11 -68 -20 -123 -74 -36 -33 -83 -85 -104 -115 -22 -29 -58 -70 -79 -91 -29
+-28 -39 -46 -39 -69 0 -22 -9 -39 -30 -58 -30 -26 -30 -26 -30 -274 0 -247 0
+-248 24 -276 13 -16 29 -47 35 -69 6 -23 19 -49 30 -58 10 -9 21 -30 25 -47 7
+-37 140 -173 178 -182 15 -4 40 -18 56 -32 17 -14 36 -25 43 -25 8 0 33 -13
+56 -29 26 -17 61 -30 92 -34 27 -3 71 -17 98 -31 47 -26 51 -26 270 -26 221 0
+221 0 285 30 45 21 78 30 115 30 45 0 57 4 83 30 20 20 41 30 60 30 19 0 40
+10 60 30 19 19 41 30 59 30 22 0 45 18 110 86 51 53 89 84 99 82 15 -3 17 -21
+20 -132 1 -75 7 -135 14 -143 14 -18 378 -19 396 -1 9 9 12 236 12 958 0 946
+0 946 -30 986 -22 29 -30 50 -30 84 0 33 -8 57 -30 89 -17 24 -30 51 -30 60 0
+9 -14 36 -30 60 -17 24 -30 48 -30 54 0 8 -46 54 -133 132 -16 14 -40 25 -57
+25 -20 0 -35 9 -50 30 -16 23 -29 30 -54 30 -23 0 -41 9 -61 30 -26 27 -34 30
+-95 30 -60 0 -68 2 -92 30 -26 30 -26 30 -336 30 -269 0 -311 -2 -323 -16z
+m560 -1378 c15 -8 33 -22 40 -30 11 -13 35 -16 115 -16 100 0 102 0 128 -30
+14 -16 36 -30 48 -30 48 0 58 -15 65 -104 11 -124 -1 -219 -31 -251 -17 -18
+-24 -38 -24 -64 0 -26 -7 -44 -21 -57 -12 -10 -30 -38 -40 -61 -24 -57 -151
+-183 -184 -183 -14 0 -38 -13 -55 -30 -22 -21 -41 -30 -64 -30 -24 0 -40 -8
+-60 -30 -27 -31 -27 -31 -285 -28 -257 3 -257 3 -290 31 -19 16 -44 27 -62 27
+-38 0 -123 77 -139 126 -6 19 -21 41 -33 49 -36 25 -51 198 -30 350 7 54 17
+81 44 120 57 82 116 135 149 135 20 0 35 9 50 30 20 28 26 30 85 30 58 0 67 3
+95 30 31 30 31 30 251 30 171 0 226 -3 248 -14z"/>
+<path d="M14515 2850 c-26 -27 -35 -30 -91 -30 -58 0 -64 -2 -84 -30 -17 -24
+-29 -30 -59 -30 -29 0 -44 -7 -64 -30 -19 -21 -36 -30 -58 -30 -23 0 -44 -14
+-95 -62 -126 -122 -204 -202 -204 -210 0 -4 9 -16 21 -26 23 -19 89 -117 89
+-132 0 -5 22 -32 49 -60 64 -66 95 -68 155 -7 24 23 50 56 59 73 16 31 117
+124 135 124 6 0 20 14 32 30 17 24 29 30 56 30 26 0 42 8 63 31 28 30 28 30
+309 30 293 0 317 -3 351 -45 8 -9 20 -16 28 -16 9 0 30 -12 48 -27 17 -16 46
+-35 62 -44 22 -12 32 -26 37 -52 4 -24 17 -43 36 -57 24 -17 30 -29 30 -60 0
+-27 8 -48 28 -71 27 -33 27 -34 30 -205 4 -218 10 -209 -138 -200 -88 6 -111
+11 -142 31 -38 25 -38 25 -384 25 -347 0 -347 0 -391 -26 -29 -17 -67 -28
+-113 -33 -56 -6 -75 -12 -98 -34 -18 -17 -39 -27 -59 -27 -20 0 -41 -10 -61
+-30 -18 -16 -41 -30 -52 -30 -41 0 -226 -188 -237 -242 -3 -14 -18 -39 -34
+-54 -16 -15 -32 -43 -35 -63 -4 -20 -17 -57 -30 -83 -22 -43 -24 -60 -24 -183
+0 -116 3 -141 20 -175 11 -22 27 -72 35 -112 9 -40 24 -82 33 -93 10 -11 25
+-31 34 -45 26 -41 189 -210 203 -210 8 0 23 -13 35 -30 13 -18 30 -30 44 -30
+13 0 40 -13 61 -30 29 -23 48 -30 82 -30 28 0 71 -12 115 -31 69 -30 69 -30
+296 -27 214 3 230 4 269 26 24 12 64 25 90 28 27 4 65 17 85 31 20 14 55 29
+77 34 43 10 123 59 144 89 7 10 28 26 47 35 20 9 45 32 58 51 23 36 56 45 66
+18 3 -9 6 -51 6 -95 0 -77 1 -80 36 -119 36 -40 36 -40 200 -40 164 0 164 0
+188 39 14 22 30 42 35 45 6 4 7 86 4 214 -3 114 -1 268 5 342 8 103 8 178 -2
+318 -9 123 -11 197 -4 225 6 28 5 95 -2 198 -9 116 -9 169 -1 208 17 80 14
+153 -10 205 -13 31 -22 78 -26 139 -5 79 -10 98 -34 136 -17 26 -29 58 -29 78
+0 74 -305 373 -380 373 -15 0 -44 13 -65 30 -31 24 -47 30 -89 30 -40 0 -61 7
+-95 30 -44 30 -44 30 -356 30 -311 0 -311 0 -340 -30z m590 -1380 c36 -29 41
+-30 140 -30 85 0 106 -3 126 -19 13 -10 42 -27 64 -37 40 -19 40 -19 43 -184
+3 -170 -3 -203 -39 -236 -13 -11 -19 -30 -19 -57 0 -38 -6 -46 -137 -173 -135
+-131 -139 -134 -183 -134 -33 0 -57 -8 -89 -30 -44 -30 -44 -30 -281 -30 -237
+0 -237 0 -268 30 -20 19 -42 30 -60 30 -26 0 -91 57 -215 188 -21 23 -22 32
+-22 196 0 200 -8 180 132 319 142 141 135 137 207 137 55 0 68 4 101 30 38 30
+38 30 250 30 212 0 212 0 250 -30z"/>
+<path d="M20757 2850 c-25 -27 -33 -30 -88 -30 -54 0 -66 -4 -96 -30 -20 -18
+-45 -30 -62 -30 -17 0 -37 -10 -53 -27 -23 -26 -48 -43 -119 -84 -15 -8 -43
+-32 -62 -52 -65 -69 -95 -38 -106 108 -4 68 -11 99 -21 105 -23 15 -383 13
+-398 -2 -17 -17 -17 -2539 0 -2556 8 -8 67 -12 199 -12 275 0 253 -64 255 730
+2 349 6 725 10 834 7 199 7 199 36 231 17 20 28 44 28 62 0 19 10 39 30 58 19
+19 30 39 30 57 0 41 134 187 173 188 16 0 40 12 59 30 24 24 40 30 73 30 32 0
+52 7 81 31 38 30 38 30 254 27 216 -3 216 -3 249 -30 18 -16 40 -28 50 -28 45
+0 187 -135 197 -187 3 -18 19 -46 35 -63 26 -26 29 -37 29 -93 0 -55 4 -71 30
+-108 30 -44 30 -44 30 -893 -1 -626 2 -852 11 -862 16 -19 381 -21 397 -1 22
+26 42 146 36 220 -3 39 -7 405 -9 812 -2 407 -8 783 -12 836 -7 83 -12 99 -35
+128 -22 25 -28 43 -28 80 0 39 -5 51 -30 73 -21 19 -30 35 -30 58 0 27 -16 47
+-109 138 -127 124 -175 162 -207 162 -14 0 -31 12 -44 30 -20 28 -25 30 -90
+30 -65 0 -70 2 -90 30 -21 30 -21 30 -299 30 -278 0 -278 0 -304 -30z"/>
+<path d="M4150 2805 c-17 -20 -16 -2531 1 -2551 15 -19 379 -20 397 -2 17 17
+17 2539 0 2556 -8 8 -67 12 -199 12 -152 0 -189 -3 -199 -15z"/>
+</g></svg><small>HADP · Confidential Brief</small></span></a>
+      <div class="nav-links">
+        <a href="#thesis">Thesis</a>
+        <a href="#moat">Moat</a>
+        <a href="#product">Product</a>
+        <a href="#team">Team</a>
+        <a href="#ask">Ask</a>
+      </div>
+      <a class="btn btn--primary nav-cta" href="#contact">Request materials</a>
+      <button class="nav-toggle" id="navToggle" aria-label="Menu" aria-expanded="false"><span></span></button>
+    </nav>
+  </div>
+</header>
+
+<main id="top">
+  <!-- HERO -->
+  <section class="hero" id="thesis">
+    <div class="wrap">
+      <div class="hero-grid">
+        <div class="hero-main">
+          <p class="eyebrow">Confidential Brief</p>
+          <h1>The contextual, <span class="tealword">governed interpretation infrastructure</span> for physician-led longevity & healthspan medicine.</h1>
+          <p class="hero-sub">Turns biomarker, longitudinal and contextual data into physician-released interpretation — not another dashboard or score.</p>
+          <p class="lede">Longevity, healthspan and preventive clinics generate growing biomarker and longitudinal data but lack a governed way to interpret it. VitaBahn’s <b>HADP</b> (Healthspan Architecture Decision Platform) turns these inputs into structured, evidence-linked interpretation under physician review, report lock and controlled release.</p>
+          <div class="hero-cta">
+            <a class="btn btn--primary" href="#contact">Request materials &amp; data room <span aria-hidden="true">→</span></a>
+          </div>
+          <p class="hero-trust">Context-aware interpretation · <b>Physician-controlled</b> · Library-governed AI assistance · Source-bound evidence · Full audit and provenance</p>
+          <p class="hero-signal"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#0D4D47" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>First external signal documented — a UAE longevity clinic has signed an LOI to enter a controlled pilot when HADP Alpha is ready.</p>
+        </div>
+        <div class="hero-aside">
+          <div class="hadp-pipe" aria-label="Governed interpretation pipeline, from sources to controlled release">
+            <div class="hp-eyebrow">Interpretation pipeline</div>
+            <div class="hp-subhead">From raw inputs to a physician-released report.</div>
+            <div class="hp-flow" id="hadpFlow">
+              <div class="hp-rail" id="hadpRail"></div>
+              <div class="hp-rail__fill" id="hadpFill"></div>
+              <div class="hp-pulse" id="hadpPulse"></div>
+              <div class="hp-step" data-i="0">
+                <div class="hp-node"><span class="hp-num">01</span><span class="hp-ping"></span></div>
+                <div class="hp-copy"><div class="hp-t">Sources</div><div class="hp-d">Labs, wearables, omics and longitudinal history.</div></div>
+              </div>
+              <div class="hp-step" data-i="1">
+                <div class="hp-node"><span class="hp-num">02</span><span class="hp-ping"></span></div>
+                <div class="hp-copy"><div class="hp-t">Knowledge libraries</div><div class="hp-d">Curated, versioned scientific authorities.</div></div>
+              </div>
+              <div class="hp-step" data-i="2">
+                <div class="hp-node"><span class="hp-num">03</span><span class="hp-ping"></span></div>
+                <div class="hp-copy"><div class="hp-t">Context</div><div class="hp-d">Patient · clinic · measurement conditions.</div></div>
+              </div>
+              <div class="hp-step" data-i="3">
+                <div class="hp-node"><span class="hp-num">04</span><span class="hp-ping"></span></div>
+                <div class="hp-copy"><div class="hp-t">Interpretation</div><div class="hp-d">Structured, multidimensional and source-bound.</div></div>
+              </div>
+              <div class="hp-step hp-step--gate" data-i="4">
+                <div class="hp-node">
+                  <span class="hp-num">05</span>
+                  <span class="hp-ping"></span>
+                  <svg class="hp-lock" viewBox="0 0 24 24" width="20" height="20" aria-hidden="true">
+                    <rect class="hp-lock__body" x="5" y="10.6" width="14" height="9.4" rx="2.2"/>
+                    <path class="hp-lock__shackle" d="M8 10.6 V7.6 a4 4 0 0 1 8 0 V10.6"/>
+                    <circle class="hp-lock__hole" cx="12" cy="14.6" r="1.3"/>
+                    <path class="hp-lock__pin" d="M12 15.7 V17.4"/>
+                  </svg>
+                </div>
+                <div class="hp-copy"><div class="hp-t">Physician review <span class="hp-badge">GATE</span></div><div class="hp-d">Approve, adjust or reject. AI assists only.</div></div>
+              </div>
+              <div class="hp-step" data-i="5">
+                <div class="hp-node"><span class="hp-num">06</span><span class="hp-ping"></span></div>
+                <div class="hp-copy"><div class="hp-t">Report lock</div><div class="hp-d">Claims and provenance fixed.</div></div>
+              </div>
+              <div class="hp-step" data-i="6">
+                <div class="hp-node"><span class="hp-num">07</span><span class="hp-ping"></span></div>
+                <div class="hp-copy"><div class="hp-t">Controlled release</div><div class="hp-d">To clinic and patient surfaces.</div></div>
+              </div>
+            </div>
+            <div class="hp-foot">
+              <span class="hp-foot-lock" id="hadpFootLock"><svg viewBox="0 0 24 24" width="14" height="14" aria-hidden="true"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11 V8 a4 4 0 0 1 8 0 V11"/></svg></span>
+              <span>Physician gate mandatory · full provenance.</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="kpis reveal">
+        <div class="kpi"><div class="k">Product Stage</div><div class="v">Alpha</div></div>
+        <div class="kpi"><div class="k">Market</div><div class="v small">Longevity · healthspan · preventive</div></div>
+        <div class="kpi"><div class="k">Interpretive moat</div><div class="v small">Governed libraries · contextual reasoning · physician control</div></div>
+        <div class="kpi"><div class="k">Model</div><div class="v small">Clinic platform subscription · white-label</div></div>
+      </div>
+    </div>
+  </section>
+
+  
+  <!-- WHY NOW -->
+  <section id="why">
+    <div class="wrap">
+      <div class="sec-head"><p class="eyebrow">The gap & why now</p><h2>The category generates complex biomarker data but lacks a governed way to interpret it in context — and the window is opening now.</h2>
+        <p class="lede">The challenge is no longer producing numbers; it is interpreting them responsibly — across patient, clinic and measurement context, with explicit scientific authority and controlled communication. Five shifts are arriving at once — cheaper omics, growing clinics, tighter regulation, demand for defensible evidence and AI that cuts both ways — and none resolves without a physician-controlled interpretation layer.</p></div>
+      <div class="grid g3 five">
+        <div class="card"><div class="ico"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#0D4D47" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 17 13.5 8.5 8.5 13.5 2 7"/><polyline points="16 17 22 17 22 11"/></svg></div><h3>Omics become affordable</h3><p>Proteomics and multi-omics are falling in price and becoming clinically usable — data volume per patient explodes.</p></div>
+        <div class="card"><div class="ico"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#0D4D47" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17 17 7M9 7h8v8"/></svg></div><h3>Longevity &amp; healthspan clinics are growing</h3><p>A new care category is emerging, with fragmented tools and no shared interpretation layer.</p></div>
+        <div class="card"><div class="ico gold"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#8a6e2f" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l7 3v5c0 4.4-3 7.6-7 9-4-1.4-7-4.6-7-9V6z"/></svg></div><h3>EU regulation</h3><p>MDR/EHDS favor evidenced, accountable statements — and raise the barrier to entry for consumer players.</p></div>
+        <div class="card"><div class="ico gold"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#8a6e2f" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3.85 8.62a4 4 0 0 1 4.78-4.77 4 4 0 0 1 6.74 0 4 4 0 0 1 4.78 4.78 4 4 0 0 1 0 6.74 4 4 0 0 1-4.77 4.78 4 4 0 0 1-6.75 0 4 4 0 0 1-4.78-4.77 4 4 0 0 1 0-6.76Z"/><path d="m9 12 2 2 4-4"/></svg></div><h3>Demand for defensible interpretation</h3><p>Clinics and patients want defensible interpretation, not hype-driven longevity. Trust becomes the differentiator.</p></div>
+        <div class="card"><div class="ico gold"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#8a6e2f" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l1.6 4.9a2 2 0 0 0 1.3 1.3L20 11l-5.1 1.8a2 2 0 0 0-1.3 1.3L12 19l-1.6-4.9a2 2 0 0 0-1.3-1.3L4 11l4.1-1.8a2 2 0 0 0 1.3-1.3z"/><path d="M19 3.4l.4 1.2 1.2.4-1.2.4-.4 1.2-.4-1.2-1.2-.4 1.2-.4z"/></svg></div><h3>AI raises capability and risk</h3><p>AI increases both capability and risk — HADP constrains AI assistance through governed libraries, authority hierarchies and physician-controlled release gates.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- MOAT -->
+  <section class="dark" id="moat">
+    <div class="wrap">
+      <div class="sec-head"><p class="eyebrow">Governed interpretive defensibility</p><h2>Defensibility emerges from governed interpretation, structured architecture, physician-controlled workflows and accumulated knowledge.</h2>
+        <p class="lede">A competitor can ship a feature in a sprint; it cannot retrofit how interpretation is produced, reviewed and released once that structure is the product. Features are copyable — the operating model is not.</p></div>
+      <div class="grid g3 five">
+        <div class="card"><div class="num">Moat 01</div><h3>Regulation by Design</h3><p>Interpretation is produced inside the architecture — context, sources, authority hierarchies and release gates are structural, not features. Regulation-by-design becomes a moat rather than a burden.</p></div>
+        <div class="card"><div class="num">Moat 02</div><h3>The Interpretation Doctrine</h3><p>The doctrine — Tri-State, CIS 0–5, Actionability A–E, Physician Gate, <b>library-governed AI assistance</b>, <b>no</b> unified score — is governance that can’t be retrofitted as a feature. It structures interpretation from the ground up.</p></div>
+        <div class="card"><div class="num">Moat 03</div><h3>Operational Clinical Integration</h3><p>Once the methodology sits inside the physician review workflow, switching cost is high. White-label binds the clinic brand; the interpretation layer stays VitaBahn.</p></div>
+        <div class="card"><div class="num">Moat 04</div><h3>Contextual Interpretation Engine</h3><p>Patient, clinic and measurement context are evaluated before interpretation — the layer competitors would have to rebuild wholesale, not bolt on.</p></div>
+        <div class="card"><div class="num">Moat 05</div><h3>Curated Knowledge Libraries</h3><p>Curated, versioned scientific authorities and rules govern every interpretation — an accumulating, source-bound asset that compounds with use.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PRODUCT EVIDENCE -->
+  <section class="alt" id="product">
+    <div class="wrap">
+      <div class="sec-head"><p class="eyebrow">HADP Alpha</p><h2>Governed interpretation in practice — already structured within HADP Alpha.</h2>
+        <p class="lede">HADP Alpha combines biomarker values, longitudinal history, context and curated scientific authorities into structured interpretation — produced for physician review, lock and controlled release. A controlled demonstration record across six health domains, then one statement up close:</p></div>
+      <div class="grid g4" style="margin-bottom:26px">
+        <div class="card"><div class="ico"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#0D4D47" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM4 21v-1a6 6 0 0 1 6-6h4a6 6 0 0 1 6 6v1"/></svg></div><h3>Patient Context</h3><p>Age, sex, menopausal status, smoking, medication and accompanying conditions shape what a value means.</p></div>
+        <div class="card"><div class="ico gold"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#8a6e2f" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18M5 21V8l7-4 7 4v13M9 21v-6h6v6"/></svg></div><h3>Clinic Context</h3><p>Programme objectives and clinic setting frame how interpretation is scoped and communicated.</p></div>
+        <div class="card"><div class="ico"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#0D4D47" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 3v4l-5 9a3 3 0 0 0 3 4h10a3 3 0 0 0 3-4l-5-9V3M9 3h6M7 14h10"/></svg></div><h3>Measurement Context</h3><p>Assay, laboratory, units, fasting and preparation are checked before any longitudinal comparison.</p></div>
+        <div class="card"><div class="ico gold"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#8a6e2f" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l7 3v5c0 4.4-3 7.6-7 9-4-1.4-7-4.6-7-9V6z"/><path d="M9 12l2 2 4-4"/></svg></div><h3>Scientific Authority Mapping</h3><p>Every interpretation is bound to curated, versioned scientific authorities — not an open-ended model.</p></div>
+      </div>
+      <div class="workspace">
+        <div class="ws-bar"><div class="ws-id"><span class="ws-app">HADP Alpha · Interpretation Workspace</span><span class="ws-case">Controlled demonstration record · longitudinal review</span></div></div>
+        <div class="ws-tabs"><span class="ws-tab on">Physician review</span><span class="ws-tab">Context</span><span class="ws-tab">Tri-State</span><span class="ws-tab">Six domains</span><span class="ws-tab">CIS &amp; actionability</span><span class="ws-tab">Audit trail</span></div>
+        <div style="padding:13px 16px;border-bottom:1px solid var(--line);background:var(--paper-2)"><div class="tri-k" style="margin-bottom:8px">Context considered before interpretation</div><div class="chips" style="margin:0"><span class="chip">Age</span><span class="chip">Sex</span><span class="chip">Menopausal status</span><span class="chip">Smoking</span><span class="chip">Medication / supplements</span><span class="chip">Fasting / preparation</span><span class="chip">Assay / laboratory</span><span class="chip">Units</span><span class="chip">Accompanying conditions</span><span class="chip">Previous measurements</span><span class="chip">Clinic programme objectives</span></div></div>
+        <div class="ws-tri"><div class="tri"><div class="tri-k">Biological</div><div class="tri-v">Movement visible</div></div><div class="tri"><div class="tri-k">Risk</div><div class="tri-v">Open for review</div></div><div class="tri"><div class="tri-k">Function</div><div class="tri-v">Partially confirmed</div></div></div>
+        <div class="ws-domains">
+          <div class="dom"><div class="dom-h"><span class="dom-n">Metabolic</span><span class="cis c3">CIS-3</span></div><p>Repeated lab series, consistent direction.</p></div>
+          <div class="dom"><div class="dom-h"><span class="dom-n">Vascular</span><span class="cis rev">Review</span></div><p>Risk context incomplete — flagged for physician.</p></div>
+          <div class="dom"><div class="dom-h"><span class="dom-n">Inflammatory</span><span class="cis c3">CIS-3</span></div><p>hs-CRP trend verified against source PDFs.</p></div>
+          <div class="dom"><div class="dom-h"><span class="dom-n">Recovery</span><span class="cis c2">CIS-2</span></div><p>Wearable trend verified, single device.</p></div>
+          <div class="dom"><div class="dom-h"><span class="dom-n">Neurocognitive</span><span class="cis hold">Hold</span></div><p>Data gap visible — Do-Not-Act status.</p></div>
+          <div class="dom"><div class="dom-h"><span class="dom-n">Hormonal</span><span class="cis c1">CIS-1</span></div><p>Single timepoint — weak evidentiary basis.</p></div>
+        </div>
+        <div class="ws-foot"><span class="ws-prov">Provenance attached to every value · append-only audit trail</span><span class="ws-status">Draft · review pending</span></div>
+        <p class="ws-note">HADP preserves multidimensional interpretation rather than collapsing biological movement, risk, function, credibility and actionability into one composite score.</p>
+      </div>
+      <div class="ev-grid">
+        <div class="evidence">
+          <div class="ev-head"><span class="t">Released interpretation statement</span></div>
+          <div class="ev-body">
+            <div class="ev-row"><div><div class="lab">Current value</div><div class="val">hs-CRP · 1.4 mg/L</div></div><span class="tag ok">verified</span></div>
+            <div class="ev-row"><div><div class="lab">Baseline</div><div class="val">hs-CRP · 2.2 mg/L</div></div><span class="lab">Source: lab PDF v2.1</span></div>
+            <div class="scorebar">
+              <div class="score"><div class="k">CIS · Interpretation Credibility</div><div class="v">3<small> / 5</small></div><p>Conservative, with caveat — not proof of efficacy.</p></div>
+              <div class="score"><div class="k">Actionability</div><div class="v">C</div><p>A separate clinical axis — observation, review, clarification or a physician-led next step. Not efficacy.</p></div>
+            </div>
+            <p class="sep-note">Kept separate — interpretation, credibility and actionability never merge.</p>
+            <div class="lifecycle"><span class="lc">Draft</span><span class="lc-arr">→</span><span class="lc">Reviewed</span><span class="lc-arr">→</span><span class="lc">Locked</span><span class="lc-arr">→</span><span class="lc active">Released</span></div>
+            <div class="gate-row"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#0D4D47" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>AI assists within governed interpretation controls; physicians retain review, approval, lock and release authority (Physician Gate).</div>
+          </div>
+        </div>
+        <div class="ev-side">
+          <ul class="bullets">
+            <li><b>Tri-State kept separate</b> — Biological, Risk and Function stay independent.</li>
+            <li>Every statement is source-bound and reconstructable in the audit trail.</li>
+            <li>Patient-facing content only exists behind the Physician Gate.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- MARKET -->
+  <section id="market">
+    <div class="wrap">
+      <div class="sec-head"><p class="eyebrow">Market</p><h2>Modeled bottom-up, not estimated top-down.</h2></div>
+      <div class="market-note">
+        <p>Clinic subscriptions establish the initial entry point, while enterprise and sovereign deployments define the broader value-creation pathway.</p>
+      </div>
+      <div class="gated"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#0D4D47" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>The detailed market model and deployment scenarios are available in the investor Data Room.</div>
+    </div>
+  </section>
+
+  <!-- BUSINESS MODEL -->
+  <section class="alt" id="model">
+    <div class="wrap">
+      <div class="sec-head"><p class="eyebrow">Business model</p><h2>Recurring per clinic. Expandable via modules, seats and white-label.</h2></div>
+      <div class="grid g3 five">
+        <div class="card"><h3>Clinic Platform Subscription</h3><p>Annual license per clinic — €4k–€22k/year, tiered by case volume and modules. Blended with per-patient usage, <b>ARPU ~€15k/clinic (base)</b> — tiers and terms in the data room.</p></div>
+        <div class="card"><h3>White-label deployment</h3><p>The clinic stays the sender; governance logic, audit trail and the limits on medical claims stay enforced — higher stickiness, clean brand presence.</p></div>
+        <div class="card"><h3>Account Expansion</h3><p>Add-on modules, additional sites and proteomics depth deepen each account over time — the structural basis for strong net revenue retention.</p></div>
+        <div class="card"><h3>Readiness &amp; Deployment Services</h3><p>Structured onboarding, configuration and governed activation around the platform license — accelerating clinic readiness and deepening integration.</p></div>
+        <div class="card"><h3>Institutional &amp; Sovereign Pathways</h3><p>Institutional, group and sovereign deployment pathways for healthspan and preventive programmes — beyond single-clinic licensing.</p></div>
+      </div>
+      <div class="ueco-head"><span class="lbl">Target unit economics · model</span> Pre-revenue — the economic shape we are building to. Full build-up, assumptions and sensitivity in the data room.</div>
+      <div class="ueco">
+        <div class="ue"><div class="uk">Gross margin</div><div class="uv">~80–85%</div><div class="ut">target · software-led</div></div>
+        <div class="ue"><div class="uk">Net revenue retention</div><div class="uv">&gt;115%</div><div class="ut">target · modules, sites, depth</div></div>
+        <div class="ue"><div class="uk">ARPU</div><div class="uv">~€15k → €22k+</div><div class="ut">base → expanded</div></div>
+        <div class="ue"><div class="uk">Recurring</div><div class="uv">~90%+</div><div class="ut">annual contracts</div></div>
+      </div>
+    </div>
+  </section>
+
+  
+  <!-- TRACTION + ROADMAP -->
+  <section id="traction">
+    <div class="wrap">
+      <div class="sec-head"><p class="eyebrow">Status &amp; roadmap</p><h2>What’s in place — and what’s being funded next.</h2>
+        <p class="lede">Alpha is the current governed interpretation stage. The round funds Beta execution and commercial conversion.</p></div>
+      <div class="tl">
+        <div class="tl-row"><div class="stage done">Done</div><div><h3>Alpha Interpretation Architecture Established</h3><p>Tri-State, CIS, Actionability and Physician Gate established as interpretation invariants; data model fixed.</p><span class="ev-doc">Data room · Doctrine + data model</span></div></div>
+        <div class="tl-row"><div class="stage done">Done</div><div><h3>Regulatory Qualification &amp; Controlled Activation Pathways Mapped</h3><p>MDR qualification logic and a phased, governed activation scope outlined.</p><span class="ev-doc">Data room · MDR memo + activation scope</span></div></div>
+        <div class="tl-row"><div class="stage done">Done</div><div><h3>First design-partner LOI signed</h3><p>A UAE longevity clinic signed a design-partner letter of intent to enter a governed pilot pathway when HADP Alpha is ready.</p><span class="ev-doc">Data room · Signed LOI (redacted)</span></div></div>
+        <div class="tl-row"><div class="stage now">Now</div><div><h3>Alpha Governed Product Surface Built</h3><p>The clinician governed interpretation workspace — six domains with Tri-State, CIS and Actionability — demonstrated through a controlled, non-identifiable report-output environment.</p><span class="ev-doc">Data room · Product walkthrough</span></div></div>
+        <div class="tl-row"><div class="stage next">Roadmap</div><div><h3>Beta execution &amp; controlled clinic activation</h3><p>Turning HADP Alpha into a deployable Beta build under the Physician Gate, toward governed clinic activation.</p></div></div>
+        <div class="tl-row"><div class="stage next">Roadmap</div><div><h3>Controlled clinic activation</h3><p>Pilot and clinic-activation timing will follow product-readiness, contractual, privacy, security, legal, regulatory and clinical-governance gates.</p></div></div>
+      </div>
+      <p class="ws-note" style="margin-top:18px"><b>18-month execution plan:</b> Months 0–12 — Beta execution and operational hardening. Months 13–18 — regulatory, legal, IP/right-to-use, procurement and commercial conversion.</p>
+    </div>
+  </section>
+
+  <!-- TEAM -->
+  <section class="alt" id="team">
+    <div class="wrap">
+      <div class="sec-head"><p class="eyebrow">Team</p><h2>The bet: a founding team covering clinical, scientific and technical.</h2>
+        <p class="lede">Clinician-governed medical infrastructure fails on missing discipline across clinical practice, data and architecture. VitaBahn unites all three: clinical leadership, data science and AI-native engineering.</p></div>
+      <div class="team">
+        <div class="member"><div class="av"><img src="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAQDAwMDAgQDAwMEBAQFBgoGBgUFBgwICQcKDgwPDg4MDQ0PERYTDxAVEQ0NExoTFRcYGRkZDxIbHRsYHRYYGRj/2wBDAQQEBAYFBgsGBgsYEA0QGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBj/wAARCAEAAQADASIAAhEBAxEB/8QAHwAAAQUBAQEBAQEAAAAAAAAAAAECAwQFBgcICQoL/8QAtRAAAgEDAwIEAwUFBAQAAAF9AQIDAAQRBRIhMUEGE1FhByJxFDKBkaEII0KxwRVS0fAkM2JyggkKFhcYGRolJicoKSo0NTY3ODk6Q0RFRkdISUpTVFVWV1hZWmNkZWZnaGlqc3R1dnd4eXqDhIWGh4iJipKTlJWWl5iZmqKjpKWmp6ipqrKztLW2t7i5usLDxMXGx8jJytLT1NXW19jZ2uHi4+Tl5ufo6erx8vP09fb3+Pn6/8QAHwEAAwEBAQEBAQEBAQAAAAAAAAECAwQFBgcICQoL/8QAtREAAgECBAQDBAcFBAQAAQJ3AAECAxEEBSExBhJBUQdhcRMiMoEIFEKRobHBCSMzUvAVYnLRChYkNOEl8RcYGRomJygpKjU2Nzg5OkNERUZHSElKU1RVVldYWVpjZGVmZ2hpanN0dXZ3eHl6goOEhYaHiImKkpOUlZaXmJmaoqOkpaanqKmqsrO0tba3uLm6wsPExcbHyMnK0tPU1dbX2Nna4uPk5ebn6Onq8vP09fb3+Pn6/9oADAMBAAIRAxEAPwD6oFOFIKcK2MhRTgKQU4CgBQMUoFAFOAoAAKUClAzSgUDClApQKUCgAxS4pQKhu7y1sLVrm7nSGJRks5wKAJsVlar4j0LRFzqmqW1txnEjgGvn34ofHHW7y+Oi+AoXVUYh73s30rwzWdO8Q69rC33iDUrq4uG4wx4FYVK8YHTSw0pn074k/ab8CaJqRtLMTalt+88HQVz7/tb+HEIz4eveenI5rwy2+HKNEJlG6QnjtmtW18FrF+7mtsZ67hmsPrZ1LAHr8P7XnhCRyJNEvowOpJFeh+GPjp8OvE8afZ9bhtpm48q4Ow18oXHw9hnnLLHgH2rA1T4YXKJ5kD7ccjbxTWLCWA0uj9ELe9s7xA9rcxTKecowap8V+bem674+8BX6XGlareKEOdhYlTj2r6E+G/7WWn6nqEGi+M7VbSZiE+2Rn5M/7Q7V0QqxnscVShKB9P4pMUy1ura+s47q1mSaGQbldDkEVLitTEjIpKeRSUAMIppFPIpCKAIyM0hFPIppFADDTTTyKaaBDDTTTzTTQAopwpBTh0oAUCnAUCnAUDACnAUCnAUAFOAoApwFAABSgUAU7HrQBV1C/tdL02W+vZligiUszseAK+Y/FPinW/idrMgQvZ6DbOREikg3Hufaun+LHi6XxP4mXwbpEhFnatuvplPDHslZun2KQxxxouxFGAvoK4cVieVcqPUwOE5/ekc+NG8qER2dssaKORVi20G3nRWlVmceoruLawhZyCuRVy30+JZTgcV5ntG9z2VSUdEcPHptxbLxbhwDwfStRNM86JXkXLehFdb9giDnaBtPWmtbBYy2BgdBUuWpcYo5GbSU8vbsA+lZt3pkaR42bvrXYyoqK24c5rKuocuW7VNyrI891bw/BexYMYHrxXkvir4fbN9xaALt5wB1+te/XaZJ21g3lksylJFzkVrTqOJzVqSkc/8AAr436h4I1iLwr4qlkm0udwkcjn/UH/CvtqGaK5tkngcPG4DKw7g1+eHjjw8sUDPaxFpgMgAcn6V7Z+zN8aXvmXwB4jl2zQqBazSt8z/7FevQrc6VzwcTR5JOx9SkUhFPIpCK6TkI6aRUhFNIoAjIpCKeRTTQAwimkU8000CIzTTUhph6UAKKeOtNFOHSgBwpwpB0pwoGKKcKQU4UAKBTgKQCngUAAFcz4/1+Tw34DvdQtwDcbNkQP948CuoAryD4039zJcaZo0JHlsxmceuKipLli2aUoc8kjzHQNNltrcyXDF7i4bzZ3bqzGuvs1DEA4rFtG3Kx64rorFVMSkDnrXz1VuTufT0IqETWtoiqnjrV6FYym1Qc1GkqKidxVtVyuV4zSRo5jCg8vAUn61G+0gb0xj0qVnIGARkdaY8haPoDQwUjOukjbPFY9xEZCSOg7Vpzz7s8YrNmYIGYnB7UmO5gXkWASQVNY7rm4B7VvXbFgVk5J6ViXAZZQcZA60JkyOa8R2Uc1u7NnGDjHUGvF7mG68MeIrfX7Kfybm3lDq44zzX0FdIs0DFI8noR6ivNvH3hm4utEnuYYwIkIIUDmu/DSd7Hm4uCtc+4/BmsnxD4C0rWSctc26SH6kVtkV5h+z3ri658BtHkEez7Mn2cj128V6iRXro8RkZFNIqQimkUCIzTTTyKaaAGGmmnmmmgBhpp6089KYelAhRTh1pB1pwoAcOtOFNHSnjpQMUU4UgFPHWgBRTgKQU4UALXhHxOuUuvHfOQ0CbFHrXvAr5++JYC+OWdOuawxPwM6cJ/ERh2mRweNxzXWafD8i98jGK5CO7trceddSBEQdCcZrRtPGGjq4VbuMZI25bGK8FQlqfQQnFHbCJgoUEDHrU0CyEk56VzJ8ZaL8qpqETS55UHNbMev2r2xZCqkD7ueTTs1uaKSexedZH3YGMd6g+bBXNZ994hFqseQFB4cHrXGah8SLbTb2USlWA+6M1apuWwOpGO52k6KzMegzWXew/Pgng9K8x1D422cpaOMbW/2eRWdH8aHkISW3VlBwPeq9jJK5g8Sm9D0C8jkgl3uSfSqMzrNx901DB4vstbtUMZjE2PuZoueiP19QKz5HHUtVFPQYGTeI8HdSatbJNbmExb4SvzL61ct1UlJvurnGSO9S3UMigpEACPv124fU48Ta1j0X9n60h03wPe6bACscdyXVfQGvXCK8v+DtiLJNSVCSrFDyc8816kRXqrY8Se5GRTSKeaaaZIw0w1IetMNADDTTTzTD0oAaetMNPNNNAgFPHSmjpThQMcKcOtIOtOFADhTh0po6U8CgBwpwpB1pwoAZO/lwM2cV4B8Tbi10/XGvLxmwDj5V3HJr3PV5NmnP8AvhDlT85/h96+cPFE2o28F/eXmujVnIIREgAC/jWVVxtZnTQjL4onh3jPXtY1Xxo2n2jtHbqu35TWbN4R1CK1E8+tRRg84lkxj8M1S8S3uo2N7Pc2KZvLhv3YxkfWq9p4Pn1TRhcarcXB1QOGEjk+Wo9Md689OMXZHoRUmrvc19BhS11VIYPEUMlwxznzAAPxNe0+E5hYXCpda5FOZ+Qh5Ykehrw//hWcG6TbctNM+GM4UIB7ACvVPAGiWr6pY23kyyy2ETGS4fo2TwKwrNdDqw8ZdTr/ABNd2QUSTas0QYcRmIk5rxrxFqGkpqvmfbvNTHIKkH8q9t8Y6OL/AEtXSPdLEyyAL1IB6V5VceH7TUtWutRmtBEXOPKYcjFRSehdaMm9Dj08QaHp8S3Fx4fuZo3OFlI2qfzFTL498FajbmKKxa0MZw7lcgH612knhy0vNJW1uF+0W8ZzsDcfhWBd+ENNjtZbGCxhSJ+sXVvxNdfMrHN7OW1i/pY8EWdmdXuNfvrtlG5UtjtVT2zW/pvjLSNYHkwq6kfxHvXAWPghLaxnjtX8mB+PLb1rY03RWsVSIFMjvWM5KWg4Qaep6EdbRohbxWrtkgAhuh9a5Xxj4u8X6PdxtZaO01kFzLKnLflXT6VGDAgYKCpGKml1m0tLy6jZWZkHzs4yuDWuH93Uzr023oes/BLXrSbwy9zd3CRSXAVgHODXsOQQGByD3r4T8S+LNanQJodj9mtFI+ccFiO4r69+F2o32qfCzS7vUZPMuGiAZq7aNbnbRx4rC+yip9zrj1phFPPSmmug4SM9KaaeetNPSgBh60w9aeaaaAGGmHpTz1ppoEAp4600dacOtADhTh0po6U8dKBjhTx1pg608UAOFPHSmjpTh1oA5vxrBLd+GL22gfZIYWKsOxxXy3BqOqT6Hc2eq+XiN9oYDnjivrTUsG6CsMqRg/SvnnxnoCaPrN2kYHlyvvBPpXFi11PWwDXLynlMnhi38w3HmkOTuQbc1aSA2xQyJK82eFVep967K00dLi4VnYkdjXW6fottGoPlgn+83JryVJs9hUUtzznSNEuXme4uoNpPKp6V6N4X02OCLyl27T8xwO9Grrb2sPkWrgvLwW7irfh2BbWaMPLuiPU571ajfcq1thNdTaQyL908iuVns4p5AYFUluWQjrXU+JNX09rl0if7vB9K5K9uIYYkuoJRuzj5TTcbBzJlUeDnkkdra4e1ZuqdjSQeFbgTEXKpKwPBFdfYXsV1bJFOyknv3rbjgijjO1Btx17mpu9h8p51feHykYMigDsAK5y5tUtpsEDrxXpmrBI4iWbf3AFcBr0bttcDGaiMnzGVSKsWLVsW5LMBlcAjrXK+JrxtI1CAywNcQ3DAORW1YO7bDjOODmr8FtFPNJa3ao4PK7u30rri3ZnOmuZXCaK31i0tzEiIE4AxX038P9PfTPAFhayKQwTOD718+6dZQyanpmmxwlZ5pRn2FfUdpB9msIYAc7EC11YKO8jlzSpooEhph6VIetMPSu88UYaYetPNNPWgBh6Uw0896YelADT1ph608009aAAdacOtNHWnDrQIcOlPHSmDpTx0oGPHWnCmjrThQA8dKeOtMHSnjrQBn36g3CE15H8X7Jmsob2NcAttNev6ivyK1effEhIpPBRQ/f3ZUVlXipQOvCzamrHlmjNlgG6Diuk1HWLPS9OMpIBAzXLWrmNMdGIzXL61d3V54it7edsWqHc/uK8HlfNyo+j9raN2dQ1zLfQy3sn7pSuUY15zB461bRtWu43Ek9ueFbPGa6DWtde4Q2aAQRbQsapycVyjWckkn2UrudvSumFFrdnLUxEpfCY/iTxHrOsFYopprQNy2w4Lj61teC9M1V4EhvtW3WxfOyUEt+dU4tNub69eKSyljSIcSMOhrX0W1v7eCYTAM7ECM9BWjgkZQqTvqj068sjcacrWjeXNEO38dWNE18zo1tcHy5o+CjdTXm9/4nvNFa2N65WNj5ZKnoPWtK21631XUYJIkCyJ8odf4x6muecUlc64123ZncaldK8ZOQDXLXyedavvYFu1aV9P/o26XkoO3esi3czRmQ9M1nBa3HUd0Q2NuBaEspyDU1qga/aVlY7RwPWrOdsbAdKgOrW2k3a3FypEbjaW64/Ctk3qu5grXv2O8+H+lmbx1avdAvOf3n+4or6EPSvIfhLZ3N9fya35EkdsE2I0q4LfSvXj0r1MNDkhY8jHVfaVNBp60w96eetMPeug4hh6U09acelNPWgBh7009Kce9NPSgBhpp604009aAEHWnjrTBTx1oEOFPHSmCnDpQMeOtPFMFPHWgBw6U8UwU4dKAIr2MyWjAdRXG+JtHOsaOYUcI6KWORmu5I3KQe9YDx4nYBTncQ30pOPMrM2oz5WfOTFxLJC4+YMVz6Vk+JPDtxeacDauY5cckGuw8bab/ZPi65iRCEkPmp9Kopdo8IV13MccV4VVOEz36LU4anmdhpfibSjvMEVyxJwzdQPSul0rTtQvyNsMEMueCTyDXVXOntPbgx/LWdcTS6dbYWDdL2KinGtd6m0FGBWvvBevTy4udYiRSOVjX+dYOpeDriZvKGpS5TG0x/KBWymtarO675NjD+E96vWn268nP2iIqn94VpOemhp7SLOX07wLaAyPe3M125/57HK/hXQ6N4etLfUDMsSxqowqgdK2JosFY4hgjrUJnMTkMcVyuTkZtK9ylq2FcrGM9j71WSERWAA4PWp7oo1yCG96zb6/jjlCA8GrhEzlIk88kFVIOOvvWXLate6naeYTsWZSQeRjNEbqsxbJJPatHQ4JrrU3laMmGLJb6V14ai6s0kctaoqUW2fXmmJDHo1ssCoE8tcbOnSrJr5o/Z++LEk/jzV/hvq94Z1hkMmnyu2SF7xn6cYr6WPWvXnBwdmeFe+o09aaelOPSmGpAaaaetOPWmGgBpph6U49KaaAGmmnrTj1ph60AIOlPFMFOHSgB4608UwdKcKAHinjpTB1pwoAeOtPFRjpTwaAHiqeoW++PzUHzDrirYp3BGD0NAHlPxL0F9V8MHULaPdc2Y3YHVl7j8K8YsrrA3L14JFfU1/aeWxbYHiOdynuPSvmj4j6K/hDxU00KF7K7JkiI42nutceLoc1nE9PC17KzNrTpGmZc9G61qnSLd5TuAORXM+F9YtruwdsYkTGVrcj1eGNyGfP1rzfZpM9SDUkH/CM6X55lkTcw6Cr1vBbIDCkYB7VlPrtsHYB+R0qnNr8e8MPlf2NW43ViuVJGjqLRIco3I+9XJXVypujtOVPNW9Q1mJYZNzgHHfvXA3mthi3ltyDwKUaRk5pG5c3aKkkh65xWI9158hJ6Cs6TUmliLgkg9QKt6VYX2u3K2em27sxPzSEfKtdFLDzm7RRhUrxjq2XtPM894ixgtK52xqP4feur8UalaeCPhvcTSP+8CnDf33I6V0WheFYdCs2eZlkugo3SEcIPavmn43eO18QeJ/7F0986fZEg88O/rX02Cwiw8Oae54mKxDrStHY4HRPEWqaJ40g8S2Nw0d7BP56tnrzyK/T74eeNdO8ffD6w8Q6fKr+dGBKoPKP3B/GvylZmZQOw6Gvd/2bvjJJ8O/F39jatMToOoOFkz/yxk6BvpWFaLn7yM1pofoWaaetMguIbq1S5t5FkikUMrqcgg049K5Chpph6U49KaaAGmmnrTj1phoAaetNPSnHpTD0oEA604UwdKcD3oAeKcOlMHWnjrQMeOlOBpgpwoAkHWnCoxTwaAHinA1BNPDbwtNPKkSKMlnOAK8j8dftJ/DjwZBJHHqS6teqSv2azYMQfc9qaTewHsb7DGQ+Md8180eK/EFv8R9a8R2GmbWtNBkEUbLz5j/xfqK8k8eftY+M/Eulz2Oi2sWiW04KAo2+Ujvzxiuw/ZdtAfhrd6jcAk3V0SWJzvxkEk+tdNPDOaswjPlkjGgebT5xLA5Ep6jsTTbrXL5iWxg55rtPHPhz+ydSa8RNtjO+QQP9W3pXG3KBTh1BXrxXk4nD+znZnr0KiktGZsmt3xYYVgaRdYvQ+UUlvenXA8wZTgioYtyPh+SazS6JGkm09yC8u729lJdjn0FUGjbeFcc9AR3rodM0XUNZvTbafAzsTywHA/GvVvDHw7stMZZr+Nbq5HRGHCV30MBKqcdbExh1OB8KfDi+1Vhdanm1tDyABy1et6do1rpNmLeziWGMDqBy31rdS32psJXI6Y6D2rnPG/iix8IeErnWbplzGpCKx+++OBX0WHwtPDxv1PGqV5zl5Hmnxq+IY8K6GNH05h/aV4ChAb7idya+RZnEkrFnaTJJBPWt7xLrt/4k8Q3Or6jIXmmYnB/hHYVhYAfpWNVubNIK2oxYyxGORVlY128KScbRg4pyRlQGXoacxUZx0xWShYp6ntHwt/aV8W+A7SHSLpF1fSIsIIpmIkiHoG719e+Afjf4F+IKJDpuorb32AWtLg7XB9vWvzOtZOvOOavQ3VxaXEdxbSyRzocrNE2GWsamHT1Gm0frTkHkHIppNfn/AOAf2kfH/g9hBfXH9t2PHyXb4ZR7NzX1B4H/AGi/AXi+CGG5vV0q+fA+z3LYBPse9ccqUolJnrx6Uw9KSOWOaJZInV0YZDKcg0p61mMaaaetKaaTQIQU4UwU4UAPHSnioxTgcUDJBTgawtc8W+HvDdjJd6zqttaxoMne4B/Kvn3xv+11o1pby2ng7TZLy4OVW4mO1F98d6qMG9hXPpbUNV0/SbJrvUryG2hQZLysFA/OvBfHv7WXg/w8stn4Zgk1m9GVV1O2MH696+RfGfxJ8XeOLx59e1WaSMnIt1YhB9BXGM/y7VU4PTtiuiFDuLmR6L48+N3xB8fO8Gpau8NmST9mtmKIPY+tefWdmZpDKwzzkk022j887MYx1Nae9IbTavGeM10KnFbITbMjVJdm/axVFUjjua+2/wBnWxe3+CulxTJhmDPz7nNfG+j6BP4n8UW2lQIxDEF8DoM19+eB9OGk+FLCwg4WFAox3ropponQ6TU9GttW0iaxu498ci4IPY+o96+c/E2jan4R1yTSdTRngY7re6PCsPQn1r6ea4t7fT5b68nSC3iGXldsBa+e/iX8ePh1fsdBXTpdWiBKvOh+RPdT61jicLGqr9TShX9nI41pS04jiiaRn4VU5LV6H4U+GOo3/l3+tfuIm5WJfvY96r/ADVPh7rd9cQaWZhqcbZjjvsbtv+z619DG2WFtoXBc/MK5sNgOTWep0YjF83wnLaf4fsdIsPIsbcRx+gFXhEoiEaALxnNaUgCjbiq8kBcYwdvWvagkl7ux5Ury1ZlTSRhFIXYrdB9OpNfHnxu8fHxX4tbSrRiunWDlNpPDP61778c/HKeDfA2y3kX+0L/KQoD8wXua+K52aSSSR2Zt53Nn+Impqy0KpqxCeXOTnHGaRkCnJwc9KeVGwZ6jgU2VAqbuW+naue7R0C7HjIz0PamSqfJLYwPU1Vl1cKfKt4jIRxk9qp7Lq6k3zzED+6OlZynfQNie3UqrFW4BqyOoOBUaBVj2rwB196lGMjmnuFyUNtxt+U+1TKSVyrbT6iq/Tkc1InZz09KHFNBY9L8E/Gvx54KkhWy1aS5sk4NtcHcuK+lPB37VnhLWnjtfEFpNpM7YBlJ3Rk/XtXxGHw5x92jzGZsH5k/u5wK55UFIdz9UNN1XTtY05L7TLuK6t3GVkjbINWjXwL8FPi/efD/Xltb2SR9InYB4t2dnuK+69I1ew1zSIdT06dZreZQyspzXHUpuD1KLopwNMFc/438UWng/wLqGv3bAJbxFgCcZOOBUWuBzXxS+Mvh74ZacousXeoSg+VaI2GPufQV8v+Jv2ofiDrSTW9h5GmRPkL5PLAf71eQ+IvEupeLvFVzrmpzvNNK52ljnaM9BWS5w23t6V3Qw6S1E5F7U9b1XV7gz6pf3N5IxyzTSE81nF2L/ALzjHQL0p7A7Rnn61GWGeRXRGKRDdxGJIpqD5huHFLvNKrbuDUvyGkkTwBUJx3pJpF+Yk8DoKEyFz1xUflvc3sVsnDSuFX8aIJt6jZ7x+z34VMttc+IruPliBESO1fVukoEs4xuVFQZZjxtHrXE/DfwlHpXgG0tVXaiRKTx/FWL8XfFV3pnhc+GtKLLqWojYXQ8xp3NdyhdWMJOx4x8efi9eeK9bbwzocpj0azcqzI+DcMO/0FeN28JEXPzZ5zXSeKPDUuiy2dvIoLSjeW71i3rx2dvvyAT0HpWElyuxSSaJdO1O50PUIdRsbx7O5hYMs0ZwVI6Z9q+2/gn8cNL+J2jSadflLbxDZqFlgJ4nH99f61+fGLvUL8Rw7pWY4CpzmvoD4P8Awy1TRr6DxGZJYbyMhoyMgj2+lOLk3boTotD7bkicLuIyfSoLlUtrKS7ncIqKXJJ4AHNZ/hbxF/bNqILtQmox/eVjgOPavLP2k/iEPDXgtfD9hPi/1EkMFPKp3FaybiJK70Pmb4t+OpPHnxEvdSTcLSJjDbx54UA9RXn5bPFTSEDKjlSSSfeqvVuDtPpWDdzW2hKSu3B604/6vA6npTNvd+vrSMpbHzUt9BohktBtyqAN3qsTtXGMGrkkyQwmYtuQcVno0k7GVxtz0FS0ugyZBgc1MwGBtpNmYx3pyKQfu0JALuKx4IpEZW+UnFOZMgkjmjCAjFUA4bB1peQue1GFAzQo3cjgUAJvOBtJr7H/AGSNW1C88KapY3Vy8kMEi+WrHO3Oa+OgvUjoK+tv2PWDaNrhH/PRP61hiF7jBXufUINfLP7X3i57fS9L8LW84CzMZplB5IGMA/rX1FJIsULSOcKoyTX5xfGvxY/jP4v6hqAJEEcvkRLnPCnGfxrioxvIpuxw8QIhVTxzk0oGWwetPc7G2UmNuW616KIY1mIFRkZHSnF89RSSSqq9KYiPACEmiNe+acCHG00g44BqWUPXOCoPXiuy+FPh5fEPxFtVkQvFbsCxx3rjchYWLdhX0p+zJ4VLyPqkqcPggkVpSjfUls+m9Ls2h0RIQAhCDg1yGq+EdG09NQ8V+JbpWEalyWH3FHYV6FKMQrbhQSecj09K+Zf2mvH6y3Fp4B0q4yv+uvZYz09F/Kt3KxLVzwz4h+LofEXiy61iD9xZxZjtU/vL61w+pJeT2C3b3CkNgbcdKn1qKO8u0iDERRfcUdzV57RDZRRP1xkislrLUeyPor4FfB7TJvDdrr93Gk0syhlyvSvoO00W1S4+ypEqgcZA6V5n+zlql5d/DRLNosiKTywfQV7rBax2cDO3zSGunm5djPc5XXNNtdF0afVpJhbpaKZfNzjbjnHvXwr8QfGd5478b3eu3Mh5bbCucgKPT619B/tS/EJ4NHtfBthOPOuT5t2iH7qjotfKB+Q8cA8hfSsJzciorUY4O8vuxn+Gj5c84PvSE85NLw38IrM1ByP72R7Uw/Kp+b5e5pwTD7V4Y9T7VSup/Oc2dvwF++9S9AIZHN5LlF2xJxs9amVGCHNCRqrBF6d6sIj4O/7nYU13AWIDauTTtp39aRkyo2N8vpUgIXHrTACgzkt+FRggMRjk1MfmFM2cmgAC7Dk0itvfb0FDkqnlk53U0J9nGzOSaAHOyxHaDX1l+x2c6Rrp/wCmifyNfI7MM4bmvrj9jv8A5A+un/pon9awxHwMaPfPiFrCaF8NNX1Jzjy7Z8c45IwK/MyWVrnWTM5J3ksc+tfcP7VGvy6V8J4tPgl2PfTiMj1UcmvhlMnUCR0BOKxw0dLhIuykbsgc03ccYIwKQEFj60OSa6yWI23bkHmq7gFgTUhHcHmomIY57igQ4cHNEfB+tB+6KdH8zZ6AVNtSuhYjg8+9gtUPMjBa+9/gx4eGh+CrdCgDbAeBXxX8PdJ/tjx/Zw43BHDGv0G8PW5s9Gjj4UbQPpXTFe6Rcf4h1q08N+GL7X7whYraNpOfXHFfnnfapPrXiG+1m4ZmmvZmlO45wCeBX07+1N40+xeHLHwVaPia/wAy3HP3VHTNfLdtCqgDOTiiKE2RtZw/afMZQWJzT3XzZgGA+UYq3sCkP296hYp97AB3YJHarsTc+wv2Z4PI+EX2t4yGllLA47V6f4r8T2Hhfwle+IdScCKCIuiZ++e1c38J7JdM+FWmwqCkYjDHIxuJ7V4J+038Qft9/beEbCYCKDc91tPQ9hSY0eGeLfEN94r8X3niG/P7+6lLqpOcLnpWF8q57kHpT5CSAAAewPtTCMKCDkisGzRCuNybsfhSKvyjAyW6e1SIW27iOaZPMI4Wc/e7AUDKl1MYgIk5kbj6VGkYiQx/xHkt60RRMJDPJy7evaplXe3JpBcfAiOuBxipcZcjdSiNEX5cimlMMSDVdAuM6NgCpEG5+lIgGD604MUXpzSAcyOCBk0wygZDDtSyTd81SnkDuqKeSccUXAnQGT5yMgdKcwDIGB5pFQxx+WDzUDBlAANAmPbCk+tfW/7HRzo+uf8AXRP618hsp6nvX13+x2Nuja5/vp/WsMR8DCO5N+16VOiaIrc4dyB+VfIUKMt0xzkV9c/tfE/2Pohzj53/AJCvkmPAB9anD/AOSuSYA+Y9aCwNIQNvWk4x0rcVhr5AyKhU7gRU3UHkVWUMrHmgLDmbbgVPGN0TN2Aqscs4FWgGjt2YDoMfWmtWNuyPbP2dNDe78Ty3ph3bSMHFfaBkit9Oaef5YYkLSewAzXhP7PHh/wCw+DoLt0w8yhs4rqfj74wk8KfCKdbRsXWpn7Mi5wcHqRXQnZWMmfJfj7xdceN/idquvXDEo0hjgUnhUU8EVjRnIO3g1TgUAjA/GritjAxgCmtBEhcj5SM10XgTw63iz4i6VohJCSShpWxxsBrnd2MnFexfs9aVJP4wvdSYH9zGIoyPVuSau6Jeh9IeLPFOn+E/A11qZCx2dhB5cSgYDSYwP1r8/ta1KfV9cutSuWLzXTmSVifXtXvP7TfjRLjVrTwPpc4NtZr5lwQeGkPY/SvnRlI4PzBe4rGUtS4rQdnYcUpQYyDgmmqVdutOIG7HYc5rJmiFaZIUzIelUSzXEpmIwB90Uk8oubgbB+7XvU4HtxQhjWyyCpEiCKGJ5pygZ3GnHazDniixLBz8vFR4L5FK+fN54FLER5hJpgNClFJ702RyFyambJJIFVLqTa2SRik9ClqV57sKMYp1mqmQTsuRVJ0EswUHqa2EiEcCoPSs4asBJSWmypwKj2MpyOadwcqTzSGRVGCelW5dBDWI4A696+uv2PsDRtcwf+Wif1r5BeZSp2da+uv2OyTomtk/89E/rWNd3gxpajf2xGxoeiH/AKaP/IV8mQMJV/nX1p+2Bg6LogP99/5CvkeE7Ufb61OH+EGWjjG0U09ME01NwXcaGG9citwGSf6vg1EuVPzZp5baRn1pJmDnKjtQBGMmYEHitWytm1DVrOyGT5sqrgVnxnkDbXXfDyyN78UtIi25AlBIpwJkfdnw+0hdL8HWNqqbQI1H4184ftK+IzrPxMi0VJCYtMj4UHgs1fUf2tNJ8PSXsy7YraAyf98jNfA3iDWpdf8AFupaxNkyXE7MD7Z4rYhmWFKkcVcjCGLnrUAHGOoHepImAlCjknirELKMLwcFc19CfDC/tPBnwVu/FN3hfKRmz03OfugV89vunkSJF+eWQRD8TivRfizq39m+GtE+H1lnyLOMT3mP+WjkDaD+tJuyGlc8q1e/utW1a61G7mMk9zIZWY98mqAQMSeQD1FSyI272/l7U0qdlYXuXawwQkEEHg9KiunZV8lD87daledI4C2eB92qkKuczucuf5UMaJYoUSAIDgdSfep8BR60xBvOT9z+tOchDtNCGCsMEYpDg+1KNoH1qQqpTAHJpskiB3tz2owApbqfShv3YJqFJPMBI60gJTJiLnjNZV5Kr/KcjHers52x5brXPXMrSXgjU1lVlZFRNTTog0jSk8A8Cr7S7XG48Gq9pE0Vqo7kVJ5TH5m5FEI6ARSyEyHZ0HemKrNyelW2jChSq8HrTMLuwDV8nUBot1wGx9a+u/2P126RrnPG9P5GvkZmCq3PSvrH9jiTfpGvc5xIn9awru0LDR//2Q==" alt="Dr. Motaz Shieban"></div><h3>Dr. Motaz Shieban</h3><div class="role">Co-Founder &amp; Scientist</div><p>Scientific and clinical grounding — practice reality, medical interpretation and scientific authority in preventive and longevity medicine.</p><a class="li" href="https://www.linkedin.com/in/drmotazshieban/" target="_blank" rel="noopener noreferrer"><svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M4.98 3.5A2.5 2.5 0 1 0 5 8.5a2.5 2.5 0 0 0-.02-5zM3 9h4v12H3zM10 9h3.8v1.7h.05c.53-.95 1.83-1.95 3.77-1.95 4 0 4.74 2.5 4.74 5.8V21H22v-5.9c0-1.4-.03-3.2-2-3.2-2 0-2.3 1.5-2.3 3.1V21H14V9z"/></svg> LinkedIn</a></div>
+        <div class="member"><div class="av"><img src="data:image/jpeg;base64,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" alt="Mohammad Ali"></div><h3>Mohammad Ali</h3><div class="role">Chief Executive Officer &amp; Co-Founder</div><p>Chief-executive leadership and commercial strategy, grounded in the biomarker science and data foundation behind the platform.</p><a class="li" href="https://www.linkedin.com/in/mohammad-ali-sheiban/" target="_blank" rel="noopener noreferrer"><svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M4.98 3.5A2.5 2.5 0 1 0 5 8.5a2.5 2.5 0 0 0-.02-5zM3 9h4v12H3zM10 9h3.8v1.7h.05c.53-.95 1.83-1.95 3.77-1.95 4 0 4.74 2.5 4.74 5.8V21H22v-5.9c0-1.4-.03-3.2-2-3.2-2 0-2.3 1.5-2.3 3.1V21H14V9z"/></svg> LinkedIn</a></div>
+        <div class="member"><div class="av"><img src="data:image/jpeg;base64,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" alt="Amer Shieban"></div><h3>Eng. Amer Shieban</h3><div class="role">CTO &amp; Co-Founder</div><p>Product architecture, AI-native infrastructure and regulation-by-design — from doctrine to data model.</p><a class="li" href="https://www.linkedin.com/in/amershieban" target="_blank" rel="noopener noreferrer"><svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M4.98 3.5A2.5 2.5 0 1 0 5 8.5a2.5 2.5 0 0 0-.02-5zM3 9h4v12H3zM10 9h3.8v1.7h.05c.53-.95 1.83-1.95 3.77-1.95 4 0 4.74 2.5 4.74 5.8V21H22v-5.9c0-1.4-.03-3.2-2-3.2-2 0-2.3 1.5-2.3 3.1V21H14V9z"/></svg> LinkedIn</a></div>
+        <div class="member"><div class="av" style="background:var(--paper-2);border:1.5px dashed #d8c79b;color:#8a6e2f;font-size:24px">+</div><h3>Scientific &amp; Technical Advisory Board</h3><div class="role" style="color:#8a6e2f">Soon</div><p>Independent scientific, clinical and technical advisors — to be announced.</p></div>
+      </div>
+      <p class="ev-cap" style="margin-top:16px">Detailed profiles and references on request.</p>
+    </div>
+  </section>
+
+  <!-- ASK -->
+  <section id="ask">
+    <div class="wrap">
+      <div class="ask-card">
+        <div class="ask-lead">
+          <p class="eyebrow">The ask</p>
+          <span class="round-badge">Raising €3.0M Pre-Seed · 18-month execution plan</span>
+          <h2>Pre-Seed — funding Beta execution, controlled clinic activation, regulatory qualification and commercial conversion.</h2>
+          <p>This round funds the path from HADP Alpha to a deployable Beta build, controlled clinic activation and a clarified MDR qualification position — with a first design-partner LOI already documented, the critical path is governed Beta execution. Allocation is indicative; exact amount and terms are in the data room.</p>
+        </div>
+        <aside class="ask-action">
+          <p class="ask-action__label">Investor access</p>
+          <p class="ask-action__lead">Request the full brief and data room — model, allocation and terms.</p>
+          <a class="btn btn--primary btn--block" href="#contact">Request materials &amp; data room <span aria-hidden="true">→</span></a>
+          <p class="ask-action__note">Two-tier data room · shared on request.</p>
+        </aside>
+      </div>
+    </div>
+  </section>
+
+  <!-- CONTACT -->
+  <section class="alt" id="contact">
+    <div class="wrap">
+      <div class="form-card">
+        <h3>Request Investor Materials &amp; Data Room Access</h3>
+        <p class="sub">For qualified investors and strategic parties. Approved recipients may receive selected investor materials, financial assumptions, product evidence and controlled Data Room documentation.</p>
+        <form id="drForm" novalidate>
+          <p hidden><label>Do not fill this out if you are human: <input name="bot-field" tabindex="-1" autocomplete="off"/></label></p>
+          <div class="two">
+            <div class="field"><label for="fn">First name</label><input id="fn" name="fn" autocomplete="given-name" required></div>
+            <div class="field"><label for="ln">Last name</label><input id="ln" name="ln" autocomplete="family-name" required></div>
+          </div>
+          <div class="field"><label for="em">Business email</label><input id="em" name="em" type="email" autocomplete="email" placeholder="name@fund.com" required></div>
+          <div class="field"><label for="org">Fund / organization</label><input id="org" name="org" autocomplete="organization" required></div>
+          <div class="field"><label for="tk">Ticket range <span style="font-weight:600;color:var(--muted-2)">(optional)</span></label>
+            <select id="tk" name="tk"><option value="">Please select</option><option>Angel / &lt; 50k</option><option>50–150k</option><option>150–500k</option><option>500k+</option><option>Strategic / grant</option></select></div>
+          <div class="field"><label for="msg">Message <span style="font-weight:600;color:var(--muted-2)">(optional)</span></label><textarea id="msg" name="msg" placeholder="Focus, fund thesis, timing …"></textarea></div>
+          <label class="consent"><input id="cs" name="cs" type="checkbox" required><span>I agree to be contacted regarding investor materials and controlled Data Room access. Submission does not guarantee access.</span></label>
+          <button class="btn btn--primary btn--block" type="submit">Request Investor Access <span aria-hidden="true">→</span></button>
+          <p class="form-note" id="drNote">Confidential materials after approval · not an offer of securities.</p>
+        </form>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="site">
+  <div class="wrap">
+    <div class="top">
+      <div>
+        <a class="brand" href="#top"><svg aria-hidden="true" class="brand-mark" viewBox="0 0 123 152">
+<g fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-width="4">
+  <path d="M38 34 V86 C38 98 46 100 46 111 C46 127 29 129 22 139 H14" stroke="#0D4D47"/>
+  <path d="M44 122 C40.5 126 38 130 37.5 136" stroke="#0D4D47" stroke-width="3.2"/>
+  <path d="M61.5 28 V140" stroke="#6D948C"/>
+  <path d="M85 34 V86 C85 98 77 100 77 111 C77 127 94 129 101 139 H109" stroke="#C8A86E"/>
+  <path d="M79 122 C82.5 126 85 130 85.5 136" stroke="#C8A86E" stroke-width="3.2"/>
+</g>
+<path d="M56 140 L67 140 L65 143.6 L58 143.6 Z" fill="#6D948C"/>
+<circle cx="38" cy="26" r="7" fill="#0D4D47"/>
+<circle cx="61.5" cy="20" r="7" fill="#6D948C"/>
+<circle cx="85" cy="26" r="7" fill="#C8A86E"/>
+<circle cx="50.0" cy="71" r="2.2" fill="#0D4D47"/><circle cx="50.4" cy="81" r="2.2" fill="#0D4D47"/><circle cx="50.8" cy="91" r="2.2" fill="#0D4D47"/><circle cx="51.2" cy="101" r="2.2" fill="#0D4D47"/><circle cx="51.6" cy="111" r="2.2" fill="#0D4D47"/>
+<circle cx="33.0" cy="92" r="2.2" fill="#0D4D47"/><circle cx="33.6" cy="101" r="2.2" fill="#0D4D47"/><circle cx="34.2" cy="110" r="2.2" fill="#0D4D47"/><circle cx="34.8" cy="119" r="2.2" fill="#0D4D47"/>
+<circle cx="73.0" cy="71" r="2.2" fill="#C8A86E"/><circle cx="72.6" cy="81" r="2.2" fill="#C8A86E"/><circle cx="72.2" cy="91" r="2.2" fill="#C8A86E"/><circle cx="71.8" cy="101" r="2.2" fill="#C8A86E"/><circle cx="71.4" cy="111" r="2.2" fill="#C8A86E"/>
+<circle cx="90.0" cy="92" r="2.2" fill="#C8A86E"/><circle cx="89.4" cy="101" r="2.2" fill="#C8A86E"/><circle cx="88.8" cy="110" r="2.2" fill="#C8A86E"/><circle cx="88.2" cy="119" r="2.2" fill="#C8A86E"/>
+</svg><span><svg class="brand-word" viewBox="0 0 2226 426" aria-hidden="true"><g transform="translate(0.000000,426.000000) scale(0.100000,-0.100000)"
+fill="currentColor" stroke="none">
+<path d="M16720 3979 c-40 -41 -40 -41 -40 -1851 0 -1810 0 -1810 39 -1849 39
+-39 39 -39 196 -39 157 0 157 0 201 44 43 44 43 44 40 692 -2 357 -2 729 2
+827 5 169 7 181 30 215 14 21 29 53 34 72 6 19 18 44 28 55 9 11 23 31 30 45
+21 41 173 200 197 206 12 3 33 19 47 35 20 23 35 29 65 29 27 0 49 8 76 30 38
+30 38 30 239 30 200 0 202 0 236 -25 19 -14 51 -30 72 -35 20 -6 50 -21 65
+-34 15 -12 35 -27 44 -32 23 -12 85 -96 94 -125 4 -13 21 -39 36 -57 22 -24
+29 -43 29 -73 0 -25 11 -60 30 -96 30 -56 30 -56 30 -917 0 -657 3 -865 12
+-874 17 -17 379 -17 396 0 9 9 12 240 12 979 0 968 0 968 -30 989 -28 20 -30
+25 -30 90 0 65 -2 70 -30 90 -24 17 -30 29 -30 57 0 32 -12 48 -135 169 -121
+121 -138 134 -169 134 -27 0 -39 7 -56 30 -20 28 -25 30 -89 30 -62 0 -70 2
+-96 30 -30 31 -30 31 -285 28 -256 -3 -256 -3 -289 -30 -28 -24 -41 -28 -96
+-28 -58 0 -67 -3 -95 -30 -17 -16 -41 -30 -54 -30 -23 0 -78 -35 -125 -80
+-162 -155 -161 -154 -178 -138 -14 15 -15 85 -14 702 2 687 2 687 -43 731 -44
+45 -44 45 -200 45 -156 0 -156 0 -196 -41z"/>
+<path d="M3326 3962 c-118 -3 -118 -3 -162 -47 -37 -37 -44 -50 -44 -83 0 -24
+-6 -45 -16 -53 -26 -21 -44 -66 -44 -108 0 -33 -6 -46 -30 -68 -25 -22 -30
+-34 -30 -70 0 -46 -18 -90 -44 -112 -10 -9 -16 -30 -16 -57 0 -36 -5 -46 -29
+-63 -25 -18 -29 -28 -33 -85 -3 -55 -8 -69 -31 -90 -21 -20 -27 -34 -27 -67 0
+-33 -6 -50 -26 -70 -19 -20 -28 -42 -33 -88 -6 -49 -12 -64 -34 -81 -20 -16
+-27 -30 -27 -57 0 -26 -7 -41 -30 -61 -26 -23 -30 -33 -30 -78 0 -42 -5 -58
+-30 -89 -21 -27 -30 -49 -30 -75 0 -26 -9 -48 -30 -75 -25 -31 -30 -47 -30
+-91 0 -47 -3 -55 -30 -74 -24 -17 -30 -29 -30 -59 0 -29 -7 -46 -30 -69 -25
+-27 -30 -40 -30 -82 0 -41 -5 -55 -30 -83 -24 -28 -30 -44 -30 -79 0 -35 -7
+-54 -30 -83 -23 -29 -30 -48 -30 -81 0 -36 -5 -46 -30 -64 -25 -18 -30 -28
+-30 -63 0 -30 -9 -55 -30 -87 -18 -27 -30 -58 -30 -77 0 -22 -10 -44 -30 -66
+-25 -29 -30 -43 -30 -85 0 -39 -6 -57 -25 -80 -14 -17 -32 -51 -39 -76 -8 -25
+-23 -57 -35 -72 -11 -15 -21 -35 -21 -44 0 -10 -7 -24 -16 -31 -14 -11 -18
+-10 -30 6 -8 10 -14 25 -14 32 0 7 -13 26 -30 43 -21 22 -30 40 -30 64 0 22
+-10 46 -30 71 -25 31 -30 47 -30 91 0 47 -3 55 -30 74 -26 18 -30 28 -30 66 0
+47 -17 91 -44 113 -10 8 -16 29 -16 53 0 31 -7 49 -30 75 -20 22 -30 44 -30
+66 0 19 -12 50 -30 77 -22 34 -30 57 -30 91 0 30 -6 51 -16 60 -25 20 -44 65
+-44 104 0 25 -8 44 -30 67 -22 23 -30 41 -30 67 0 28 -7 43 -30 63 -24 21 -30
+34 -30 66 0 29 -8 49 -30 77 -23 29 -30 48 -30 83 0 35 -6 51 -30 79 -20 23
+-30 44 -30 67 0 20 -12 50 -30 77 -21 31 -30 56 -30 86 0 33 -5 46 -27 63 -22
+17 -28 32 -34 80 -5 43 -14 68 -33 90 -19 23 -26 43 -26 75 0 26 -6 47 -16 56
+-26 21 -44 66 -44 108 0 33 -6 46 -30 68 -22 20 -30 35 -30 61 0 24 -9 45 -30
+69 -20 22 -30 45 -30 66 0 19 -13 50 -30 76 -22 31 -30 56 -30 86 0 34 -6 47
+-30 68 -24 22 -30 35 -30 69 0 27 -8 54 -23 77 -13 20 -31 48 -41 64 -16 27
+-16 27 -234 27 -156 0 -221 -3 -230 -12 -23 -23 -14 -92 18 -139 21 -31 30
+-56 30 -86 0 -35 5 -45 30 -63 24 -17 30 -29 30 -59 0 -27 9 -49 30 -76 25
+-31 30 -47 30 -91 0 -47 3 -55 30 -74 24 -17 30 -29 30 -57 0 -25 9 -45 30
+-70 20 -23 30 -44 30 -67 0 -22 10 -46 30 -71 24 -30 30 -47 30 -86 0 -41 4
+-50 29 -68 24 -17 29 -29 33 -74 3 -34 12 -64 27 -84 13 -17 26 -52 28 -77 5
+-37 12 -51 34 -67 23 -16 29 -28 29 -58 0 -27 9 -49 30 -76 25 -31 30 -47 30
+-91 0 -47 3 -55 30 -74 24 -17 30 -29 30 -59 0 -28 7 -44 30 -66 26 -25 30
+-36 30 -82 0 -44 5 -58 30 -86 21 -25 30 -45 30 -70 0 -28 6 -40 30 -57 26
+-19 30 -28 30 -68 0 -35 7 -58 30 -92 20 -30 30 -58 30 -83 0 -28 7 -44 26
+-62 17 -16 28 -38 31 -67 6 -48 24 -88 47 -107 10 -8 16 -29 16 -52 0 -31 6
+-45 30 -66 24 -21 30 -34 30 -68 0 -26 6 -48 16 -56 26 -21 44 -66 44 -110 0
+-32 7 -49 30 -76 17 -19 30 -45 30 -61 0 -15 14 -47 30 -71 17 -24 30 -53 30
+-65 0 -12 14 -41 30 -66 20 -30 30 -57 30 -84 0 -28 8 -47 30 -73 20 -23 30
+-44 30 -67 0 -18 9 -45 20 -59 11 -14 27 -45 35 -68 9 -24 22 -50 29 -59 8 -8
+22 -33 33 -55 18 -40 18 -40 177 -43 104 -2 163 1 172 8 7 6 16 26 20 43 3 18
+17 45 30 60 16 19 24 41 24 67 0 32 6 43 30 60 27 19 30 27 30 74 0 44 5 60
+30 91 21 27 30 49 30 76 0 30 6 42 29 58 21 16 30 31 34 66 4 25 18 65 32 89
+16 27 25 58 25 84 0 34 5 44 30 62 24 17 30 29 30 59 0 29 7 44 30 64 25 22
+30 35 30 70 0 33 7 53 30 83 18 24 30 51 30 72 0 22 9 42 30 64 22 23 30 40
+30 69 0 26 8 47 26 68 17 21 28 49 33 86 6 40 15 63 34 83 20 21 27 38 27 69
+0 25 6 46 16 54 22 18 44 64 44 92 0 13 13 44 30 68 16 24 30 56 30 71 0 16
+13 42 30 61 19 22 30 46 30 64 0 19 10 39 29 57 23 22 30 38 33 81 3 39 12 62
+31 85 19 22 27 43 27 71 0 31 6 44 30 66 23 20 30 35 30 63 0 28 7 43 30 63
+25 22 30 35 30 71 0 33 7 52 30 81 23 29 30 48 30 81 0 36 5 46 30 64 25 18
+30 28 30 61 0 30 6 46 26 64 19 17 28 39 33 78 5 37 16 65 34 87 19 22 27 43
+27 69 0 29 7 44 30 64 23 21 30 35 30 66 0 26 10 52 30 82 20 29 30 57 30 81
+0 29 7 44 30 65 28 24 30 31 30 93 0 42 -5 71 -12 78 -16 12 -111 18 -262 14z"/>
+<path d="M4256 3934 c-14 -16 -40 -29 -62 -33 -31 -5 -43 -14 -66 -51 -44 -71
+-47 -82 -50 -201 -3 -114 -3 -114 41 -171 40 -53 47 -58 82 -58 30 0 42 -6 59
+-30 20 -28 25 -30 90 -30 65 0 70 2 90 29 16 24 29 31 63 33 35 3 44 8 57 33
+8 17 25 46 38 66 20 33 22 49 22 163 0 128 0 128 -44 172 -25 24 -49 44 -54
+44 -5 0 -29 13 -53 30 -39 26 -53 30 -116 30 -65 0 -75 -3 -97 -26z"/>
+<path d="M10513 3948 c-6 -7 -13 -29 -16 -48 -7 -36 -8 -632 -7 -2412 0 -726
+-3 -1000 -12 -1032 -10 -36 -9 -56 6 -120 10 -41 24 -80 31 -86 9 -7 279 -10
+866 -8 854 3 854 3 914 30 40 19 77 28 112 28 44 0 57 5 83 30 25 24 39 30 74
+30 33 0 52 7 81 30 21 17 41 30 45 30 4 0 24 14 45 30 21 17 46 30 57 30 10 0
+63 45 122 103 80 80 105 111 110 139 3 19 17 45 31 58 13 12 27 37 31 54 3 17
+16 41 27 54 14 14 23 43 28 82 5 43 14 68 33 90 26 32 26 32 26 229 0 198 0
+198 -30 236 -24 30 -30 47 -30 86 0 36 -6 55 -24 76 -14 16 -28 43 -32 59 -4
+16 -20 44 -36 62 -15 18 -28 44 -28 57 0 17 -23 47 -79 102 -96 95 -147 133
+-177 133 -14 0 -31 12 -44 30 -17 25 -28 30 -60 30 -31 0 -43 5 -56 25 -9 14
+-30 27 -50 31 -66 12 -68 55 -3 68 17 3 46 18 65 33 18 16 57 47 87 70 29 23
+60 55 67 70 8 15 28 44 45 65 48 58 75 106 86 156 6 26 20 57 32 70 20 21 23
+37 28 170 3 81 3 205 0 277 -6 125 -7 133 -33 164 -19 21 -28 44 -28 66 0 26
+-7 39 -29 54 -16 12 -32 32 -35 45 -20 82 -192 256 -252 256 -14 0 -31 12 -44
+30 -17 24 -29 30 -58 30 -26 0 -44 8 -64 27 -25 24 -40 29 -107 34 -66 4 -84
+10 -111 32 -32 27 -32 27 -855 27 -646 0 -825 -3 -832 -12z m1595 -378 c24
+-21 43 -30 68 -30 31 0 47 -12 138 -104 69 -69 106 -113 110 -133 4 -17 18
+-45 32 -64 24 -32 24 -36 24 -247 0 -213 0 -215 -24 -247 -14 -18 -28 -43 -31
+-56 -3 -13 -37 -56 -76 -94 -39 -39 -85 -85 -103 -102 -23 -24 -42 -33 -65
+-33 -23 0 -40 -8 -59 -29 -27 -30 -27 -30 -472 -41 -323 -9 -471 -9 -542 -1
+-111 13 -124 16 -133 39 -9 21 -18 1064 -10 1109 12 66 -19 63 573 63 538 0
+538 0 570 -30z m-403 -1575 c88 -8 239 -15 336 -15 176 0 176 0 207 -30 21
+-20 42 -30 62 -30 20 0 39 -9 53 -24 12 -13 38 -30 57 -38 19 -8 65 -45 102
+-81 49 -48 69 -76 74 -102 4 -23 16 -43 35 -56 27 -19 29 -25 29 -89 0 -52 6
+-81 25 -122 33 -71 33 -145 0 -213 -20 -41 -25 -65 -25 -132 0 -79 -1 -82 -29
+-102 -17 -13 -32 -35 -36 -54 -12 -54 -146 -187 -189 -187 -13 0 -35 -13 -49
+-30 -24 -26 -34 -30 -82 -30 -47 0 -58 -4 -85 -30 -31 -30 -31 -30 -613 -28
+-582 3 -582 3 -596 33 -13 25 -15 119 -16 570 -1 619 4 752 31 772 11 8 49 13
+103 14 47 0 104 4 126 8 66 14 310 12 480 -4z"/>
+<path d="M5592 3528 c-6 -8 -11 -144 -14 -351 -3 -282 -6 -340 -18 -347 -8 -6
+-99 -10 -201 -10 -180 0 -186 -1 -206 -22 -35 -39 -43 -64 -43 -134 0 -60 3
+-71 35 -115 20 -26 44 -50 53 -52 9 -2 64 -5 122 -6 101 -2 222 -23 248 -43 9
+-8 12 -193 12 -862 0 -851 0 -851 30 -896 19 -29 30 -58 30 -80 0 -29 10 -47
+54 -95 29 -33 61 -67 70 -75 9 -8 45 -43 80 -77 35 -35 73 -63 83 -63 11 0 37
+-14 58 -30 32 -25 47 -30 94 -30 43 0 71 -7 116 -30 57 -28 66 -29 193 -30
+120 0 138 2 194 26 34 14 92 29 129 33 51 5 75 13 92 30 14 12 37 25 53 29 20
+6 35 20 48 47 17 33 18 44 8 82 -7 24 -12 81 -12 126 0 115 -23 134 -95 77
+-28 -23 -48 -30 -80 -30 -33 0 -47 -6 -70 -30 -29 -30 -29 -30 -185 -30 -157
+0 -157 0 -195 30 -21 16 -44 30 -52 30 -8 0 -47 34 -88 75 -67 66 -75 78 -75
+111 0 25 -9 52 -27 78 -28 39 -28 39 -31 811 -2 698 -1 773 14 785 11 10 55
+14 147 15 73 1 233 5 357 9 200 6 227 9 244 26 16 16 19 35 20 148 1 96 -3
+133 -13 145 -12 15 -50 17 -380 17 -272 0 -370 3 -379 12 -9 9 -12 100 -12
+348 0 248 -3 339 -12 348 -17 17 -382 17 -396 0z"/>
+<path d="M8219 2864 c-23 -28 -67 -44 -122 -44 -45 0 -61 -5 -92 -30 -21 -16
+-48 -30 -60 -30 -12 0 -39 -13 -60 -30 -21 -16 -43 -30 -50 -30 -7 0 -26 -13
+-43 -30 -18 -16 -42 -30 -54 -30 -15 0 -52 -27 -100 -73 -78 -74 -78 -74 -78
+-137 0 -63 0 -63 55 -117 31 -30 64 -72 75 -94 20 -38 46 -59 74 -59 8 0 66
+51 128 113 110 110 209 187 240 187 8 0 34 13 59 29 40 26 54 29 159 34 63 3
+191 3 284 0 161 -6 171 -7 192 -30 12 -12 36 -26 55 -29 25 -5 53 -27 102 -78
+38 -39 75 -84 84 -101 9 -16 24 -41 34 -54 11 -14 19 -40 19 -64 0 -30 7 -48
+31 -74 30 -35 30 -35 27 -179 -2 -101 -7 -147 -16 -156 -10 -9 -42 -12 -120
+-10 -95 3 -111 6 -143 28 -36 25 -36 25 -405 22 -369 -3 -369 -3 -401 -27 -23
+-17 -50 -26 -101 -30 -51 -5 -80 -14 -108 -32 -22 -15 -66 -32 -99 -39 -51
+-11 -68 -20 -123 -74 -36 -33 -83 -85 -104 -115 -22 -29 -58 -70 -79 -91 -29
+-28 -39 -46 -39 -69 0 -22 -9 -39 -30 -58 -30 -26 -30 -26 -30 -274 0 -247 0
+-248 24 -276 13 -16 29 -47 35 -69 6 -23 19 -49 30 -58 10 -9 21 -30 25 -47 7
+-37 140 -173 178 -182 15 -4 40 -18 56 -32 17 -14 36 -25 43 -25 8 0 33 -13
+56 -29 26 -17 61 -30 92 -34 27 -3 71 -17 98 -31 47 -26 51 -26 270 -26 221 0
+221 0 285 30 45 21 78 30 115 30 45 0 57 4 83 30 20 20 41 30 60 30 19 0 40
+10 60 30 19 19 41 30 59 30 22 0 45 18 110 86 51 53 89 84 99 82 15 -3 17 -21
+20 -132 1 -75 7 -135 14 -143 14 -18 378 -19 396 -1 9 9 12 236 12 958 0 946
+0 946 -30 986 -22 29 -30 50 -30 84 0 33 -8 57 -30 89 -17 24 -30 51 -30 60 0
+9 -14 36 -30 60 -17 24 -30 48 -30 54 0 8 -46 54 -133 132 -16 14 -40 25 -57
+25 -20 0 -35 9 -50 30 -16 23 -29 30 -54 30 -23 0 -41 9 -61 30 -26 27 -34 30
+-95 30 -60 0 -68 2 -92 30 -26 30 -26 30 -336 30 -269 0 -311 -2 -323 -16z
+m560 -1378 c15 -8 33 -22 40 -30 11 -13 35 -16 115 -16 100 0 102 0 128 -30
+14 -16 36 -30 48 -30 48 0 58 -15 65 -104 11 -124 -1 -219 -31 -251 -17 -18
+-24 -38 -24 -64 0 -26 -7 -44 -21 -57 -12 -10 -30 -38 -40 -61 -24 -57 -151
+-183 -184 -183 -14 0 -38 -13 -55 -30 -22 -21 -41 -30 -64 -30 -24 0 -40 -8
+-60 -30 -27 -31 -27 -31 -285 -28 -257 3 -257 3 -290 31 -19 16 -44 27 -62 27
+-38 0 -123 77 -139 126 -6 19 -21 41 -33 49 -36 25 -51 198 -30 350 7 54 17
+81 44 120 57 82 116 135 149 135 20 0 35 9 50 30 20 28 26 30 85 30 58 0 67 3
+95 30 31 30 31 30 251 30 171 0 226 -3 248 -14z"/>
+<path d="M14515 2850 c-26 -27 -35 -30 -91 -30 -58 0 -64 -2 -84 -30 -17 -24
+-29 -30 -59 -30 -29 0 -44 -7 -64 -30 -19 -21 -36 -30 -58 -30 -23 0 -44 -14
+-95 -62 -126 -122 -204 -202 -204 -210 0 -4 9 -16 21 -26 23 -19 89 -117 89
+-132 0 -5 22 -32 49 -60 64 -66 95 -68 155 -7 24 23 50 56 59 73 16 31 117
+124 135 124 6 0 20 14 32 30 17 24 29 30 56 30 26 0 42 8 63 31 28 30 28 30
+309 30 293 0 317 -3 351 -45 8 -9 20 -16 28 -16 9 0 30 -12 48 -27 17 -16 46
+-35 62 -44 22 -12 32 -26 37 -52 4 -24 17 -43 36 -57 24 -17 30 -29 30 -60 0
+-27 8 -48 28 -71 27 -33 27 -34 30 -205 4 -218 10 -209 -138 -200 -88 6 -111
+11 -142 31 -38 25 -38 25 -384 25 -347 0 -347 0 -391 -26 -29 -17 -67 -28
+-113 -33 -56 -6 -75 -12 -98 -34 -18 -17 -39 -27 -59 -27 -20 0 -41 -10 -61
+-30 -18 -16 -41 -30 -52 -30 -41 0 -226 -188 -237 -242 -3 -14 -18 -39 -34
+-54 -16 -15 -32 -43 -35 -63 -4 -20 -17 -57 -30 -83 -22 -43 -24 -60 -24 -183
+0 -116 3 -141 20 -175 11 -22 27 -72 35 -112 9 -40 24 -82 33 -93 10 -11 25
+-31 34 -45 26 -41 189 -210 203 -210 8 0 23 -13 35 -30 13 -18 30 -30 44 -30
+13 0 40 -13 61 -30 29 -23 48 -30 82 -30 28 0 71 -12 115 -31 69 -30 69 -30
+296 -27 214 3 230 4 269 26 24 12 64 25 90 28 27 4 65 17 85 31 20 14 55 29
+77 34 43 10 123 59 144 89 7 10 28 26 47 35 20 9 45 32 58 51 23 36 56 45 66
+18 3 -9 6 -51 6 -95 0 -77 1 -80 36 -119 36 -40 36 -40 200 -40 164 0 164 0
+188 39 14 22 30 42 35 45 6 4 7 86 4 214 -3 114 -1 268 5 342 8 103 8 178 -2
+318 -9 123 -11 197 -4 225 6 28 5 95 -2 198 -9 116 -9 169 -1 208 17 80 14
+153 -10 205 -13 31 -22 78 -26 139 -5 79 -10 98 -34 136 -17 26 -29 58 -29 78
+0 74 -305 373 -380 373 -15 0 -44 13 -65 30 -31 24 -47 30 -89 30 -40 0 -61 7
+-95 30 -44 30 -44 30 -356 30 -311 0 -311 0 -340 -30z m590 -1380 c36 -29 41
+-30 140 -30 85 0 106 -3 126 -19 13 -10 42 -27 64 -37 40 -19 40 -19 43 -184
+3 -170 -3 -203 -39 -236 -13 -11 -19 -30 -19 -57 0 -38 -6 -46 -137 -173 -135
+-131 -139 -134 -183 -134 -33 0 -57 -8 -89 -30 -44 -30 -44 -30 -281 -30 -237
+0 -237 0 -268 30 -20 19 -42 30 -60 30 -26 0 -91 57 -215 188 -21 23 -22 32
+-22 196 0 200 -8 180 132 319 142 141 135 137 207 137 55 0 68 4 101 30 38 30
+38 30 250 30 212 0 212 0 250 -30z"/>
+<path d="M20757 2850 c-25 -27 -33 -30 -88 -30 -54 0 -66 -4 -96 -30 -20 -18
+-45 -30 -62 -30 -17 0 -37 -10 -53 -27 -23 -26 -48 -43 -119 -84 -15 -8 -43
+-32 -62 -52 -65 -69 -95 -38 -106 108 -4 68 -11 99 -21 105 -23 15 -383 13
+-398 -2 -17 -17 -17 -2539 0 -2556 8 -8 67 -12 199 -12 275 0 253 -64 255 730
+2 349 6 725 10 834 7 199 7 199 36 231 17 20 28 44 28 62 0 19 10 39 30 58 19
+19 30 39 30 57 0 41 134 187 173 188 16 0 40 12 59 30 24 24 40 30 73 30 32 0
+52 7 81 31 38 30 38 30 254 27 216 -3 216 -3 249 -30 18 -16 40 -28 50 -28 45
+0 187 -135 197 -187 3 -18 19 -46 35 -63 26 -26 29 -37 29 -93 0 -55 4 -71 30
+-108 30 -44 30 -44 30 -893 -1 -626 2 -852 11 -862 16 -19 381 -21 397 -1 22
+26 42 146 36 220 -3 39 -7 405 -9 812 -2 407 -8 783 -12 836 -7 83 -12 99 -35
+128 -22 25 -28 43 -28 80 0 39 -5 51 -30 73 -21 19 -30 35 -30 58 0 27 -16 47
+-109 138 -127 124 -175 162 -207 162 -14 0 -31 12 -44 30 -20 28 -25 30 -90
+30 -65 0 -70 2 -90 30 -21 30 -21 30 -299 30 -278 0 -278 0 -304 -30z"/>
+<path d="M4150 2805 c-17 -20 -16 -2531 1 -2551 15 -19 379 -20 397 -2 17 17
+17 2539 0 2556 -8 8 -67 12 -199 12 -152 0 -189 -3 -199 -15z"/>
+</g></svg><small class="brand-tag"><i>—</i>Contextual Governed Healthspan Interpretation<i>—</i></small></span></a>
+        <p style="margin:12px 0 0;font:600 11px/1.4 var(--mono,monospace);letter-spacing:.04em;color:#9aa6a1">HADP — Healthspan Architecture Decision Platform</p>
+        <p class="desc">VitaBahn builds HADP, a contextual, governed interpretation platform for physician-led longevity, healthspan and preventive medicine — structured, source-bound and auditable.</p>
+      </div>
+      <div class="col"><h4>Brief</h4><a href="#thesis">Thesis</a><a href="#moat">Moat</a><a href="#ask">Ask</a></div>
+      <div class="col"><h4>Contact</h4><a href="#contact">Data room</a><a href="mailto:invest@vitabahn.com">invest@vitabahn.com</a><a href="#product">Product evidence</a></div>
+    </div>
+    <p class="disclaimer">Confidential investor brief — for addressed recipients only and not for distribution. This presentation is for information purposes and constitutes neither an offer or solicitation to purchase securities nor investment advice. It contains forward-looking statements subject to uncertainty; all figures, market data and milestones rely on the evidence held in the current Data Room. Product demonstrations use controlled, non-identifiable demonstration outputs and contain no identifiable patient data. HADP is VitaBahn’s contextual, governed interpretation platform operating under physician review, report lock and controlled release — not a diagnosis, not a treatment recommendation, no unified score.</p>
+    <div class="foot-bottom"><span>© 2026 VitaBahn · HADP · Confidential investor brief</span><span>Confidential — for addressed recipients only.</span></div>
+  </div>
+</footer>
+
+<script src="app.js"></script>
+
+</body>
+</html>

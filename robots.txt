@@ -1,0 +1,4 @@
+# Confidential investor brief — must not be indexed by search engines.
+# Mirrors the <meta name="robots" content="noindex, nofollow"> in index.html.
+User-agent: *
+Disallow: /

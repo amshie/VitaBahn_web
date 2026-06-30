@@ -1,0 +1,19 @@
+# OS / editor cruft
+.DS_Store
+Thumbs.db
+desktop.ini
+*.log
+
+# Node (form-backend tooling)
+node_modules/
+
+# Secrets / local env (never commit real credentials)
+.env
+.env.*
+!.env.example
+
+# Vercel
+.vercel/
+
+# Claude Code tooling (not part of the site)
+.claude/
