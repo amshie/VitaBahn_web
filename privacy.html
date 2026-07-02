@@ -1,9 +1,10 @@
 <!DOCTYPE html>
 <!--
-  DRAFT PRIVACY POLICY / DATENSCHUTZERKLÄRUNG — TEMPLATE.
-  Replace every [BRACKETED] placeholder with real details, confirm the processor
-  facts, and have this reviewed by qualified counsel before publishing. Remove the
-  yellow draft banner (.draft) once completed. This is not legal advice.
+  PRIVACY POLICY / DATENSCHUTZERKLÄRUNG (GDPR Art. 13).
+  Interim version: controller is a natural person (Amer Shieban) while VitaBahn is
+  pre-incorporation. On incorporation, update the "Controller" section to the company.
+  Action items: accept the data-processing agreements (SCCs) offered by Vercel and
+  Porkbun. Legal review recommended. This document is not legal advice.
 -->
 <html lang="en">
 <head>
@@ -30,8 +31,6 @@
   .lead{font-size:1.05rem;}
   ul{padding-left:1.2rem;}
   .updated{font-size:.85rem;color:#7c8b86;margin-top:0;}
-  .draft{background:#fff7db;border:1px solid #e5cf7a;color:#5b4a12;border-radius:10px;padding:14px 16px;font-size:.9rem;margin:0 0 26px;}
-  .ph{background:#fff3cd;border-bottom:1px dashed #d0a83a;padding:0 .15em;border-radius:2px;color:#5b4a12;}
   table{border-collapse:collapse;width:100%;margin:.4rem 0 .2rem;font-size:.95rem;}
   th,td{border:1px solid var(--rule);padding:.5rem .6rem;text-align:left;vertical-align:top;color:var(--muted);}
   th{color:var(--ink);font-weight:600;background:#efece4;}
@@ -42,21 +41,19 @@
   <main class="wrap">
     <div class="top"><span>VitaBahn · HADP</span><a class="home" href="/">← Back to the brief</a></div>
 
-    <div class="draft">⚠ <strong>Draft template.</strong> Replace every highlighted <span class="ph">[placeholder]</span>, confirm the processor details, and have this reviewed by qualified counsel before publishing. Remove this banner when complete. This document is not legal advice.</div>
-
     <h1>Privacy Policy</h1>
     <p class="updated">Datenschutzerklärung · Last updated: 2 July 2026</p>
-    <p class="lead">This notice explains what personal data VitaBahn processes when you use this website and its investor-materials request form, why, on what legal basis, and what rights you have under the EU General Data Protection Regulation (GDPR).</p>
+    <p class="lead">This notice explains what personal data we process when you use this website and its investor-materials request form, why, on what legal basis, and what rights you have under the EU General Data Protection Regulation (GDPR).</p>
 
     <h2>1. Controller</h2>
-    <p>The controller responsible for the processing described here is:</p>
+    <p>VitaBahn is currently being incorporated. Until then, the controller responsible for the processing described here is:</p>
     <p>
-      <span class="ph">[Legal entity, e.g. VitaBahn GmbH]</span><br/>
-      <span class="ph">[Street and number]</span><br/>
-      <span class="ph">[Postal code, City]</span>, Germany<br/>
-      Email: <span class="ph">[privacy@vitabahn.com]</span>
+      Amer Shieban<br/>
+      Spinnerstraße 38<br/>
+      38114 Braunschweig, Germany<br/>
+      Email: <a href="mailto:invest@vitabahn.com">invest@vitabahn.com</a>
     </p>
-    <p>We have <span class="ph">[not appointed / appointed]</span> a Data Protection Officer. <span class="ph">[If appointed, add contact details.]</span></p>
+    <p>We are not legally required to appoint, and have not appointed, a Data Protection Officer.</p>
 
     <h2>2. Investor-materials request form</h2>
     <p>When you submit the “Request Investor Materials &amp; Data Room Access” form, we process the data you enter: <strong>first name, last name, business email, fund/organization</strong>, and optionally a <strong>ticket range</strong> and a <strong>message</strong>, together with the <strong>consent</strong> you give.</p>
@@ -64,7 +61,7 @@
       <li><strong>Purpose:</strong> to receive, assess and respond to your enquiry and to decide on and manage controlled access to investor materials and the Data Room.</li>
       <li><strong>Legal basis:</strong> your consent (Art. 6(1)(a) GDPR) and steps taken at your request prior to entering into a relationship (Art. 6(1)(b) GDPR); our legitimate interest in evaluating and responding to enquiries (Art. 6(1)(f) GDPR).</li>
       <li><strong>Delivery:</strong> your submission is sent to us by email (to invest@vitabahn.com) via our email/SMTP provider.</li>
-      <li><strong>Retention:</strong> we keep your enquiry for as long as needed to handle it and any resulting relationship, and then delete it <span class="ph">[after X months / when no longer required]</span>.</li>
+      <li><strong>Retention:</strong> we keep your enquiry for as long as needed to handle it and any resulting relationship, and delete it at the latest 24 months after the last contact if no business relationship results.</li>
       <li><strong>Provision:</strong> the required fields are necessary to process your request; without them we cannot respond.</li>
     </ul>
 
@@ -74,7 +71,7 @@
 
     <h2>4. Analytics</h2>
     <p>We use <strong>Vercel Web Analytics</strong> to understand aggregate usage of the site. It is <strong>cookieless</strong> and does not track you across other websites. It collects aggregated, non-identifying information such as pages viewed, referrer, approximate region/country (derived from IP), and device/browser type.</p>
-    <p><strong>Processor:</strong> Vercel Inc. <strong>Legal basis:</strong> our legitimate interest in measuring and improving the site (Art. 6(1)(f) GDPR). <span class="ph">[Confirm whether you rely on legitimate interest or will ask for consent; a cookieless setup generally does not set cookies under § 25 TTDSG.]</span></p>
+    <p><strong>Processor:</strong> Vercel Inc. <strong>Legal basis:</strong> our legitimate interest in measuring and improving the site (Art. 6(1)(f) GDPR). Because the analytics is cookieless and stores no information on your device, it does not rely on consent under § 25 TTDSG.</p>
 
     <h2>5. Recipients &amp; processors</h2>
     <p>We use the following service providers as processors (Art. 28 GDPR):</p>
@@ -82,16 +79,15 @@
       <tr><th>Provider</th><th>Role</th><th>Location</th></tr>
       <tr><td>Vercel Inc.</td><td>Website hosting, the form’s serverless function, and Web Analytics</td><td>USA</td></tr>
       <tr><td>Porkbun LLC</td><td>Domain and email/SMTP delivery of form submissions</td><td>USA</td></tr>
-      <tr><td class="ph">[Upstash / Vercel KV, if enabled]</td><td>Short-lived rate-limit store (IP-keyed counters)</td><td class="ph">[region]</td></tr>
     </table>
     <p>We do not sell your data or share it for advertising.</p>
 
     <h2>6. International transfers</h2>
-    <p>Some of the processors above are located in the United States, so your data may be processed outside the EU/EEA. Where this is a transfer under Chapter V GDPR, it is covered by the EU Standard Contractual Clauses and the processors’ data-processing agreements. <span class="ph">[Confirm the DPAs/SCCs with Vercel and Porkbun are in place and reference them here.]</span></p>
+    <p>The processors above are located in the United States, so your data may be processed outside the EU/EEA. Such transfers are based on the European Commission’s Standard Contractual Clauses; we conclude the corresponding data-processing agreements with these providers (Vercel and Porkbun).</p>
 
     <h2>7. Your rights</h2>
-    <p>You have the right to access, rectification, erasure, restriction, data portability, and to object to processing based on legitimate interests. Where processing is based on consent, you may withdraw it at any time with effect for the future. To exercise any right, contact us at <span class="ph">[privacy@vitabahn.com]</span>.</p>
-    <p>You also have the right to lodge a complaint with a supervisory authority. For a Berlin-based controller this is the <em>Berliner Beauftragte für Datenschutz und Informationsfreiheit</em>. <span class="ph">[Adjust to your actual place of establishment.]</span></p>
+    <p>You have the right to access, rectification, erasure, restriction, data portability, and to object to processing based on legitimate interests. Where processing is based on consent, you may withdraw it at any time with effect for the future. To exercise any right, contact us at <a href="mailto:invest@vitabahn.com">invest@vitabahn.com</a>.</p>
+    <p>You also have the right to lodge a complaint with a supervisory authority. The authority responsible for the controller is <em>Die Landesbeauftragte für den Datenschutz Niedersachsen</em> (Hannover).</p>
 
     <h2>8. Cookies</h2>
     <p>This site does not set cookies. Analytics is cookieless, and the site loads no third-party scripts other than the first-party analytics endpoint served from this domain.</p>
