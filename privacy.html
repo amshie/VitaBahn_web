@@ -3,8 +3,9 @@
   PRIVACY POLICY / DATENSCHUTZERKLÄRUNG (GDPR Art. 13).
   Interim version: controller is a natural person (Amer Shieban) while VitaBahn is
   pre-incorporation. On incorporation, update the "Controller" section to the company.
-  Action items: accept the data-processing agreements (SCCs) offered by Vercel and
-  Porkbun. Legal review recommended. This document is not legal advice.
+  Action items: accept the data-processing agreements (SCCs) offered by Vercel,
+  Porkbun and Neon (database). Prefer an EU region for the Neon database. Legal
+  review recommended. This document is not legal advice.
 -->
 <html lang="en">
 <head>
@@ -42,8 +43,8 @@
     <div class="top"><span>VitaBahn · HADP</span><a class="home" href="/">← Back to the brief</a></div>
 
     <h1>Privacy Policy</h1>
-    <p class="updated">Datenschutzerklärung · Last updated: 2 July 2026</p>
-    <p class="lead">This notice explains what personal data we process when you use this website and its investor-materials request form, why, on what legal basis, and what rights you have under the EU General Data Protection Regulation (GDPR).</p>
+    <p class="updated">Datenschutzerklärung · Last updated: 12 July 2026</p>
+    <p class="lead">This notice explains what personal data we process when you use this website, its investor-access request form, and — for approved investors — the secure investor Data Room, why, on what legal basis, and what rights you have under the EU General Data Protection Regulation (GDPR).</p>
 
     <h2>1. Controller</h2>
     <p>VitaBahn is currently being incorporated. Until then, the controller responsible for the processing described here is:</p>
@@ -55,44 +56,54 @@
     </p>
     <p>We are not legally required to appoint, and have not appointed, a Data Protection Officer.</p>
 
-    <h2>2. Investor-materials request form</h2>
-    <p>When you submit the “Request Investor Materials &amp; Data Room Access” form, we process the data you enter: <strong>first name, last name, business email, fund/organization</strong>, and optionally a <strong>ticket range</strong> and a <strong>message</strong>, together with the <strong>consent</strong> you give.</p>
+    <h2>2. Investor-access request form</h2>
+    <p>When you submit the “Request Investor Access” form, we process the data you enter: <strong>full name, professional email, organisation/fund, role/title, country, LinkedIn or professional-profile URL, investor type, indicative ticket, potential role in the round, area of interest, decision timeline, requested meeting type</strong> and a <strong>message</strong>, an optional <strong>referral source</strong>, and the <strong>confirmations</strong> you give (accuracy of the information and acceptance of this notice).</p>
     <ul>
-      <li><strong>Purpose:</strong> to receive, assess and respond to your enquiry and to decide on and manage controlled access to investor materials and the Data Room.</li>
+      <li><strong>Purpose:</strong> to receive, verify and assess your request and to decide on and manage staged, controlled access to investor materials and the Data Room. Submitting the form does not grant access; access is assigned manually after review.</li>
       <li><strong>Legal basis:</strong> your consent (Art. 6(1)(a) GDPR) and steps taken at your request prior to entering into a relationship (Art. 6(1)(b) GDPR); our legitimate interest in evaluating and responding to enquiries (Art. 6(1)(f) GDPR).</li>
-      <li><strong>Delivery:</strong> your submission is sent to us by email (to invest@vitabahn.com) via our email/SMTP provider.</li>
-      <li><strong>Retention:</strong> we keep your enquiry for as long as needed to handle it and any resulting relationship, and delete it at the latest 24 months after the last contact if no business relationship results.</li>
+      <li><strong>Storage &amp; delivery:</strong> your submission is stored in our database (Neon; see §6) and a notification is emailed to us (invest@vitabahn.com) via our email/SMTP provider. An internal routing note we generate for our own assessment is not shared with you.</li>
+      <li><strong>Retention:</strong> we keep your request for as long as needed to handle it and any resulting relationship, and delete it at the latest 24 months after the last contact if no business relationship results.</li>
       <li><strong>Provision:</strong> the required fields are necessary to process your request; without them we cannot respond.</li>
     </ul>
 
-    <h2>3. Server logs &amp; abuse prevention</h2>
-    <p>To keep the form available and free of automated abuse, our serverless backend briefly processes your <strong>IP address</strong> for rate limiting and requires a client-side <strong>proof-of-work</strong> challenge. The IP address is used only transiently for this security purpose (short-lived counters) and is not used to build a profile.</p>
+    <h2>3. Investor Data Room account &amp; access logs</h2>
+    <p>If we grant you access, we create an <strong>investor account</strong> and store: your name, professional email, organisation, role, country and investor type; a <strong>securely hashed password</strong> (we never store your password in readable form); and your <strong>access grant</strong> — the assigned access level, NDA status, and any expiry date. Access is per user, time-limited and <strong>revocable</strong>.</p>
+    <p>To operate and secure the Data Room and to maintain an audit trail over confidential materials, we keep an <strong>access log</strong> that records sign-ins (successful and failed), sign-outs, and each document you open or are denied, together with the date and time, your <strong>IP address</strong> and browser <strong>user-agent</strong>.</p>
+    <ul>
+      <li><strong>Purpose:</strong> controlled, staged disclosure of confidential materials; authentication; security; and an audit trail for the protection of confidential information.</li>
+      <li><strong>Legal basis:</strong> steps taken prior to / within a potential investment relationship (Art. 6(1)(b) GDPR) and our legitimate interest in securing confidential materials, preventing abuse and keeping an audit trail (Art. 6(1)(f) GDPR).</li>
+      <li><strong>Retention:</strong> account and access-log records are kept for the duration of the financing process and for a limited period afterwards for security and audit purposes, then deleted or anonymised.</li>
+    </ul>
+
+    <h2>4. Server logs &amp; abuse prevention</h2>
+    <p>To keep the forms available and free of automated abuse, our serverless backend briefly processes your <strong>IP address</strong> for rate limiting; the public request form additionally requires a client-side <strong>proof-of-work</strong> challenge. The IP address is used only transiently for this security purpose (short-lived counters) and, separately, is recorded in the Data Room access log described in §3.</p>
     <p><strong>Legal basis:</strong> our legitimate interest in the security and availability of the service (Art. 6(1)(f) GDPR).</p>
 
-    <h2>4. Analytics</h2>
+    <h2>5. Analytics</h2>
     <p>We use <strong>Vercel Web Analytics</strong> to understand aggregate usage of the site. It is <strong>cookieless</strong> and does not track you across other websites. It collects aggregated, non-identifying information such as pages viewed, referrer, approximate region/country (derived from IP), and device/browser type.</p>
     <p><strong>Processor:</strong> Vercel Inc. <strong>Legal basis:</strong> our legitimate interest in measuring and improving the site (Art. 6(1)(f) GDPR). Because the analytics is cookieless and stores no information on your device, it does not rely on consent under § 25 TTDSG.</p>
 
-    <h2>5. Recipients &amp; processors</h2>
+    <h2>6. Recipients &amp; processors</h2>
     <p>We use the following service providers as processors (Art. 28 GDPR):</p>
     <table>
       <tr><th>Provider</th><th>Role</th><th>Location</th></tr>
-      <tr><td>Vercel Inc.</td><td>Website hosting, the form’s serverless function, and Web Analytics</td><td>USA</td></tr>
-      <tr><td>Porkbun LLC</td><td>Domain and email/SMTP delivery of form submissions</td><td>USA</td></tr>
+      <tr><td>Vercel Inc.</td><td>Website &amp; application hosting, the serverless functions, and Web Analytics</td><td>USA</td></tr>
+      <tr><td>Neon, Inc.</td><td>Database hosting for investor requests, accounts and access logs</td><td>USA / EU region</td></tr>
+      <tr><td>Porkbun LLC</td><td>Domain and email/SMTP delivery of notifications</td><td>USA</td></tr>
     </table>
     <p>We do not sell your data or share it for advertising.</p>
 
-    <h2>6. International transfers</h2>
-    <p>The processors above are located in the United States, so your data may be processed outside the EU/EEA. Such transfers are based on the European Commission’s Standard Contractual Clauses; we conclude the corresponding data-processing agreements with these providers (Vercel and Porkbun).</p>
+    <h2>7. International transfers</h2>
+    <p>Some processors above are located in, or may process data in, the United States, so your data may be processed outside the EU/EEA. Where the database is hosted in an EU region, that data stays in the EU; otherwise, and for the other providers, transfers are based on the European Commission’s Standard Contractual Clauses, and we conclude the corresponding data-processing agreements with these providers (Vercel, Neon and Porkbun).</p>
 
-    <h2>7. Your rights</h2>
+    <h2>8. Your rights</h2>
     <p>You have the right to access, rectification, erasure, restriction, data portability, and to object to processing based on legitimate interests. Where processing is based on consent, you may withdraw it at any time with effect for the future. To exercise any right, contact us at <a href="mailto:invest@vitabahn.com">invest@vitabahn.com</a>.</p>
     <p>You also have the right to lodge a complaint with a supervisory authority. The authority responsible for the controller is <em>Die Landesbeauftragte für den Datenschutz Niedersachsen</em> (Hannover).</p>
 
-    <h2>8. Cookies</h2>
-    <p>This site does not set cookies. Analytics is cookieless, and the site loads no third-party scripts other than the first-party analytics endpoint served from this domain.</p>
+    <h2>9. Cookies</h2>
+    <p>This site sets <strong>no tracking or advertising cookies</strong>, and analytics is cookieless. For signed-in investors and founders only, we set a single <strong>strictly-necessary session cookie</strong> (HttpOnly) so the Data Room and console can keep you authenticated during your session; it contains only a signed session reference, stores no tracking data, and is exempt from consent under § 25(2) TTDSG. It is cleared when you sign out.</p>
 
-    <h2>9. Changes</h2>
+    <h2>10. Changes</h2>
     <p>We may update this policy to reflect changes in our processing or legal requirements. The “last updated” date above shows the current version.</p>
 
     <footer>© 2026 VitaBahn · Confidential investor brief · <a href="/impressum.html">Impressum</a></footer>
