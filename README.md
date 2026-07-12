@@ -158,3 +158,96 @@ There is no build/lint step, so these are easy to forget — verify each before 
   domain so the form and its CORS lock stay in sync.
 - Because the repo also deploys to Vercel, the brief is reachable at the Vercel URL too;
   the production site is Porkbun + `vitabahn.com`.
+
+---
+
+# Investor Access & Data Room system
+
+A staged, server-enforced investor-access and secure data-room system layered on the
+existing Vercel serverless architecture. It replaces the old inline "request data room"
+email form: every investor CTA now routes to **`/investor-access`**.
+
+> **Hosting requirement — must run on Vercel.** This system needs serverless functions,
+> a Postgres database, session cookies and the response headers in `vercel.json`.
+> **Porkbun static hosting cannot run it.** To use it, serve the domain from the
+> **Vercel** deployment (which serves the static pages *and* the functions *and* applies
+> the CSP/security headers), not from Porkbun static hosting.
+
+## What it does
+
+- **`/investor-access`** — public qualification gateway. Submits to `POST /api/access-request`,
+  which validates server-side, stores the request (status *pending*), emails the team the
+  internal routing hint, emails the applicant a **neutral** confirmation, and gates booking.
+  It **never** grants access, sends credentials, or exposes the Lead/Anchor booking automatically.
+- **`/investor-login` → `/investor-room`** — authenticated investors sign in and see only the
+  documents released at their **access level (1–5)** and **NDA** status. Documents are streamed
+  **only** through `GET /api/room/document` after a per-request re-check of level, NDA, expiry and
+  revocation. Bytes live in the database — there is **no public object URL**. Every view and denial
+  is logged.
+- **`/founder-login` → `/investor-console`** — the internal Level-0 console: assign per-user access
+  level (L4/L5 require a **named approver**), toggle NDA/meeting, set expiry, **revoke** access (takes
+  effect immediately), manage commitments/notes, review access requests and provision accounts, upload/
+  classify/delete data-room documents, and read the audit log.
+
+Access levels: **0** founders/admins (never assigned to an investor) · **1** public/first-contact ·
+**2** interested · **3** qualified/NDA · **4** lead/anchor *(named approval)* · **5** signing *(named approval)*.
+
+## Security model
+
+- Server-side auth/authz only. Client-side hiding, secret URLs and `noindex` are **not** relied on.
+- Passwords: scrypt with per-user salt. Sessions: HMAC-signed, HttpOnly, SameSite=Lax cookies;
+  the signature is verified **and the account re-loaded from the DB on every request**, so
+  revocation / expiry / level changes are immediate. Investor and founder are separate cookie realms.
+- All SQL is parameterised; the only dynamic SQL is column-**allowlisted** update builders.
+- State-changing requests require an allowlisted `Origin`/`Referer` (CSRF defence, on top of SameSite).
+- Every login (success + failure), logout, document view, document denial and admin action is written
+  to an append-only `access_logs` table.
+
+## Setup (Vercel)
+
+1. **Link a database.** Vercel Storage → add Postgres (Neon). It injects `POSTGRES_URL`.
+2. **Set env vars** (see `.env.example`): `SESSION_SECRET` (required), `POSTGRES_URL` (auto),
+   `LEAD_TO`, `SMTP_*`, `ALLOWED_ORIGIN`, optional `BOOKING_*`. Redeploy.
+3. **Create the first admin.** Set `ADMIN_BOOTSTRAP_TOKEN`, redeploy, then:
+   ```bash
+   curl -X POST https://<your-app>/api/admin/bootstrap \
+     -H "Content-Type: application/json" -H "Origin: https://vitabahn.com" \
+     -d '{"token":"<ADMIN_BOOTSTRAP_TOKEN>","email":"you@vitabahn.com","password":"a-long-password","name":"You"}'
+   ```
+   Then **unset `ADMIN_BOOTSTRAP_TOKEN`** and redeploy. The schema is created automatically on first use.
+
+## Run locally
+
+```bash
+npm install
+node scripts/dev-server.mjs      # http://localhost:5050 — runs the real handlers on embedded PGlite
+```
+
+The dev server seeds a founder + sample investors/documents and prints demo credentials. It mirrors the
+production CSP. (Data is in-memory unless you set `PGLITE_DATA_DIR`.) `npm run create-admin -- <email> <password> "<name>"`
+creates/rotates an admin against `PGLITE_DATA_DIR` (local) or `POSTGRES_URL` (prod).
+
+## Tests
+
+```bash
+npm test        # 33 hermetic tests (PGlite) exercising authn/authz, level + NDA enforcement,
+                # revocation, expiry, access logging, gateway intake, and console/admin flows
+```
+
+## Data protection (GDPR)
+
+The system stores **investor personal data**: access-request submissions (name, professional email,
+organisation, role, country, LinkedIn, free-text message) and, for provisioned accounts, the same
+profile plus a scrypt password hash, access grant and an audit trail of logins and document access.
+
+- **Lawful basis:** legitimate interest / pre-contractual steps for evaluating investor-access requests
+  (Art. 6(1)(b)/(f) GDPR). Consent is captured on the gateway (accuracy + privacy notice).
+- **Data minimisation:** only fields needed to qualify an investor are collected; documents are shown
+  strictly per access level + NDA.
+- **Security:** passwords hashed (scrypt), transport over HTTPS/HSTS, access controlled per user and
+  revocable, all access logged.
+- **Retention & rights:** access requests and audit logs are retained for the fundraise; implement a
+  periodic purge and honour access/erasure requests via `invest@vitabahn.com`. The `documents.bytes`,
+  `investors` and `access_requests`/`access_logs` tables are the records to include in a data-subject
+  export or deletion. **Update `privacy.html`** to describe the investor data-room processing (categories,
+  purpose, retention, rights) before go-live.

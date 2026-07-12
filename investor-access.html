@@ -1,0 +1,231 @@
+<!doctype html>
+<html lang="en" dir="ltr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="robots" content="noindex,nofollow" />
+  <meta name="theme-color" content="#0B1013" />
+  <title>Investor Access | VitaBahn</title>
+  <meta name="description" content="Request VitaBahn investor materials and schedule a qualified investor discussion." />
+  <link rel="stylesheet" href="/assets/fonts.css" />
+  <style>
+    :root{
+      --paper:#F7F8F6;--paper-2:#EFF2F0;--surface:#FFFFFF;--ink:#0B1013;--ink-2:#203038;--ink-3:#5B6870;
+      --teal:#4FB3A3;--teal-dark:#267F73;--teal-soft:#DFF2EE;--gold:#CBA968;--gold-soft:#F4EBD8;--gold-ink:#6E5423;
+      --line:#DFE3E7;--line-2:#E9ECEE;--shadow-sm:0 1px 2px rgba(11,16,19,.05);
+      --shadow-md:0 14px 40px -18px rgba(11,16,19,.20),0 2px 6px rgba(11,16,19,.04);
+      --sans:"IBM Plex Sans",ui-sans-serif,system-ui,-apple-system,"Segoe UI",Arial,sans-serif;
+      --mono:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,Consolas,monospace
+    }
+    *{box-sizing:border-box}html{scroll-behavior:smooth}
+    body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--sans);line-height:1.6;-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
+    a{color:var(--teal-dark);text-underline-offset:2px}
+    a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:2px solid var(--teal);outline-offset:2px}
+    .wrap{width:min(1160px,calc(100% - 32px));margin:auto}
+    .railbar{height:3px;display:flex;width:100%}.railbar span{display:block;height:100%}
+    .railbar .a{flex:4;background:var(--teal)}.railbar .b{flex:3;background:#86B5A6}.railbar .c{flex:3;background:var(--gold)}
+    header{padding:22px 0;border-bottom:1px solid var(--line);background:var(--surface)}
+    .brand{display:flex;align-items:center;justify-content:space-between;gap:20px}
+    .brand-left{display:flex;align-items:center;gap:13px}.mark{flex:none;display:block}
+    .brand-name{font-size:20px;font-weight:600;letter-spacing:.01em;line-height:1.1}
+    .brand-note{font-size:12.5px;color:var(--ink-3)}
+    .brand-tag{font-family:var(--mono);font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--teal-dark);font-weight:500}
+    .hero{padding:64px 0 40px}
+    .eyebrow{display:inline-flex;padding:6px 11px;border:1px solid rgba(38,127,115,.30);color:var(--teal-dark);border-radius:999px;font-size:11px;font-weight:500;letter-spacing:.16em;text-transform:uppercase;font-family:var(--mono);background:var(--teal-soft)}
+    h1{font-size:clamp(34px,5.2vw,60px);line-height:1.05;letter-spacing:-.035em;margin:18px 0 20px;max-width:940px;font-weight:600}
+    .lead{font-size:clamp(16px,1.7vw,20px);color:var(--ink-2);max-width:900px;margin:0}
+    .rail-wrap{margin:46px 0 0}
+    .rail-cap{font-family:var(--mono);font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--teal-dark);font-weight:600;display:flex;align-items:center;gap:12px;margin:0 0 24px}
+    .rail-cap::before{content:"";width:22px;height:1px;background:var(--teal-dark);opacity:.55}.rail-cap::after{content:"";flex:1;height:1px;background:var(--line)}
+    .rail{list-style:none;margin:0;padding:0;display:flex;position:relative}
+    .rail::before{content:"";position:absolute;left:10%;right:10%;top:33px;height:2px;background:var(--line);z-index:0}
+    .stop{flex:1;display:flex;flex-direction:column;align-items:center;position:relative;z-index:1;min-width:0}
+    .stop-idx{height:16px;line-height:16px;margin-bottom:10px;font-family:var(--mono);font-size:11px;letter-spacing:.06em;color:var(--ink-3)}
+    .stop-node{width:16px;height:16px;border-radius:50%;background:var(--surface);border:2px solid var(--teal)}
+    .stop-label{margin-top:13px;font-size:12.5px;line-height:1.4;color:var(--ink-2);text-align:center;max-width:16ch}
+    .stop.is-active .stop-idx{color:var(--teal-dark);font-weight:600}
+    .stop.is-active .stop-node{background:var(--teal);box-shadow:0 0 0 4px rgba(79,179,163,.18)}
+    .stop.is-active .stop-label{color:var(--ink);font-weight:600}
+    .stop.is-gate .stop-idx{color:var(--gold-ink);font-weight:600}
+    .stop.is-gate .stop-node{width:18px;height:18px;margin-top:-1px;background:var(--gold);border-color:var(--gold);box-shadow:0 0 0 4px rgba(203,169,104,.20)}
+    .stop.is-gate .stop-label{color:var(--gold-ink);font-weight:600}
+    main{padding:32px 0 84px}
+    .grid{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(300px,.75fr);gap:24px;align-items:start}
+    .card{background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:26px;box-shadow:var(--shadow-md)}
+    .card h2{font-size:24px;margin:0 0 8px;letter-spacing:-.02em;font-weight:600}.card .intro{color:var(--ink-2);margin:0 0 24px}
+    .section-title{font-size:11px;color:var(--teal-dark);font-weight:600;letter-spacing:.14em;text-transform:uppercase;margin:28px 0 12px;font-family:var(--mono);display:flex;align-items:center;gap:10px}
+    .section-title::after{content:"";flex:1;height:1px;background:var(--line)}
+    .form-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+    .field{display:flex;flex-direction:column;gap:7px}.field.full{grid-column:1/-1}
+    label{font-size:13px;font-weight:600;color:var(--ink)}
+    input,select,textarea{width:100%;border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:10px;padding:12px 13px;font:inherit;outline:none;transition:border-color .16s,box-shadow .16s}
+    input::placeholder,textarea::placeholder{color:var(--ink-3)}
+    input:hover,select:hover,textarea:hover{border-color:#C9D0D4}
+    input:focus,select:focus,textarea:focus{border-color:var(--teal);box-shadow:0 0 0 3px rgba(79,179,163,.18)}
+    textarea{min-height:108px;resize:vertical}
+    select{appearance:none;-webkit-appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath d='M2 4l4 4 4-4' fill='none' stroke='%235B6870' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 13px center;padding-right:34px}
+    .hint{color:var(--ink-3);font-size:12px}
+    .check{display:flex;gap:10px;align-items:flex-start;margin-top:14px}
+    .check input{width:18px;height:18px;margin-top:3px;flex:0 0 auto;accent-color:var(--teal-dark)}
+    .check label{font-weight:400;color:var(--ink-2);font-size:13.5px}
+    button{border:0;border-radius:10px;padding:14px 18px;font:inherit;font-weight:600;cursor:pointer}
+    .primary{background:var(--teal-dark);color:#FFFFFF;width:100%;margin-top:20px;transition:filter .16s,background .16s}
+    .primary:hover:not(:disabled){background:#1F6C62}.primary:disabled{opacity:.5;cursor:not-allowed}
+    .status{display:none;margin-top:16px;padding:12px 14px;border-radius:10px;font-size:14px}
+    .status.error{display:block;background:#FCEBEA;border:1px solid #F1C9C6;color:#8A2C25}
+    .status.ok{display:block;background:var(--teal-soft);border:1px solid #A9DBD0;color:#1E5B52}
+    .side-list{display:grid;gap:12px}
+    .side-item{padding:16px;border:1px solid var(--line);border-radius:12px;background:var(--paper-2)}
+    .side-item strong{display:block;margin-bottom:5px;font-weight:600}.side-item p{margin:0;color:var(--ink-2);font-size:13px}
+    .ticket{margin-top:20px;padding:17px;border-radius:12px;background:var(--gold-soft);border:1px solid rgba(203,169,104,.45)}
+    .ticket strong{color:var(--gold-ink);font-weight:600}.ticket .micro{color:#7A6636}
+    .security{margin-top:20px;padding-top:18px;border-top:1px solid var(--line);color:var(--ink-3);font-size:13px}
+    #bookingSection{display:none;margin-top:24px}
+    .booking-head{display:flex;justify-content:space-between;gap:16px;align-items:flex-start;margin-bottom:18px}
+    .booking-head p{color:var(--ink-2);margin:5px 0 0}
+    .request-id{font-size:12px;padding:6px 10px;border-radius:999px;background:var(--teal-soft);color:var(--teal-dark);white-space:nowrap;font-family:var(--mono);font-weight:500}
+    .calendar-shell{min-height:520px;border:1px solid var(--line);border-radius:14px;overflow:hidden;background:#fff}
+    .calendar-shell iframe{width:100%;min-height:690px;border:0}
+    .calendar-placeholder{min-height:340px;display:flex;align-items:center;justify-content:center;text-align:center;padding:30px;background:var(--paper-2)}
+    .calendar-placeholder div{max-width:600px}.calendar-placeholder h3{margin:0 0 10px;font-weight:600}.calendar-placeholder p{color:var(--ink-2)}
+    .micro{font-size:12px;color:var(--ink-3);margin-top:12px}
+    .access-result{margin-top:18px;padding:14px;border-radius:12px;background:var(--teal-soft);border:1px solid #A9DBD0}
+    .access-result strong{display:block;color:var(--teal-dark);margin-bottom:4px;font-weight:600}
+    .loginline{margin-top:14px;font-size:13px;color:var(--ink-3)}
+    footer{padding:26px 0;border-top:1px solid var(--line);color:var(--ink-3);font-size:12px;background:var(--surface)}
+    @media(max-width:900px){.grid{grid-template-columns:1fr}.form-grid{grid-template-columns:1fr}.field.full{grid-column:auto}}
+    @media(max-width:560px){.wrap{width:min(100% - 20px,1160px)}.hero{padding-top:44px}.card{padding:19px}.booking-head{flex-direction:column}
+      .rail-wrap{margin-top:38px}.rail{flex-direction:column;align-items:stretch}.rail::before{left:7px;right:auto;top:8px;bottom:8px;width:2px;height:auto}
+      .stop{flex-direction:row;align-items:center;gap:14px;padding:9px 0}.stop-idx{display:none}.stop-node{margin:0;flex:0 0 auto}.stop.is-gate .stop-node{margin:0}.stop-label{margin-top:0;text-align:left;max-width:none}}
+    @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*{transition:none!important;animation:none!important}}
+  </style>
+</head>
+<body>
+<div class="railbar" aria-hidden="true"><span class="a"></span><span class="b"></span><span class="c"></span></div>
+<header>
+  <div class="wrap brand">
+    <div class="brand-left">
+      <svg class="mark" width="30" height="30" viewBox="0 0 34 34" aria-hidden="true" focusable="false">
+        <rect x="7"  y="16" width="4.6" height="12" rx="2.3" fill="#4FB3A3"/><circle cx="9.3"  cy="16" r="2.7" fill="#4FB3A3"/>
+        <rect x="14.7" y="11" width="4.6" height="17" rx="2.3" fill="#86B5A6"/><circle cx="17"   cy="11" r="2.7" fill="#86B5A6"/>
+        <rect x="22.4" y="6"  width="4.6" height="22" rx="2.3" fill="#CBA968"/><circle cx="24.7" cy="6"  r="2.7" fill="#CBA968"/>
+      </svg>
+      <div>
+        <div class="brand-name">VitaBahn</div>
+        <div class="brand-note">Clinician-governed healthspan infrastructure</div>
+      </div>
+    </div>
+    <div class="brand-tag">Investor Access</div>
+  </div>
+</header>
+
+<section class="hero">
+  <div class="wrap">
+    <span class="eyebrow">Investor Data Room</span>
+    <h1>Request access. Qualify the discussion. Book the right meeting.</h1>
+    <p class="lead">
+      Investor materials are released progressively. Completing this form and booking a meeting does not grant automatic Data Room access.
+      Access is assigned after verification according to investor capacity, strategic fit, role in the round, NDA status and diligence stage.
+    </p>
+    <div class="rail-wrap">
+      <div class="rail-cap">Disclosure pathway</div>
+      <ol class="rail" aria-label="Disclosure pathway">
+        <li class="stop is-active"><span class="stop-idx">01</span><span class="stop-node"></span><span class="stop-label">Public / First Contact</span></li>
+        <li class="stop"><span class="stop-idx">02</span><span class="stop-node"></span><span class="stop-label">Interested Investor</span></li>
+        <li class="stop is-gate"><span class="stop-idx">03</span><span class="stop-node"></span><span class="stop-label">Qualified / NDA</span></li>
+        <li class="stop"><span class="stop-idx">04</span><span class="stop-node"></span><span class="stop-label">Lead / Anchor</span></li>
+        <li class="stop"><span class="stop-idx">05</span><span class="stop-node"></span><span class="stop-label">Signing / Closing</span></li>
+      </ol>
+    </div>
+  </div>
+</section>
+
+<main>
+  <div class="wrap">
+    <div class="grid">
+      <section class="card">
+        <h2>Investor qualification request</h2>
+        <p class="intro">Please provide sufficient information for a focused investor discussion. Fields marked * are required.</p>
+        <form id="investorForm" novalidate>
+          <div class="section-title">Contact</div>
+          <div class="form-grid">
+            <div class="field"><label for="fullName">Full name *</label><input id="fullName" name="fullName" autocomplete="name" maxlength="120" required /></div>
+            <div class="field"><label for="professionalEmail">Professional email *</label><input id="professionalEmail" name="professionalEmail" type="email" autocomplete="email" maxlength="160" required /></div>
+            <div class="field"><label for="organisation">Organisation / fund *</label><input id="organisation" name="organisation" maxlength="160" required /></div>
+            <div class="field"><label for="role">Role / title *</label><input id="role" name="role" maxlength="120" required /></div>
+            <div class="field"><label for="country">Country *</label><input id="country" name="country" autocomplete="country-name" maxlength="80" required /></div>
+            <div class="field"><label for="linkedin">LinkedIn or professional profile *</label><input id="linkedin" name="linkedin" type="url" inputmode="url" placeholder="https://..." maxlength="300" required /></div>
+          </div>
+          <div class="section-title">Investment profile</div>
+          <div class="form-grid">
+            <div class="field"><label for="investorType">Investor type *</label>
+              <select id="investorType" name="investorType" required>
+                <option value="">Select</option><option>Family office</option><option>Venture capital</option><option>Strategic healthcare investor</option><option>Corporate investor</option><option>Institutional investor</option><option>Qualified angel investor</option><option>Sovereign or public-sector investment entity</option><option>Adviser or authorised representative</option><option>Other</option>
+              </select></div>
+            <div class="field"><label for="ticketRange">Indicative ticket *</label>
+              <select id="ticketRange" name="ticketRange" required>
+                <option value="">Select</option><option value="participant">€250k–€499k</option><option value="major">€500k–€999k</option><option value="lead">€1M+</option><option value="strategic">Strategic / Institutional</option><option value="undetermined">Not yet determined</option>
+              </select>
+              <div class="hint">€250,000 is a targeted minimum ticket, not an automatic entitlement to special governance or access rights.</div></div>
+            <div class="field"><label for="roleInRound">Potential role in the round *</label>
+              <select id="roleInRound" name="roleInRound" required>
+                <option value="">Select</option><option>Participating investor</option><option>Lead investor</option><option>Anchor investor</option><option>Strategic investor</option><option>Co-investment partner</option><option>Adviser or introducer</option>
+              </select></div>
+            <div class="field"><label for="interestArea">Primary area of interest *</label>
+              <select id="interestArea" name="interestArea" required>
+                <option value="">Select</option><option>HealthTech / clinical AI</option><option>Longevity / healthspan</option><option>Enterprise healthcare infrastructure</option><option>Sovereign digital health / data custody</option><option>Life sciences / biomarkers</option><option>Strategic clinic or institutional deployment</option><option>Other</option>
+              </select></div>
+            <div class="field"><label for="timeline">Indicative decision timeline *</label>
+              <select id="timeline" name="timeline" required>
+                <option value="">Select</option><option>Within 30 days</option><option>Within 60 days</option><option>Within 90 days</option><option>More than 90 days</option><option>Exploratory only</option>
+              </select></div>
+            <div class="field"><label for="meetingType">Requested discussion *</label>
+              <select id="meetingType" name="meetingType" required>
+                <option value="">Select</option><option value="intro20">Introductory investor meeting — 20 minutes</option><option value="qualified40">Qualified investor review — 40 minutes</option><option value="lead60">Lead / Anchor diligence meeting — 60 minutes</option><option value="strategic30">Strategic or institutional discussion — 30 minutes</option>
+              </select></div>
+            <div class="field full"><label for="message">Why is VitaBahn relevant to your investment or strategic mandate? *</label><textarea id="message" name="message" maxlength="2000" required></textarea></div>
+            <div class="field full"><label for="referral">Referral or introduction source</label><input id="referral" name="referral" maxlength="160" placeholder="Name, organisation, event or network" /></div>
+          </div>
+          <div aria-hidden="true" style="position:absolute;left:-9999px;top:auto;width:1px;height:1px;overflow:hidden">
+            <label for="companyWebsite">Leave this field empty</label>
+            <input id="companyWebsite" name="companyWebsite" type="text" tabindex="-1" autocomplete="off" />
+          </div>
+          <div class="check"><input id="accuracy" name="accuracy" type="checkbox" required /><label for="accuracy">I confirm that the information provided is accurate and may be used to evaluate this investor-access request. *</label></div>
+          <div class="check"><input id="privacy" name="privacy" type="checkbox" required /><label for="privacy">I have read and accept the <a href="/privacy.html" target="_blank" rel="noopener">privacy notice</a>. I understand that booking a meeting does not create investment rights or grant automatic access to confidential materials. *</label></div>
+          <button id="submitBtn" class="primary" type="submit">Submit request and continue to booking</button>
+          <div id="formStatus" class="status" role="status" aria-live="polite"></div>
+          <p class="loginline">Already approved for the Data Room? <a href="/investor-login">Investor login →</a></p>
+        </form>
+      </section>
+
+      <aside class="card">
+        <h2>How access works</h2>
+        <p class="intro">The Data Room is not opened automatically from the website.</p>
+        <div class="side-list">
+          <div class="side-item"><strong>1. Qualification request</strong><p>We review identity, organisation, ticket range, mandate and intended role.</p></div>
+          <div class="side-item"><strong>2. Meeting request</strong><p>Available times are shown only after the form is completed.</p></div>
+          <div class="side-item"><strong>3. Founder review</strong><p>The meeting and disclosure level remain subject to manual approval.</p></div>
+          <div class="side-item"><strong>4. Progressive disclosure</strong><p>Public, interested, qualified/NDA, lead/anchor, then signing/closing.</p></div>
+        </div>
+        <div class="ticket"><strong>Targeted minimum ticket: €250,000</strong><p class="micro">Larger tickets may justify deeper diligence access, but ticket size alone never opens restricted materials.</p></div>
+        <div id="accessResult" class="access-result" hidden><strong>Request received</strong><span id="accessResultText"></span></div>
+        <div class="security">A defined set of proprietary materials — including core methodology, detailed unit economics and protected product internals — sits outside standard investor access. These are shared, if at all, only under an executed NDA at the appropriate diligence stage.</div>
+      </aside>
+    </div>
+
+    <section id="bookingSection" class="card">
+      <div class="booking-head">
+        <div><h2>Request a meeting</h2><p>Your request has been recorded. The booking remains subject to confirmation.</p></div>
+        <span id="requestId" class="request-id"></span>
+      </div>
+      <div id="calendarContainer" class="calendar-shell"></div>
+      <p id="bookingNote" class="micro"></p>
+      <p class="micro">No Data Room credentials are issued at booking. Approved materials are shared separately after identity and investor-fit review. <a href="/request-submitted">What happens next →</a></p>
+    </section>
+  </div>
+</main>
+
+<footer><div class="wrap">© 2026 VitaBahn · Investor access is staged, verified and revocable · not an offer of securities.</div></footer>
+<script src="/assets/access.js"></script>
+</body>
+</html>
