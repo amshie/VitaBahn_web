@@ -13,9 +13,9 @@ const {
   LEAD_FROM,
 } = process.env;
 
-// Address shown to investors for "was this you?" queries. Defaults to the IR inbox;
-// override with IR_CONTACT if you use a different mailbox (e.g. invest@vitabahn.com).
-const IR_CONTACT = process.env.IR_CONTACT || 'investors@vitabahn.com';
+// Address shown to investors for "was this you?" / questions. Defaults to the shared
+// inbox; override with IR_CONTACT to use a different mailbox.
+const IR_CONTACT = process.env.IR_CONTACT || 'info@vitabahn.com';
 const IR_FROM_NAME = 'VitaBahn Investor Relations';
 
 export function mailConfigured() {
