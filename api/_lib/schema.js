@@ -94,17 +94,26 @@ CREATE INDEX IF NOT EXISTS access_requests_created_idx ON access_requests (creat
 CREATE TABLE IF NOT EXISTS documents (
   id           TEXT PRIMARY KEY,
   title        TEXT NOT NULL,
-  -- Minimum access_level required to view (2..5). Authoritative for enforcement.
+  -- Minimum access_level required to view (1..5). Authoritative for enforcement.
   min_level    INT  NOT NULL DEFAULT 3,
   -- Coarse label mirrored from min_level for the console (1 = Open, 2 = NDA/restricted).
   tier         INT  NOT NULL DEFAULT 1,
   content_type TEXT NOT NULL DEFAULT 'application/octet-stream',
   size         BIGINT NOT NULL DEFAULT 0,
+  -- Human display label for the room table (e.g. "22 pages", "6 tabs", "live"). Optional.
+  pages        TEXT NOT NULL DEFAULT '',
   bytes        BYTEA,
-  added_at     TIMESTAMPTZ NOT NULL DEFAULT now()
+  added_at     TIMESTAMPTZ NOT NULL DEFAULT now(),
+  -- Last content/metadata change; drives the room's "Updated" column + "Recently updated".
+  updated_at   TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 
 CREATE INDEX IF NOT EXISTS documents_level_idx ON documents (min_level);
+
+-- Additive migrations for databases created before these columns existed. Each is
+-- idempotent, so ensureSchema() can run them on every cold start without harm.
+ALTER TABLE documents ADD COLUMN IF NOT EXISTS pages TEXT NOT NULL DEFAULT '';
+ALTER TABLE documents ADD COLUMN IF NOT EXISTS updated_at TIMESTAMPTZ NOT NULL DEFAULT now();
 
 -- Single-use, time-limited set-password invitations. Only a HASH of the token is
 -- stored, so a database leak never exposes a usable link.

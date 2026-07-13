@@ -8,13 +8,14 @@
     "node": ">=18"
   },
   "scripts": {
-    "test": "node --test \"test/**/*.test.js\"",
+    "test": "node --test --test-concurrency=1 \"test/**/*.test.js\"",
     "create-admin": "node scripts/create-admin.js"
   },
   "dependencies": {
     "@neondatabase/serverless": "^1.1.0",
     "@vercel/analytics": "^2.0.1",
-    "nodemailer": "^9.0.3"
+    "nodemailer": "^9.0.3",
+    "pdf-lib": "^1.17.1"
   },
   "devDependencies": {
     "@electric-sql/pglite": "^0.5.4"
