@@ -31,6 +31,7 @@ const api = {
   '/api/auth/admin-login': (await import('../api/auth/admin-login.js')).default,
   '/api/auth/logout': (await import('../api/auth/logout.js')).default,
   '/api/auth/set-password': (await import('../api/auth/set-password.js')).default,
+  '/api/auth/forgot-password': (await import('../api/auth/forgot-password.js')).default,
   '/api/room/session': (await import('../api/room/session.js')).default,
   '/api/room/documents': (await import('../api/room/documents.js')).default,
   '/api/room/document': (await import('../api/room/document.js')).default,

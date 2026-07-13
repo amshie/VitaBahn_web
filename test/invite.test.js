@@ -3,10 +3,17 @@ import { mockReq, mockRes, cookieFromRes, TEST_ORIGIN } from './helpers.js';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 
-import { ensureSchema, resetDbForTests } from '../api/_lib/db.js';
+import { ensureSchema, resetDbForTests, query } from '../api/_lib/db.js';
 import * as store from '../api/_lib/store.js';
 import setPassword from '../api/auth/set-password.js';
+import forgotPassword from '../api/auth/forgot-password.js';
 import investorLogin from '../api/auth/investor-login.js';
+
+async function countValidInvites(investorId) {
+  const { rows } = await query('SELECT count(*)::int AS n FROM invites WHERE investor_id = $1 AND used_at IS NULL AND expires_at > now()', [investorId]);
+  return rows[0].n;
+}
+const forgot = (email, ip) => mockReq({ method: 'POST', headers: { origin: TEST_ORIGIN }, body: { email }, ip });
 
 test.before(async () => { await ensureSchema(); });
 test.beforeEach(async () => { await resetDbForTests(); });
@@ -76,6 +83,40 @@ test('too-short password rejected without consuming the token', async () => {
 test('bogus token is rejected', async () => {
   const p = mockRes(); await setPassword(post('not-a-real-token', 'some-password-1'), p);
   assert.equal(p.statusCode, 400);
+});
+
+test('forgot-password issues a reset invite for an existing active account', async () => {
+  const id = await store.createInvestor({ email: 'known@fund.vc', name: 'Known', accessLevel: 3 });
+  const res = mockRes();
+  await forgotPassword(forgot('known@fund.vc', '198.51.100.10'), res);
+  assert.equal(res.statusCode, 200);
+  assert.match(res.json_().message, /if an account exists/i);
+  assert.equal(await countValidInvites(id), 1);
+  assert.equal((await store.listLogs({ actorId: id })).some((l) => l.event === 'password_reset_requested'), true);
+});
+
+test('forgot-password is neutral for unknown emails (no enumeration, no invite)', async () => {
+  const known = await store.createInvestor({ email: 'known2@fund.vc', name: 'K', accessLevel: 2 });
+  const a = mockRes(); await forgotPassword(forgot('known2@fund.vc', '198.51.100.11'), a);
+  const b = mockRes(); await forgotPassword(forgot('nobody@fund.vc', '198.51.100.12'), b);
+  // identical neutral message for existing vs unknown
+  assert.equal(a.json_().message, b.json_().message);
+  assert.equal(b.statusCode, 200);
+});
+
+test('forgot-password does not issue an invite for a revoked account', async () => {
+  const id = await store.createInvestor({ email: 'rev@fund.vc', name: 'Rev', accessLevel: 3 });
+  await store.updateInvestor(id, { revoked: true });
+  const res = mockRes();
+  await forgotPassword(forgot('rev@fund.vc', '198.51.100.13'), res);
+  assert.equal(res.statusCode, 200); // still neutral
+  assert.equal(await countValidInvites(id), 0);
+});
+
+test('forgot-password rate-limits repeated requests from one IP', async () => {
+  let last;
+  for (let i = 0; i < 7; i++) { last = mockRes(); await forgotPassword(forgot('x@fund.vc', '198.51.100.99'), last); }
+  assert.equal(last.statusCode, 429);
 });
 
 test('setting a password for a revoked account does not sign in', async () => {

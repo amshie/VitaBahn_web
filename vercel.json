@@ -30,6 +30,7 @@
     { "source": "/investor-access", "headers": [ { "key": "X-Robots-Tag", "value": "noindex, nofollow" } ] },
     { "source": "/investor-login", "headers": [ { "key": "X-Robots-Tag", "value": "noindex, nofollow" } ] },
     { "source": "/investor-set-password", "headers": [ { "key": "X-Robots-Tag", "value": "noindex, nofollow" } ] },
+    { "source": "/investor-forgot-password", "headers": [ { "key": "X-Robots-Tag", "value": "noindex, nofollow" } ] },
     { "source": "/founder-login", "headers": [ { "key": "X-Robots-Tag", "value": "noindex, nofollow" } ] },
     { "source": "/request-submitted", "headers": [ { "key": "X-Robots-Tag", "value": "noindex, nofollow" } ] },
     { "source": "/investor-room", "headers": [ { "key": "X-Robots-Tag", "value": "noindex, nofollow" } ] },

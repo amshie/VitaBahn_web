@@ -32,23 +32,29 @@ function transporter() {
   return _transporter;
 }
 
-// Compose + send the set-password invitation. Returns sendMail's result so the
-// caller can tell the founder whether it actually went out.
-export async function sendInviteEmail({ to, name, url, expiresDays = 7 }) {
+// Compose + send the set-password / reset invitation. Returns sendMail's result so
+// the caller can tell whether it actually went out.
+export async function sendInviteEmail({ to, name, url, expiresDays = 7, reset = false }) {
+  const lead = reset
+    ? 'A password reset was requested for your VitaBahn investor Data Room account.'
+    : 'You have been approved for access to the VitaBahn investor Data Room.';
   const text = [
     `${name || 'Hello'},`,
     '',
-    'You have been approved for access to the VitaBahn investor Data Room.',
+    lead,
     'Set your password using the secure link below, then sign in:',
     '',
     url,
     '',
-    `This link can be used once and expires in ${expiresDays} days. If it expires, contact us for a new one.`,
-    'If you did not expect this email, you can ignore it.',
+    `This link can be used once and expires in ${expiresDays} days. If it expires, request a new one.`,
+    reset ? 'If you did not request this, you can safely ignore this email — your password is unchanged.' : 'If you did not expect this email, you can ignore it.',
     '',
     '— VitaBahn',
   ].join('\n');
-  return sendMail({ to, subject: 'VitaBahn — set your investor Data Room password', text });
+  const subject = reset
+    ? 'VitaBahn — reset your investor Data Room password'
+    : 'VitaBahn — set your investor Data Room password';
+  return sendMail({ to, subject, text });
 }
 
 export async function sendMail({ to, subject, text, replyTo }) {
