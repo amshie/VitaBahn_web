@@ -9,7 +9,13 @@ import { sendHtml, redirect } from './_lib/http.js';
 import { ensureSchema } from './_lib/store.js';
 import { loadInvestor } from './_lib/auth.js';
 
-const SHELL = `<!doctype html>
+export function renderShell(preview) {
+  const esc = (s) => String(s == null ? '' : s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+  const bodyAttr = preview ? ` data-preview-investor="${esc(String(preview.id))}"` : '';
+  const ribbon = preview
+    ? `<div class="previewbar" role="status">Preview · viewing the data room as <b>${esc(preview.name)}</b> — read-only<a class="pv-back" href="/investor-console">Back to console →</a></div>`
+    : '';
+  return `<!doctype html>
 <html lang="en" dir="ltr">
 <head>
 <meta charset="utf-8" />
@@ -158,10 +164,14 @@ main{padding:26px 0 40px}
   .navwrap{grid-template-columns:1fr}
 }
 @media(prefers-reduced-motion:reduce){*{transition:none!important}}
+.previewbar{position:sticky;top:0;z-index:60;display:flex;align-items:center;gap:6px;justify-content:center;flex-wrap:wrap;background:#0B1013;color:#EAF0F1;font-size:12.5px;padding:9px 16px;border-bottom:2px solid var(--gold)}
+.previewbar b{color:#fff;font-weight:600}
+.previewbar .pv-back{color:var(--gold);text-decoration:none;font-weight:600;margin-left:8px}
+.previewbar .pv-back:hover{text-decoration:underline}
 </style>
 </head>
-<body>
-<div class="railbar" aria-hidden="true"><span class="a"></span><span class="b"></span><span class="c"></span></div>
+<body${bodyAttr}>
+${ribbon}<div class="railbar" aria-hidden="true"><span class="a"></span><span class="b"></span><span class="c"></span></div>
 <header>
   <div class="wrap head">
     <div class="brand-left">
@@ -203,10 +213,11 @@ main{padding:26px 0 40px}
 <script src="/assets/room.js"></script>
 </body>
 </html>`;
+}
 
 export default async function handler(req, res) {
   await ensureSchema();
   const { investor } = await loadInvestor(req);
   if (!investor) return redirect(res, '/investor-login');
-  return sendHtml(res, 200, SHELL);
+  return sendHtml(res, 200, renderShell(null));
 }

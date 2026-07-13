@@ -43,11 +43,13 @@ const api = {
   '/api/admin/requests': (await import('../api/admin/requests.js')).default,
   '/api/admin/logs': (await import('../api/admin/logs.js')).default,
   '/api/admin/documents': (await import('../api/admin/documents.js')).default,
+  '/api/admin/preview-room': (await import('../api/admin/preview-room.js')).default,
   '/api/admin/bootstrap': (await import('../api/admin/bootstrap.js')).default,
 };
 const pages = {
   '/investor-room': (await import('../api/page-room.js')).default,
   '/investor-console': (await import('../api/page-console.js')).default,
+  '/investor-console/preview': (await import('../api/page-room-preview.js')).default,
 };
 
 const CT = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.css': 'text/css; charset=utf-8', '.woff2': 'font/woff2', '.svg': 'image/svg+xml', '.png': 'image/png', '.jpg': 'image/jpeg', '.ico': 'image/x-icon', '.txt': 'text/plain; charset=utf-8', '.json': 'application/json', '.webmanifest': 'application/manifest+json' };

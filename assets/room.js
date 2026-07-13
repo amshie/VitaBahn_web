@@ -28,8 +28,14 @@
 
   var state = { data: null, active: 'overview', search: '' };
 
+  // Founder read-only preview: when the shell carries data-preview-investor, the
+  // page is being viewed by an admin previewing that investor. It pulls the SAME
+  // computed view from the admin-gated endpoint and disables investor-only actions.
+  var PREVIEW = document.body.getAttribute('data-preview-investor') || null;
+  var OVERVIEW_URL = PREVIEW ? '/api/admin/preview-room?investorId=' + encodeURIComponent(PREVIEW) : '/api/room/overview';
+
   function $(id) { return document.getElementById(id); }
-  function toLogin() { window.location.href = '/investor-login'; }
+  function toLogin() { window.location.href = PREVIEW ? '/founder-login' : '/investor-login'; }
 
   // Minimal safe hyperscript. String children become text nodes. `attrs.on<evt>`
   // adds a listener. No innerHTML path — icons use setIcon() with constant strings.
@@ -85,6 +91,7 @@
 
   // ---- open / download / request -----------------------------------------
   async function openDoc(id, btn) {
+    if (PREVIEW) { toast('Preview (read-only) — you see exactly what the investor sees.'); return; }
     var old = btn.textContent;
     btn.disabled = true; btn.textContent = 'Opening…';
     try {
@@ -107,6 +114,7 @@
   }
 
   function downloadDoc(id) {
+    if (PREVIEW) { toast('Preview (read-only) — you see exactly what the investor sees.'); return; }
     var a = document.createElement('a');
     a.href = '/api/room/document?id=' + encodeURIComponent(id) + '&dl=1';
     a.rel = 'noopener';
@@ -116,6 +124,7 @@
   }
 
   async function requestAccess(level, btn) {
+    if (PREVIEW) { toast('Preview (read-only) — investor actions are disabled here.'); return; }
     if (btn) btn.disabled = true;
     try {
       await fetch('/api/room/request-access', {
@@ -334,6 +343,7 @@
   });
 
   $('logoutBtn').addEventListener('click', async function () {
+    if (PREVIEW) { window.location.href = '/investor-console'; return; }
     try {
       await fetch('/api/auth/logout', { method: 'POST', credentials: 'same-origin', headers: { 'Content-Type': 'application/json' }, body: '{}' });
     } catch (e) { /* fall through to redirect */ }
@@ -342,12 +352,13 @@
 
   async function load() {
     var r;
-    try { r = await fetch('/api/room/overview', { credentials: 'same-origin' }); }
+    try { r = await fetch(OVERVIEW_URL, { credentials: 'same-origin' }); }
     catch (e) { return toast('Could not reach the data room. Please retry.'); }
     if (r.status === 401) return toLogin();
     var j = await r.json().catch(function () { return null; });
     if (!j || !j.ok) return toLogin();
     state.data = j;
+    if (PREVIEW) $('logoutBtn').textContent = 'Close preview';
     render();
   }
 
