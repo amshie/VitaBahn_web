@@ -3,6 +3,7 @@
   "cleanUrls": true,
   "rewrites": [
     { "source": "/investor-room", "destination": "/api/page-room" },
+    { "source": "/investor-console/preview", "destination": "/api/page-room-preview" },
     { "source": "/investor-console", "destination": "/api/page-console" }
   ],
   "headers": [
@@ -34,6 +35,7 @@
     { "source": "/founder-login", "headers": [ { "key": "X-Robots-Tag", "value": "noindex, nofollow" } ] },
     { "source": "/request-submitted", "headers": [ { "key": "X-Robots-Tag", "value": "noindex, nofollow" } ] },
     { "source": "/investor-room", "headers": [ { "key": "X-Robots-Tag", "value": "noindex, nofollow" } ] },
-    { "source": "/investor-console", "headers": [ { "key": "X-Robots-Tag", "value": "noindex, nofollow" } ] }
+    { "source": "/investor-console", "headers": [ { "key": "X-Robots-Tag", "value": "noindex, nofollow" } ] },
+    { "source": "/investor-console/preview", "headers": [ { "key": "X-Robots-Tag", "value": "noindex, nofollow" } ] }
   ]
 }

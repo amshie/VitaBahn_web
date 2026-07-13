@@ -15,6 +15,8 @@ import adminInvite from '../api/admin/invite.js';
 import adminRequests from '../api/admin/requests.js';
 import adminDocuments from '../api/admin/documents.js';
 import roomDocument from '../api/room/document.js';
+import previewRoom from '../api/admin/preview-room.js';
+import roomOverview from '../api/room/overview.js';
 
 const ADMIN_PW = 'Founder-Console-Pass-1';
 
@@ -193,4 +195,63 @@ test('access requests are listable and provisioning marks the request approved',
   assert.equal(prov.json_().ok, true);
   const reqs = await store.listAccessRequests();
   assert.equal(reqs[0].status, 'approved');
+});
+
+// ---- Founder "view as investor" preview -----------------------------------
+async function seedInvestorA() {
+  await store.insertDocument({ id: 'D-open', title: 'One-Pager', minLevel: 2, tier: 1, contentType: 'application/pdf', size: 3, bytes: Buffer.from('ONE') });
+  await store.insertDocument({ id: 'D-nda', title: 'Financial Model', minLevel: 3, tier: 2, contentType: 'application/pdf', size: 3, bytes: Buffer.from('FIN') });
+  await store.insertDocument({ id: 'D-lead', title: 'Cap Table', minLevel: 4, tier: 2, contentType: 'application/pdf', size: 3, bytes: Buffer.from('CAP') });
+  const id = await store.createInvestor({ email: 'a@fund.vc', name: 'Investor A', accessLevel: 3 });
+  await store.updateInvestor(id, { passwordHash: hashPassword('Investor-Pass-1'), ndaSigned: true });
+  return id;
+}
+
+test('preview-room is founder-only (anonymous + investor sessions rejected)', async () => {
+  await seedAdmin();
+  const invId = await seedInvestorA();
+  // anonymous
+  let r = mockRes(); await previewRoom(mockReq({ method: 'GET', query: { investorId: String(invId) } }), r);
+  assert.equal(r.statusCode, 401);
+  // an investor session must not reach the founder preview
+  const ilog = mockRes();
+  await investorLogin(mockReq({ method: 'POST', headers: { origin: TEST_ORIGIN }, body: { email: 'a@fund.vc', password: 'Investor-Pass-1' } }), ilog);
+  const invCookie = cookieFromRes(ilog, 'vb_inv');
+  r = mockRes(); await previewRoom(mockReq({ method: 'GET', cookies: { vb_inv: invCookie }, query: { investorId: String(invId) } }), r);
+  assert.equal(r.statusCode, 401);
+});
+
+test('preview-room returns 404 for an unknown investor', async () => {
+  await seedAdmin();
+  const cookie = await adminCookie();
+  const r = mockRes(); await previewRoom(asAdmin(cookie, { method: 'GET', query: { investorId: '99999' } }), r);
+  assert.equal(r.statusCode, 404);
+});
+
+test('preview-room shows EXACTLY the investor view (matches /api/room/overview) and is logged', async () => {
+  await seedAdmin();
+  const invId = await seedInvestorA();
+  // The investor's own view.
+  const ilog = mockRes();
+  await investorLogin(mockReq({ method: 'POST', headers: { origin: TEST_ORIGIN }, body: { email: 'a@fund.vc', password: 'Investor-Pass-1' } }), ilog);
+  const invCookie = cookieFromRes(ilog, 'vb_inv');
+  const ov = mockRes(); await roomOverview(mockReq({ cookies: { vb_inv: invCookie } }), ov);
+  const ovJson = ov.json_();
+  // The founder's preview of that same investor.
+  const cookie = await adminCookie();
+  const pv = mockRes(); await previewRoom(asAdmin(cookie, { method: 'GET', query: { investorId: String(invId) } }), pv);
+  assert.equal(pv.statusCode, 200);
+  const pvJson = pv.json_();
+  // Founder sees the investor's exact sections + access grant.
+  assert.deepEqual(pvJson.sections, ovJson.sections);
+  assert.deepEqual(pvJson.access, ovJson.access);
+  assert.equal(pvJson.preview.investorId, invId);
+  assert.equal(pvJson.preview.email, 'a@fund.vc');
+  // L3+NDA: 1-3 unlocked, 4 gated, and no higher-tier document name leaks.
+  assert.equal(pvJson.sections.find((s) => s.level === 3).state, 'unlocked');
+  assert.equal(pvJson.sections.find((s) => s.level === 4).state, 'gate');
+  assert.equal(JSON.stringify(pvJson).includes('Cap Table'), false);
+  // The preview is written to the audit log.
+  const logs = await store.listLogs({ limit: 20 });
+  assert.equal(logs.some((l) => l.event === 'admin_action' && /previewed data room as a@fund\.vc/.test(l.detail)), true);
 });

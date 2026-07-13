@@ -104,6 +104,7 @@
       '<div class="row" style="margin-bottom:8px">' +
         '<button class="tog gold ' + (i.ndaSigned ? 'on' : '') + '" data-tog="ndaSigned">NDA signed</button>' +
         '<button class="tog ' + (i.meetingBooked ? 'on' : '') + '" data-tog="meetingBooked">Meeting booked</button>' +
+        '<button class="btn btn-teal" id="viewRoom">View data room ↗</button>' +
         (i.revoked ? '<button class="btn" id="reinstate">Reinstate access</button>' : '<button class="btn btn-red" id="revoke">Revoke access</button>') +
         '<button class="btn" id="sendInvite">' + (i.hasPassword ? 'Reset password (email link)' : 'Send set-password link') + '</button>' +
         '<button class="btn btn-red" id="deleteInv" style="margin-left:auto">Delete investor</button>' +
@@ -209,6 +210,7 @@
 
   $('detail').addEventListener('click', async function (e) {
     var i = inv(); if (!i) return;
+    if (e.target.id === 'viewRoom') { window.open('/investor-console/preview?investorId=' + i.id, '_blank', 'noopener'); return; }
     if (e.target.id === 'deleteInv') {
       if (confirm('Permanently DELETE ' + i.name + ' (' + i.email + ')?\n\nThis removes the account, their access grant, and their entire access-log history. This cannot be undone.')) {
         try { await api('DELETE', '/api/admin/investors', { id: i.id }); state.selectedId = null; await loadInvestorsAndLogs(); renderAll(); toast('Investor permanently deleted.'); }
