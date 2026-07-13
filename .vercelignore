@@ -1,0 +1,4 @@
+# Not part of the deployed app.
+test/
+*.test.js
+vitabahn-investor-access-implementation-prompt.md

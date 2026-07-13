@@ -1,0 +1,154 @@
+// Founder console backend: Level-0 separation, named approval for L4/L5,
+// provisioning, revocation, document upload, request review.
+import { mockReq, mockRes, cookieFromRes, TEST_ORIGIN } from './helpers.js';
+import test from 'node:test';
+import assert from 'node:assert/strict';
+
+import { ensureSchema, resetDbForTests } from '../api/_lib/db.js';
+import * as store from '../api/_lib/store.js';
+import { hashPassword } from '../api/_lib/auth.js';
+
+import adminLogin from '../api/auth/admin-login.js';
+import investorLogin from '../api/auth/investor-login.js';
+import adminInvestors from '../api/admin/investors.js';
+import adminRequests from '../api/admin/requests.js';
+import adminDocuments from '../api/admin/documents.js';
+import roomDocument from '../api/room/document.js';
+
+const ADMIN_PW = 'Founder-Console-Pass-1';
+
+async function seedAdmin() {
+  await store.createAdmin({ email: 'founder@vitabahn.com', name: 'Founder', passwordHash: hashPassword(ADMIN_PW) });
+}
+async function adminCookie() {
+  const res = mockRes();
+  await adminLogin(mockReq({ method: 'POST', headers: { origin: TEST_ORIGIN }, body: { email: 'founder@vitabahn.com', password: ADMIN_PW } }), res);
+  return cookieFromRes(res, 'vb_adm');
+}
+const asAdmin = (cookie, extra = {}) => mockReq({ cookies: { vb_adm: cookie }, headers: { origin: TEST_ORIGIN }, ...extra });
+
+test.before(async () => { await ensureSchema(); });
+test.beforeEach(async () => { await resetDbForTests(); });
+
+test('admin endpoints reject anonymous and investor sessions (Level-0 separation)', async () => {
+  await seedAdmin();
+  // anonymous
+  let r = mockRes(); await adminInvestors(mockReq({ method: 'GET' }), r); assert.equal(r.statusCode, 401);
+  // an investor session must not reach the console API
+  const invId = await store.createInvestor({ email: 'inv@fund.vc', name: 'Inv', accessLevel: 2 });
+  await store.updateInvestor(invId, { passwordHash: hashPassword('Investor-Pass-1') });
+  const ilog = mockRes();
+  await investorLogin(mockReq({ method: 'POST', headers: { origin: TEST_ORIGIN }, body: { email: 'inv@fund.vc', password: 'Investor-Pass-1' } }), ilog);
+  const invCookie = cookieFromRes(ilog, 'vb_inv');
+  r = mockRes(); await adminInvestors(mockReq({ method: 'GET', cookies: { vb_inv: invCookie } }), r);
+  assert.equal(r.statusCode, 401);
+});
+
+test('admin login: wrong password 401 + logged; right password sets vb_adm', async () => {
+  await seedAdmin();
+  const bad = mockRes(); await adminLogin(mockReq({ method: 'POST', headers: { origin: TEST_ORIGIN }, body: { email: 'founder@vitabahn.com', password: 'nope' } }), bad);
+  assert.equal(bad.statusCode, 401);
+  const cookie = await adminCookie();
+  assert.ok(cookie);
+  const logs = await store.listLogs({ limit: 10 });
+  assert.equal(logs.some((l) => l.event === 'login_failed' && l.detail === 'admin'), true);
+  assert.equal(logs.some((l) => l.event === 'login_success' && l.detail === 'console'), true);
+});
+
+test('provisioning creates a working investor login and returns a one-time password', async () => {
+  await seedAdmin();
+  const cookie = await adminCookie();
+  const res = mockRes();
+  await adminInvestors(asAdmin(cookie, { method: 'POST', body: { email: 'new@fund.vc', name: 'New Investor', accessLevel: 2 } }), res);
+  const j = res.json_();
+  assert.equal(j.ok, true);
+  assert.ok(j.tempPassword && j.tempPassword.length >= 10);
+  // the new investor can log in with the issued password
+  const login = mockRes();
+  await investorLogin(mockReq({ method: 'POST', headers: { origin: TEST_ORIGIN }, body: { email: 'new@fund.vc', password: j.tempPassword } }), login);
+  assert.equal(login.statusCode, 200);
+});
+
+test('Level 4/5 requires a named approver', async () => {
+  await seedAdmin();
+  const cookie = await adminCookie();
+  const id = await store.createInvestor({ email: 'lead@fund.vc', name: 'Lead', accessLevel: 3 });
+
+  const no = mockRes();
+  await adminInvestors(asAdmin(cookie, { method: 'PATCH', body: { id, changes: { accessLevel: 4 } } }), no);
+  assert.equal(no.statusCode, 400);
+  assert.equal((await store.getInvestorById(id)).accessLevel, 3); // unchanged
+
+  const yes = mockRes();
+  await adminInvestors(asAdmin(cookie, { method: 'PATCH', body: { id, changes: { accessLevel: 4, approvedBy: 'A. Founder' } } }), yes);
+  assert.equal(yes.statusCode, 200);
+  const upd = await store.getInvestorById(id);
+  assert.equal(upd.accessLevel, 4);
+  assert.equal(upd.approvedBy, 'A. Founder');
+  assert.equal(upd.approvedLevel, 4);
+  const logs = await store.listLogs({ limit: 10 });
+  assert.equal(logs.some((l) => l.event === 'admin_action' && /approved by A\. Founder/.test(l.detail)), true);
+});
+
+test('access_level 0 can never be assigned to an investor', async () => {
+  await seedAdmin();
+  const cookie = await adminCookie();
+  const id = await store.createInvestor({ email: 'x@fund.vc', name: 'X', accessLevel: 2 });
+  const res = mockRes();
+  await adminInvestors(asAdmin(cookie, { method: 'PATCH', body: { id, changes: { accessLevel: 0 } } }), res);
+  assert.equal(res.statusCode, 400);
+  assert.equal((await store.getInvestorById(id)).accessLevel, 2);
+});
+
+test('revoke via console locks the investor out of document serving', async () => {
+  await seedAdmin();
+  const cookie = await adminCookie();
+  const id = await store.createInvestor({ email: 'r@fund.vc', name: 'R', accessLevel: 3 });
+  await store.updateInvestor(id, { ndaSigned: true, passwordHash: hashPassword('Investor-Pass-1') });
+  await store.insertDocument({ id: 'D-nda', title: 'Model', minLevel: 3, tier: 2, contentType: 'application/pdf', size: 3, bytes: Buffer.from('FIN') });
+  // investor logs in and can view
+  const ilog = mockRes();
+  await investorLogin(mockReq({ method: 'POST', headers: { origin: TEST_ORIGIN }, body: { email: 'r@fund.vc', password: 'Investor-Pass-1' } }), ilog);
+  const invCookie = cookieFromRes(ilog, 'vb_inv');
+  let d = mockRes(); await roomDocument(mockReq({ cookies: { vb_inv: invCookie }, query: { id: 'D-nda' } }), d);
+  assert.equal(d.statusCode, 200);
+  // admin revokes
+  const rv = mockRes();
+  await adminInvestors(asAdmin(cookie, { method: 'PATCH', body: { id, changes: { revoked: true } } }), rv);
+  assert.equal(rv.statusCode, 200);
+  // same session now denied
+  d = mockRes(); await roomDocument(mockReq({ cookies: { vb_inv: invCookie }, query: { id: 'D-nda' } }), d);
+  assert.equal(d.statusCode, 401);
+});
+
+test('document upload stores bytes served only via the authorised route; list leaks no bytes', async () => {
+  await seedAdmin();
+  const cookie = await adminCookie();
+  const pdf = Buffer.from('%PDF-1.4 fake');
+  const up = mockRes();
+  await adminDocuments(asAdmin(cookie, { method: 'POST', query: { title: 'Cap Table', minLevel: '4', filename: 'cap.pdf', contentType: 'application/pdf' }, body: pdf }), up);
+  const j = up.json_();
+  assert.equal(j.ok, true);
+  assert.equal(j.document.minLevel, 4);
+  // GET returns metadata only
+  const list = mockRes(); await adminDocuments(asAdmin(cookie, { method: 'GET' }), list);
+  const doc = list.json_().documents.find((x) => x.id === j.document.id);
+  assert.equal('bytes' in doc, false);
+  // bytes are retrievable through the store (used by the authorised room route)
+  const withBytes = await store.getDocumentWithBytes(j.document.id);
+  assert.equal(withBytes.bytes.toString(), '%PDF-1.4 fake');
+});
+
+test('access requests are listable and provisioning marks the request approved', async () => {
+  await seedAdmin();
+  const cookie = await adminCookie();
+  await store.insertAccessRequest({ requestId: 'VB-20260712-ABCDE', fullName: 'Omar', email: 'o@gulf.cap', organisation: 'Gulf', ticketRange: 'major', roleInRound: 'Anchor investor', meetingType: 'qualified40' });
+  const listed = mockRes(); await adminRequests(asAdmin(cookie, { method: 'GET' }), listed);
+  assert.equal(listed.json_().requests.length, 1);
+
+  const prov = mockRes();
+  await adminInvestors(asAdmin(cookie, { method: 'POST', body: { email: 'o@gulf.cap', name: 'Omar', accessLevel: 2, requestId: 'VB-20260712-ABCDE' } }), prov);
+  assert.equal(prov.json_().ok, true);
+  const reqs = await store.listAccessRequests();
+  assert.equal(reqs[0].status, 'approved');
+});
