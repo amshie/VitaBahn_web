@@ -41,8 +41,9 @@ export default async function handler(req, res) {
     const filename = clean(q.filename, 160);
     const title = clean(q.title, 160) || filename || 'Untitled document';
     const contentType = clean(q.contentType, 100) || req.headers['content-type'] || 'application/octet-stream';
+    const pages = clean(q.pages, 40); // optional display label, e.g. "22 pages" / "6 tabs"
     const id = 'D' + Date.now().toString(36) + crypto.randomBytes(3).toString('hex');
-    const doc = await insertDocument({ id, title, minLevel, tier: tierForLevel(minLevel), contentType, size: buf.length, bytes: buf });
+    const doc = await insertDocument({ id, title, minLevel, tier: tierForLevel(minLevel), contentType, size: buf.length, pages, bytes: buf });
     await logEvent({ actorType: 'admin', actorId: admin.id, email: admin.email, event: 'admin_action', detail: `uploaded "${title}" (level ${minLevel}, ${buf.length} B)`, ip, userAgent: ua });
     return sendJson(res, 200, { ok: true, document: doc });
   }
@@ -55,6 +56,7 @@ export default async function handler(req, res) {
     const c = body.changes || {};
     const patch = {};
     if ('title' in c) patch.title = clean(c.title, 160) || meta.title;
+    if ('pages' in c) patch.pages = clean(c.pages, 40);
     if ('minLevel' in c) {
       const lvl = Number(c.minLevel);
       if (!validLevel(lvl)) return sendJson(res, 400, { ok: false, error: 'minLevel must be 1–5.' });

@@ -57,7 +57,9 @@ function mapDoc(r) {
     tier: Number(r.tier),
     contentType: r.content_type,
     size: Number(r.size || 0),
+    pages: r.pages || '',
     addedAt: iso(r.added_at),
+    updatedAt: iso(r.updated_at),
   };
 }
 
@@ -278,7 +280,7 @@ export async function setRequestStatus(requestId, status) {
 // Metadata only (never selects bytes) — for the console and the room listing.
 export async function listDocuments() {
   const { rows } = await query(
-    'SELECT id, title, min_level, tier, content_type, size, added_at FROM documents ORDER BY min_level ASC, added_at DESC'
+    'SELECT id, title, min_level, tier, content_type, size, pages, added_at, updated_at FROM documents ORDER BY min_level ASC, updated_at DESC'
   );
   return rows.map(mapDoc);
 }
@@ -286,7 +288,7 @@ export async function listDocuments() {
 // Documents an investor at `level` is authorised to see (min_level <= level).
 export async function listDocumentsForLevel(level) {
   const { rows } = await query(
-    'SELECT id, title, min_level, tier, content_type, size, added_at FROM documents WHERE min_level <= $1 ORDER BY min_level ASC, added_at DESC',
+    'SELECT id, title, min_level, tier, content_type, size, pages, added_at, updated_at FROM documents WHERE min_level <= $1 ORDER BY min_level ASC, updated_at DESC',
     [Number(level)]
   );
   return rows.map(mapDoc);
@@ -294,7 +296,7 @@ export async function listDocumentsForLevel(level) {
 
 export async function getDocumentMeta(id) {
   const { rows } = await query(
-    'SELECT id, title, min_level, tier, content_type, size, added_at FROM documents WHERE id = $1',
+    'SELECT id, title, min_level, tier, content_type, size, pages, added_at, updated_at FROM documents WHERE id = $1',
     [id]
   );
   return rows[0] ? mapDoc(rows[0]) : null;
@@ -310,13 +312,13 @@ export async function getDocumentWithBytes(id) {
 
 export async function insertDocument(d) {
   await query(
-    'INSERT INTO documents (id, title, min_level, tier, content_type, size, bytes) VALUES ($1,$2,$3,$4,$5,$6,$7)',
-    [d.id, d.title, Number(d.minLevel), Number(d.tier), d.contentType || 'application/octet-stream', Number(d.size || 0), d.bytes || null]
+    'INSERT INTO documents (id, title, min_level, tier, content_type, size, pages, bytes) VALUES ($1,$2,$3,$4,$5,$6,$7,$8)',
+    [d.id, d.title, Number(d.minLevel), Number(d.tier), d.contentType || 'application/octet-stream', Number(d.size || 0), d.pages || '', d.bytes || null]
   );
   return getDocumentMeta(d.id);
 }
 
-const DOC_PATCH = { title: 'title', minLevel: 'min_level', tier: 'tier' };
+const DOC_PATCH = { title: 'title', minLevel: 'min_level', tier: 'tier', pages: 'pages' };
 export async function updateDocument(id, patch) {
   const sets = [];
   const vals = [];
@@ -328,6 +330,8 @@ export async function updateDocument(id, patch) {
     }
   }
   if (!sets.length) return getDocumentMeta(id);
+  // Any catalogue change (metadata or a re-upload) counts as an update for the room.
+  sets.push('updated_at = now()');
   vals.push(id);
   await query(`UPDATE documents SET ${sets.join(', ')} WHERE id = $${i}`, vals);
   return getDocumentMeta(id);
@@ -354,6 +358,17 @@ export async function listLogs({ limit = 200, actorId = null } = {}) {
     ? await query('SELECT * FROM access_logs WHERE actor_id = $1 ORDER BY created_at DESC LIMIT $2', [actorId, limit])
     : await query('SELECT * FROM access_logs ORDER BY created_at DESC LIMIT $1', [limit]);
   return rows.map(mapLog);
+}
+
+// Set of document ids this investor has actually opened (from the audit log), so
+// the room can mark each row viewed / not-viewed per user. Derived data — no new
+// column, and it can never reveal a document the investor was not served.
+export async function viewedDocIdsByInvestor(investorId) {
+  const { rows } = await query(
+    "SELECT DISTINCT document_id FROM access_logs WHERE actor_type = 'investor' AND actor_id = $1 AND event = 'document_view' AND document_id IS NOT NULL",
+    [investorId]
+  );
+  return new Set(rows.map((r) => r.document_id));
 }
 
 // Per-investor engagement, aggregated from the audit log, for the console lead

@@ -7,8 +7,13 @@
 import { sendJson, clientIp, userAgent } from '../_lib/http.js';
 import { ensureSchema, getDocumentMeta, getDocumentWithBytes, logEvent } from '../_lib/store.js';
 import { loadInvestor } from '../_lib/auth.js';
+import { looksLikePdf, watermarkPdf } from '../_lib/watermark.js';
 
 const NDA_MIN_LEVEL = 3;
+// Documents at the NDA tier (min_level >= 3) are view-only: the room hides their
+// download control and this route refuses an explicit download of them, matching
+// the mockup's download-restricted rule. Open-tier docs (1–2) may be downloaded.
+const isViewOnly = (minLevel) => minLevel >= NDA_MIN_LEVEL;
 
 function safeFilename(title, contentType) {
   const base = String(title || 'document').replace(/[^\w.\- ]+/g, '_').slice(0, 100).trim() || 'document';
@@ -48,21 +53,42 @@ export default async function handler(req, res) {
     return sendJson(res, 403, { ok: false, error: 'An executed NDA is required for this document.' });
   }
 
+  // Download vs inline view. NDA-tier documents are view-only: an explicit
+  // download is refused (and logged), so there is no one-click path to a pristine,
+  // un-watermarked copy of restricted material.
+  const wantsDownload = Boolean((req.query && req.query.dl) || new URL(req.url, 'http://x').searchParams.get('dl'));
+  if (wantsDownload && isViewOnly(meta.minLevel)) {
+    await logEvent({ actorType: 'investor', actorId: investor.id, email: investor.email, event: 'document_denied', documentId: id, detail: 'download-restricted (view-only tier)', ip, userAgent: ua });
+    return sendJson(res, 403, { ok: false, error: 'This document is view-only at its tier; download is restricted.' });
+  }
+
   const full = await getDocumentWithBytes(id);
   if (!full || !full.bytes) {
     await logEvent({ actorType: 'investor', actorId: investor.id, email: investor.email, event: 'document_denied', documentId: id, detail: 'no-bytes', ip, userAgent: ua });
     return sendJson(res, 404, { ok: false, error: 'Document has no stored content.' });
   }
 
-  const disposition = (req.query && req.query.dl) || (new URL(req.url, 'http://x').searchParams.get('dl')) ? 'attachment' : 'inline';
+  // Per-recipient watermark. PDFs are stamped with the authenticated investor's
+  // identity + timestamp before the bytes leave the server, so any leaked copy is
+  // traceable. Non-PDFs cannot be stamped in place and are served as-is (still
+  // access-controlled, view-only and logged).
+  let outBytes = full.bytes;
+  let watermarked = false;
+  if (looksLikePdf(full.bytes, full.contentType)) {
+    const wm = await watermarkPdf(full.bytes, { name: investor.name, email: investor.email, when: new Date().toISOString() });
+    outBytes = wm.bytes;
+    watermarked = wm.applied;
+  }
+
+  const disposition = wantsDownload ? 'attachment' : 'inline';
   res.statusCode = 200;
   res.setHeader('Content-Type', full.contentType || 'application/octet-stream');
-  res.setHeader('Content-Length', full.bytes.length);
+  res.setHeader('Content-Length', outBytes.length);
   res.setHeader('Content-Disposition', `${disposition}; filename="${safeFilename(full.title, full.contentType)}"`);
   res.setHeader('Cache-Control', 'private, no-store');
   res.setHeader('X-Content-Type-Options', 'nosniff');
   res.setHeader('X-Robots-Tag', 'noindex, nofollow');
 
-  await logEvent({ actorType: 'investor', actorId: investor.id, email: investor.email, event: 'document_view', documentId: id, detail: `${full.title} (${disposition})`, ip, userAgent: ua });
-  return res.end(full.bytes);
+  await logEvent({ actorType: 'investor', actorId: investor.id, email: investor.email, event: 'document_view', documentId: id, detail: `${full.title} (${disposition}${watermarked ? ', watermarked' : ''})`, ip, userAgent: ua });
+  return res.end(outBytes);
 }
