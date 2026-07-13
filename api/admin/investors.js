@@ -10,7 +10,7 @@ import { sendJson, readJsonBody, clientIp, userAgent, requireOrigin, baseUrl } f
 import { normaliseEmail, clean } from '../_lib/validate.js';
 import {
   ensureSchema, listInvestors, getInvestorById, createInvestor, updateInvestor,
-  deleteInvestor, engagementByInvestor, setRequestStatus, createInvite, logEvent,
+  deleteInvestor, engagementByInvestor, latestNdaByInvestor, setRequestStatus, createInvite, logEvent,
 } from '../_lib/store.js';
 import { loadAdmin } from '../_lib/auth.js';
 import { sendInviteEmail } from '../_lib/mail.js';
@@ -38,10 +38,10 @@ export default async function handler(req, res) {
 
   // ---- GET: list ----
   if (req.method === 'GET') {
-    const [investors, eng] = await Promise.all([listInvestors(), engagementByInvestor()]);
+    const [investors, eng, ndas] = await Promise.all([listInvestors(), engagementByInvestor(), latestNdaByInvestor()]);
     const out = investors.map((inv) => {
       const e = eng.get(inv.id);
-      return { ...inv, docViews: e ? e.views : 0, lastActivityAt: e ? e.lastAt : inv.createdAt, score: leadScore(inv, e) };
+      return { ...inv, docViews: e ? e.views : 0, lastActivityAt: e ? e.lastAt : inv.createdAt, score: leadScore(inv, e), ndaSubmission: ndas.get(inv.id) || null };
     });
     return sendJson(res, 200, { ok: true, investors: out });
   }

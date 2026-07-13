@@ -60,6 +60,7 @@ function mapDoc(r) {
     contentType: r.content_type,
     size: Number(r.size || 0),
     pages: r.pages || '',
+    isNdaTemplate: r.is_nda_template === true || r.is_nda_template === 't',
     addedAt: iso(r.added_at),
     updatedAt: iso(r.updated_at),
   };
@@ -195,6 +196,7 @@ export async function updateInvestor(id, patch) {
 export async function deleteInvestor(id) {
   await query("DELETE FROM access_logs WHERE actor_id = $1 AND actor_type = 'investor'", [id]);
   await query('DELETE FROM invites WHERE investor_id = $1', [id]);
+  await query('DELETE FROM nda_submissions WHERE investor_id = $1', [id]);
   await query('DELETE FROM investors WHERE id = $1', [id]);
 }
 
@@ -282,7 +284,7 @@ export async function setRequestStatus(requestId, status) {
 // Metadata only (never selects bytes) — for the console and the room listing.
 export async function listDocuments() {
   const { rows } = await query(
-    'SELECT id, title, min_level, tier, content_type, size, pages, added_at, updated_at FROM documents ORDER BY min_level ASC, updated_at DESC'
+    'SELECT id, title, min_level, tier, content_type, size, pages, is_nda_template, added_at, updated_at FROM documents ORDER BY min_level ASC, updated_at DESC'
   );
   return rows.map(mapDoc);
 }
@@ -290,7 +292,7 @@ export async function listDocuments() {
 // Documents an investor at `level` is authorised to see (min_level <= level).
 export async function listDocumentsForLevel(level) {
   const { rows } = await query(
-    'SELECT id, title, min_level, tier, content_type, size, pages, added_at, updated_at FROM documents WHERE min_level <= $1 ORDER BY min_level ASC, updated_at DESC',
+    'SELECT id, title, min_level, tier, content_type, size, pages, is_nda_template, added_at, updated_at FROM documents WHERE min_level <= $1 ORDER BY min_level ASC, updated_at DESC',
     [Number(level)]
   );
   return rows.map(mapDoc);
@@ -298,7 +300,7 @@ export async function listDocumentsForLevel(level) {
 
 export async function getDocumentMeta(id) {
   const { rows } = await query(
-    'SELECT id, title, min_level, tier, content_type, size, pages, added_at, updated_at FROM documents WHERE id = $1',
+    'SELECT id, title, min_level, tier, content_type, size, pages, is_nda_template, added_at, updated_at FROM documents WHERE id = $1',
     [id]
   );
   return rows[0] ? mapDoc(rows[0]) : null;
@@ -341,6 +343,88 @@ export async function updateDocument(id, patch) {
 
 export async function deleteDocument(id) {
   await query('DELETE FROM documents WHERE id = $1', [id]);
+}
+
+// The NDA template = the single document flagged is_nda_template, that investors
+// download to sign. Setting one clears the flag on any other (at most one template).
+export async function setNdaTemplate(id) {
+  await query('UPDATE documents SET is_nda_template = false WHERE is_nda_template = true');
+  if (id) await query('UPDATE documents SET is_nda_template = true WHERE id = $1', [id]);
+  return getNdaTemplate();
+}
+export async function getNdaTemplate() {
+  const { rows } = await query(
+    'SELECT id, title, min_level, tier, content_type, size, pages, is_nda_template, added_at, updated_at FROM documents WHERE is_nda_template = true ORDER BY updated_at DESC LIMIT 1'
+  );
+  return rows[0] ? mapDoc(rows[0]) : null;
+}
+
+// -------------------------------------------------------- NDA submissions
+function mapNda(r) {
+  if (!r) return null;
+  return {
+    id: r.id,
+    investorId: r.investor_id,
+    filename: r.filename,
+    contentType: r.content_type,
+    size: Number(r.size || 0),
+    status: r.status,
+    submittedAt: iso(r.submitted_at),
+    reviewedAt: iso(r.reviewed_at),
+    reviewedBy: r.reviewed_by || null,
+  };
+}
+
+// Store a freshly-submitted signed NDA; any prior still-pending submission from the
+// same investor is marked superseded so only the newest is actionable.
+export async function insertNdaSubmission({ investorId, filename, contentType, size, bytes }) {
+  await query("UPDATE nda_submissions SET status = 'superseded' WHERE investor_id = $1 AND status = 'submitted'", [investorId]);
+  const { rows } = await query(
+    'INSERT INTO nda_submissions (investor_id, filename, content_type, size, bytes) VALUES ($1,$2,$3,$4,$5) RETURNING id',
+    [investorId, filename || '', contentType || 'application/pdf', Number(size || 0), bytes || null]
+  );
+  return rows[0].id;
+}
+
+export async function getLatestNdaSubmission(investorId) {
+  const { rows } = await query(
+    'SELECT id, investor_id, filename, content_type, size, status, submitted_at, reviewed_at, reviewed_by FROM nda_submissions WHERE investor_id = $1 ORDER BY submitted_at DESC LIMIT 1',
+    [investorId]
+  );
+  return rows[0] ? mapNda(rows[0]) : null;
+}
+
+export async function getNdaSubmissionWithBytes(id) {
+  const { rows } = await query('SELECT * FROM nda_submissions WHERE id = $1', [id]);
+  const r = rows[0];
+  if (!r) return null;
+  return { ...mapNda(r), bytes: r.bytes == null ? null : Buffer.from(r.bytes) };
+}
+
+// Latest NDA submission per investor (id + status + date), for the console list.
+export async function latestNdaByInvestor() {
+  const { rows } = await query(
+    'SELECT DISTINCT ON (investor_id) investor_id, id, status, submitted_at FROM nda_submissions ORDER BY investor_id, submitted_at DESC'
+  );
+  const out = new Map();
+  for (const r of rows) out.set(Number(r.investor_id), { id: r.id, status: r.status, submittedAt: iso(r.submitted_at) });
+  return out;
+}
+
+// Accept/reject a submission. Accepting also flips the investor's nda_signed grant
+// (the single source of truth the room enforces on). Returns the investor id.
+export async function setNdaSubmissionStatus(id, status, reviewedBy) {
+  const { rows } = await query(
+    'UPDATE nda_submissions SET status = $1, reviewed_at = now(), reviewed_by = $2 WHERE id = $3 RETURNING investor_id',
+    [status, reviewedBy || null, id]
+  );
+  const investorId = rows[0] && rows[0].investor_id;
+  if (investorId && status === 'accepted') {
+    // Executing the NDA also opens Diligence (Level 3) — the NDA IS the L2→L3 gate.
+    // GREATEST keeps any higher level; it never assigns 4/5 (those need named approval).
+    await query('UPDATE investors SET nda_signed = true, nda_signed_at = now(), access_level = GREATEST(access_level, 3), updated_at = now() WHERE id = $1', [investorId]);
+  }
+  return investorId || null;
 }
 
 // ------------------------------------------------------------ access logs

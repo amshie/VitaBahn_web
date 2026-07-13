@@ -279,20 +279,74 @@
     ];
   }
 
+  function fmtShort(iso) {
+    if (!iso) return '';
+    var d = new Date(iso);
+    if (isNaN(d.getTime())) return '';
+    return d.toLocaleDateString(undefined, { day: '2-digit', month: 'short', year: 'numeric' });
+  }
+
+  function uploadSignedNda(file) {
+    if (PREVIEW) { toast('Preview (read-only) — investor actions are disabled here.'); return; }
+    var qs = '?filename=' + encodeURIComponent(file.name) + '&contentType=' + encodeURIComponent(file.type || 'application/pdf');
+    toast('Uploading your signed NDA…');
+    fetch('/api/room/nda' + qs, { method: 'POST', credentials: 'same-origin', headers: { 'Content-Type': file.type || 'application/pdf' }, body: file })
+      .then(function (r) { return r.json().catch(function () { return {}; }).then(function (j) { return { ok: r.ok, j: j }; }); })
+      .then(function (res) {
+        if (!res.ok) { toast((res.j && res.j.error) || 'Upload failed.'); return; }
+        toast('Signed NDA received — pending review. We will notify you when access opens.');
+        load(); // refresh so the gate reflects the submitted state
+      })
+      .catch(function () { toast('Upload failed. Please retry.'); });
+  }
+
+  function ndaUploadControl() {
+    var input = h('input', { type: 'file', accept: 'application/pdf,.pdf', style: 'display:none' });
+    var label = h('label', { class: 'nda-btn primary' }, 'Choose signed PDF…', input);
+    input.addEventListener('change', function () { var f = input.files && input.files[0]; if (f) uploadSignedNda(f); });
+    return label;
+  }
+
+  function ndaPanel() {
+    var nda = state.data.nda || {};
+    var rows = [];
+    if (nda.status === 'submitted') {
+      rows.push(h('div', { class: 'nda-status ok' }, 'Signed NDA received' + (nda.submittedAt ? ' on ' + fmtShort(nda.submittedAt) : '') + ' — pending review. We will notify you when Diligence access opens.'));
+      rows.push(h('div', { class: 'nda-step' }, h('span', { class: 'nda-hint' }, 'Need to replace it?'), ndaUploadControl()));
+    } else {
+      if (nda.rejected) rows.push(h('div', { class: 'nda-status warn' }, 'Your previous submission needs a corrected copy. Please re-upload your signed NDA.'));
+      if (nda.templateDocId) {
+        var dl = h('button', { class: 'nda-btn' }, 'Download the NDA');
+        dl.addEventListener('click', function () { downloadDoc(nda.templateDocId); });
+        rows.push(h('div', { class: 'nda-step' }, h('span', { class: 'nda-num' }, '1'), h('span', { class: 'nda-txt' }, 'Download and sign the NDA' + (nda.templateName ? ' (' + nda.templateName + ')' : '') + '.'), dl));
+      } else {
+        rows.push(h('div', { class: 'nda-step' }, h('span', { class: 'nda-num' }, '1'), h('span', { class: 'nda-txt' }, 'Your VitaBahn contact will provide the NDA to sign.')));
+      }
+      rows.push(h('div', { class: 'nda-step' }, h('span', { class: 'nda-num' }, '2'), h('span', { class: 'nda-txt' }, 'Upload your signed NDA as a PDF.'), ndaUploadControl()));
+    }
+    return h('div', { class: 'nda-panel' }, rows);
+  }
+
   function gateView(sec) {
     var g = sec.gate;
     if (!g) return [h('div', { class: 'noresults' }, 'Nothing to show.')];
     var iconName = g.kind === 'nda' ? 'lock' : g.kind === 'verify' ? 'check' : 'person';
-    var cta = h('button', { class: 'gate-cta' }, g.cta);
-    if (g.disabled) cta.disabled = true;
-    else cta.addEventListener('click', function () { requestAccess(sec.level, cta); });
+    var action;
+    if (g.kind === 'nda') {
+      action = ndaPanel();
+    } else {
+      var cta = h('button', { class: 'gate-cta' }, g.cta);
+      if (g.disabled) cta.disabled = true;
+      else cta.addEventListener('click', function () { requestAccess(sec.level, cta); });
+      action = cta;
+    }
     return [
       h('div', { class: 'crumb' }, 'Data room / ', h('b', {}, sec.title)),
       h('div', { class: 'ch' }, h('div', {}, h('h1', {}, sec.title), h('div', { class: 'cn' }, 'Level ' + sec.level + ' · access not yet granted.'))),
       h('div', { class: 'gate ' + g.kind },
         h('div', { class: 'gate-h' }, setIcon(h('div', { class: 'gate-ic' }), iconName), h('h2', {}, g.title)),
         h('p', {}, g.body),
-        cta,
+        action,
         h('div', { class: 'gate-note' }, g.note)),
       conf()
     ];

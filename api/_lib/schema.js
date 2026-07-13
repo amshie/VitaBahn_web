@@ -105,7 +105,9 @@ CREATE TABLE IF NOT EXISTS documents (
   bytes        BYTEA,
   added_at     TIMESTAMPTZ NOT NULL DEFAULT now(),
   -- Last content/metadata change; drives the room's "Updated" column + "Recently updated".
-  updated_at   TIMESTAMPTZ NOT NULL DEFAULT now()
+  updated_at   TIMESTAMPTZ NOT NULL DEFAULT now(),
+  -- Marks the document investors download to sign for the NDA gate (at most one).
+  is_nda_template BOOLEAN NOT NULL DEFAULT false
 );
 
 CREATE INDEX IF NOT EXISTS documents_level_idx ON documents (min_level);
@@ -114,6 +116,7 @@ CREATE INDEX IF NOT EXISTS documents_level_idx ON documents (min_level);
 -- idempotent, so ensureSchema() can run them on every cold start without harm.
 ALTER TABLE documents ADD COLUMN IF NOT EXISTS pages TEXT NOT NULL DEFAULT '';
 ALTER TABLE documents ADD COLUMN IF NOT EXISTS updated_at TIMESTAMPTZ NOT NULL DEFAULT now();
+ALTER TABLE documents ADD COLUMN IF NOT EXISTS is_nda_template BOOLEAN NOT NULL DEFAULT false;
 
 -- Single-use, time-limited set-password invitations. Only a HASH of the token is
 -- stored, so a database leak never exposes a usable link.
@@ -128,6 +131,24 @@ CREATE TABLE IF NOT EXISTS invites (
 
 CREATE INDEX IF NOT EXISTS invites_token_idx ON invites (token_hash);
 CREATE INDEX IF NOT EXISTS invites_investor_idx ON invites (investor_id);
+
+-- Investor-submitted signed NDAs (per-investor, private — NOT part of the shared
+-- documents catalogue). The founder reviews and accepts one, which flips
+-- investors.nda_signed. Bytes are served only to the founder via the admin route.
+CREATE TABLE IF NOT EXISTS nda_submissions (
+  id           SERIAL PRIMARY KEY,
+  investor_id  INT NOT NULL,
+  filename     TEXT NOT NULL DEFAULT '',
+  content_type TEXT NOT NULL DEFAULT 'application/pdf',
+  size         BIGINT NOT NULL DEFAULT 0,
+  bytes        BYTEA,
+  status       TEXT NOT NULL DEFAULT 'submitted',   -- submitted | accepted | rejected | superseded
+  submitted_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  reviewed_at  TIMESTAMPTZ,
+  reviewed_by  TEXT
+);
+
+CREATE INDEX IF NOT EXISTS nda_submissions_investor_idx ON nda_submissions (investor_id, submitted_at DESC);
 
 -- Append-only audit log: every login (success + failure), logout, document access
 -- (granted + denied), request submission and admin action.
