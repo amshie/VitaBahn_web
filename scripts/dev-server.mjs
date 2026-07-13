@@ -38,11 +38,13 @@ const api = {
   '/api/room/documents': (await import('../api/room/documents.js')).default,
   '/api/room/document': (await import('../api/room/document.js')).default,
   '/api/room/request-access': (await import('../api/room/request-access.js')).default,
+  '/api/room/nda': (await import('../api/room/nda.js')).default,
   '/api/admin/investors': (await import('../api/admin/investors.js')).default,
   '/api/admin/invite': (await import('../api/admin/invite.js')).default,
   '/api/admin/requests': (await import('../api/admin/requests.js')).default,
   '/api/admin/logs': (await import('../api/admin/logs.js')).default,
   '/api/admin/documents': (await import('../api/admin/documents.js')).default,
+  '/api/admin/nda': (await import('../api/admin/nda.js')).default,
   '/api/admin/preview-room': (await import('../api/admin/preview-room.js')).default,
   '/api/admin/bootstrap': (await import('../api/admin/bootstrap.js')).default,
 };
@@ -115,6 +117,11 @@ async function seed() {
     // Backdate some so the room shows a realistic mix of New / Not-viewed statuses.
     if (d.old) await query("UPDATE documents SET updated_at = now() - interval '30 days' WHERE id = $1", [d.id]);
   }
+
+  // NDA template investors download to sign (open tier so an L2 investor can get it).
+  const ndaTpl = await makePdf('Non-Disclosure Agreement (template)', 'Sign and return to unlock Diligence (Level 3).');
+  await store.insertDocument({ id: 'D-nda-template', title: 'Non-Disclosure Agreement (template)', minLevel: 2, tier: 1, contentType: 'application/pdf', size: ndaTpl.length, pages: '3 pages', bytes: ndaTpl });
+  await store.setNdaTemplate('D-nda-template');
 
   await store.insertAccessRequest({ requestId: 'VB-20260712-DEMO1', fullName: 'Lena Brandt', email: 'lena@brandt-fo.at', organisation: 'Brandt Family Office', ticketRange: 'participant', roleInRound: 'Participating investor', meetingType: 'intro20', internalRoutingHint: 'Participant route.' });
 }

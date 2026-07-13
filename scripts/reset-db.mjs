@@ -24,7 +24,7 @@ const INCLUDE_ADMINS = args.includes('--include-admins');
 
 // No cross-table foreign keys in the schema, so a single TRUNCATE is enough and
 // works on Neon's one-statement HTTP driver too.
-const DATA_TABLES = ['access_logs', 'invites', 'access_requests', 'documents', 'investors'];
+const DATA_TABLES = ['access_logs', 'invites', 'nda_submissions', 'access_requests', 'documents', 'investors'];
 const TABLES = INCLUDE_ADMINS ? [...DATA_TABLES, 'admins'] : DATA_TABLES;
 
 await ensureSchema();

@@ -7,7 +7,7 @@
 // documents; the next section carries static gate copy (no document names); deeper
 // sections carry a title only.
 
-import { listDocumentsForLevel, viewedDocIdsByInvestor } from './store.js';
+import { listDocumentsForLevel, viewedDocIdsByInvestor, getLatestNdaSubmission, getNdaTemplate } from './store.js';
 
 const NDA_MIN_LEVEL = 3;
 const RECENT_DAYS = 14;
@@ -107,6 +107,27 @@ export async function buildRoomOverview(investor) {
     }
   }
 
+  // NDA state for the gate: template to download + this investor's latest submission.
+  const latestNda = nda ? null : await getLatestNdaSubmission(investor.id);
+  const template = await getNdaTemplate();
+  const templateVisible = template && template.minLevel <= level; // must be downloadable at this level
+  let ndaState;
+  if (nda) ndaState = 'executed';
+  else if (level < 2) ndaState = 'not-required';
+  else if (latestNda && latestNda.status === 'submitted') ndaState = 'submitted';
+  else ndaState = 'required';
+  const ndaInfo = {
+    status: ndaState,
+    submittedAt: latestNda ? latestNda.submittedAt : null,
+    rejected: !!(latestNda && latestNda.status === 'rejected'),
+    templateDocId: templateVisible ? template.id : null,
+    templateName: templateVisible ? template.title : null,
+  };
+  const ndaStatusDisplay = ndaState === 'executed' ? 'Executed'
+    : ndaState === 'submitted' ? 'Submitted — in review'
+    : ndaState === 'required' ? 'Required for L3'
+    : 'Not required';
+
   return {
     investor: {
       name: investor.name || investor.email,
@@ -118,10 +139,11 @@ export async function buildRoomOverview(investor) {
       level,
       levelName: LEVEL_NAME[level] || String(level),
       ndaSigned: nda,
-      ndaStatus: nda ? 'Executed' : level >= 2 ? 'Required for L3' : 'Not required',
+      ndaStatus: ndaStatusDisplay,
       validUntil: fmtDate(investor.expiresAt),
       docCount,
     },
+    nda: ndaInfo,
     sections,
   };
 }

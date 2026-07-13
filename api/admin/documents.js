@@ -10,7 +10,7 @@
 import crypto from 'node:crypto';
 import { sendJson, readJsonBody, readRawBody, requireOrigin, clientIp, userAgent } from '../_lib/http.js';
 import { clean } from '../_lib/validate.js';
-import { ensureSchema, listDocuments, getDocumentMeta, insertDocument, updateDocument, deleteDocument, logEvent } from '../_lib/store.js';
+import { ensureSchema, listDocuments, getDocumentMeta, insertDocument, updateDocument, deleteDocument, setNdaTemplate, logEvent } from '../_lib/store.js';
 import { loadAdmin } from '../_lib/auth.js';
 
 const MAX_UPLOAD = 8 * 1024 * 1024; // 8 MB (note: Vercel request-body limit is ~4.5 MB)
@@ -62,8 +62,9 @@ export default async function handler(req, res) {
       if (!validLevel(lvl)) return sendJson(res, 400, { ok: false, error: 'minLevel must be 1–5.' });
       patch.minLevel = lvl; patch.tier = tierForLevel(lvl);
     }
-    const doc = await updateDocument(id, patch);
-    await logEvent({ actorType: 'admin', actorId: admin.id, email: admin.email, event: 'admin_action', detail: `edited document ${id} (${JSON.stringify(patch)})`, ip, userAgent: ua });
+    let doc = await updateDocument(id, patch);
+    if ('isNdaTemplate' in c) { await setNdaTemplate(c.isNdaTemplate ? id : null); doc = await getDocumentMeta(id); }
+    await logEvent({ actorType: 'admin', actorId: admin.id, email: admin.email, event: 'admin_action', detail: `edited document ${id} (${JSON.stringify(patch)}${'isNdaTemplate' in c ? `, nda_template=${!!c.isNdaTemplate}` : ''})`, ip, userAgent: ua });
     return sendJson(res, 200, { ok: true, document: doc });
   }
 

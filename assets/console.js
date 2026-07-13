@@ -96,11 +96,23 @@
       return '<li><b>' + esc(l.event.replace(/_/g, ' ')) + '</b>' + (l.documentId ? ' · ' + esc(l.documentId) : '') + (l.detail ? ' — ' + esc(l.detail) : '') + '<div class="ts">' + fmtDate(l.createdAt) + '</div></li>';
     }).join('') || '<li class="muted">No activity yet.</li>';
     var instr = ['—', 'SAFE', 'Equity'].map(function (o) { return '<option ' + (i.instrument === o ? 'selected' : '') + '>' + o + '</option>'; }).join('');
+    var ns = i.ndaSubmission;
+    var ndaBlock = (ns && ns.status === 'submitted')
+      ? '<div style="margin:2px 0 14px;padding:12px 14px;border:1px solid #CBA968;background:#F4EBD8;border-radius:10px">' +
+          '<div style="font-size:13.5px;color:#6E5423"><b>Signed NDA submitted</b> · ' + fmtDate(ns.submittedAt) + ' — pending review' + (i.ndaSigned ? ' · NDA already marked signed' : '') + '</div>' +
+          '<div style="display:flex;gap:8px;margin-top:9px;flex-wrap:wrap">' +
+            '<a class="btn" href="/api/admin/nda?id=' + ns.id + '" target="_blank" rel="noopener">View signed NDA ↗</a>' +
+            '<button class="btn btn-teal" id="ndaAccept" data-nda="' + ns.id + '">Accept &amp; open L3</button>' +
+            '<button class="btn btn-red" id="ndaReject" data-nda="' + ns.id + '">Reject</button>' +
+          '</div>' +
+        '</div>'
+      : '';
     $('detail').innerHTML =
       '<div class="sec">' + esc(i.name) + ' — ' + esc(i.email) + (i.revoked ? ' · <span class="tag rev">REVOKED</span>' : '') + (i.isExpired ? ' · <span class="tag due">EXPIRED</span>' : '') + '</div>' +
       '<div class="muted" style="margin-top:-6px;margin-bottom:10px">' + esc(i.role || '') + ' · ' + esc(i.org || '') + ' · ' + esc(i.country || '') + ' · score <b class="mono">' + (i.score == null ? '—' : i.score) + '</b>' + (i.hasPassword ? '' : ' · <b style="color:var(--gold-ink)">password not set (invite pending)</b>') + '</div>' +
       '<div style="font-size:12px;color:var(--ink-3);margin-bottom:5px">Disclosure level (levels 4 & 5 require a named approver)</div>' +
       '<div class="rail" id="rail">' + rail + '</div>' +
+      ndaBlock +
       '<div class="row" style="margin-bottom:8px">' +
         '<button class="tog gold ' + (i.ndaSigned ? 'on' : '') + '" data-tog="ndaSigned">NDA signed</button>' +
         '<button class="tog ' + (i.meetingBooked ? 'on' : '') + '" data-tog="meetingBooked">Meeting booked</button>' +
@@ -170,12 +182,14 @@
   function renderLibrary() {
     var rows = state.documents.map(function (d) {
       var sel = [1, 2, 3, 4, 5].map(function (l) { return '<option value="' + l + '"' + (d.minLevel === l ? ' selected' : '') + '>L' + l + '</option>'; }).join('');
+      var isTpl = d.isNdaTemplate;
+      var tplTag = isTpl ? ' <span class="tag" style="background:#F4EBD8;color:#6E5423">NDA template</span>' : '';
       return '<div class="lib-row" data-doc="' + esc(d.id) + '">' +
-        '<div><b>' + esc(d.title) + '</b> <span class="tag ' + (d.tier === 2 ? '' : '') + '" style="background:' + (d.minLevel >= 3 ? 'var(--gold-soft);color:var(--gold-ink)' : 'var(--teal-soft);color:var(--teal-dark)') + '">' + (d.minLevel >= 3 ? 'NDA' : 'Open') + '</span></div>' +
+        '<div><b>' + esc(d.title) + '</b> <span class="tag ' + (d.tier === 2 ? '' : '') + '" style="background:' + (d.minLevel >= 3 ? 'var(--gold-soft);color:var(--gold-ink)' : 'var(--teal-soft);color:var(--teal-dark)') + '">' + (d.minLevel >= 3 ? 'NDA' : 'Open') + '</span>' + tplTag + '</div>' +
         '<div class="mono muted">' + fmtSize(d.size) + '</div>' +
         '<div class="muted mono" style="font-size:12px">' + fmtDate(d.addedAt) + '</div>' +
         '<div><select data-doclevel="' + esc(d.id) + '">' + sel + '</select></div>' +
-        '<div class="right"><button class="btn btn-red" data-del="' + esc(d.id) + '">Delete</button></div>' +
+        '<div class="right"><button class="btn" data-ndatpl="' + esc(d.id) + '" data-on="' + (isTpl ? '1' : '0') + '">' + (isTpl ? 'Unset NDA' : 'Set as NDA') + '</button> <button class="btn btn-red" data-del="' + esc(d.id) + '">Delete</button></div>' +
       '</div>';
     }).join('') || '<div class="muted">No documents in the data room yet.</div>';
     $('library').innerHTML = '<div class="sec">Data room documents</div>' +
@@ -211,6 +225,19 @@
   $('detail').addEventListener('click', async function (e) {
     var i = inv(); if (!i) return;
     if (e.target.id === 'viewRoom') { window.open('/investor-console/preview?investorId=' + i.id, '_blank', 'noopener'); return; }
+    if (e.target.id === 'ndaAccept') {
+      var aid = e.target.getAttribute('data-nda');
+      try { await api('PATCH', '/api/admin/nda', { id: Number(aid), action: 'accept' }); await loadInvestorsAndLogs(); renderAll(); toast('NDA accepted — Diligence (L3) access opened.'); }
+      catch (er) { toast(er.message); }
+      return;
+    }
+    if (e.target.id === 'ndaReject') {
+      var rid = e.target.getAttribute('data-nda');
+      if (!confirm('Reject this signed NDA? The investor will be asked to upload a corrected copy.')) return;
+      try { await api('PATCH', '/api/admin/nda', { id: Number(rid), action: 'reject' }); await loadInvestorsAndLogs(); renderAll(); toast('NDA rejected — the investor can re-upload.'); }
+      catch (er) { toast(er.message); }
+      return;
+    }
     if (e.target.id === 'deleteInv') {
       if (confirm('Permanently DELETE ' + i.name + ' (' + i.email + ')?\n\nThis removes the account, their access grant, and their entire access-log history. This cannot be undone.')) {
         try { await api('DELETE', '/api/admin/investors', { id: i.id }); state.selectedId = null; await loadInvestorsAndLogs(); renderAll(); toast('Investor permanently deleted.'); }
@@ -295,6 +322,13 @@
     if (dl) { try { await api('PATCH', '/api/admin/documents', { id: dl, changes: { minLevel: Number(e.target.value) } }); await loadDocuments(); renderLibrary(); } catch (er) { toast(er.message); } }
   });
   $('library').addEventListener('click', async function (e) {
+    var tpl = e.target.getAttribute('data-ndatpl');
+    if (tpl) {
+      var on = e.target.getAttribute('data-on') === '1';
+      try { await api('PATCH', '/api/admin/documents', { id: tpl, changes: { isNdaTemplate: !on } }); await loadDocuments(); renderLibrary(); toast(on ? 'NDA template unset.' : 'Set as the NDA template investors download to sign.'); }
+      catch (er) { toast(er.message); }
+      return;
+    }
     var del = e.target.getAttribute('data-del'); if (!del) return;
     var d = state.documents.find(function (x) { return x.id === del; });
     if (confirm('Delete "' + (d ? d.title : del) + '" from the data room? Its bytes and any view history reference are removed.')) {
