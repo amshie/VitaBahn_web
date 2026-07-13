@@ -106,6 +106,20 @@ CREATE TABLE IF NOT EXISTS documents (
 
 CREATE INDEX IF NOT EXISTS documents_level_idx ON documents (min_level);
 
+-- Single-use, time-limited set-password invitations. Only a HASH of the token is
+-- stored, so a database leak never exposes a usable link.
+CREATE TABLE IF NOT EXISTS invites (
+  id          SERIAL PRIMARY KEY,
+  investor_id INT NOT NULL,
+  token_hash  TEXT NOT NULL,
+  expires_at  TIMESTAMPTZ NOT NULL,
+  used_at     TIMESTAMPTZ,
+  created_at  TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+
+CREATE INDEX IF NOT EXISTS invites_token_idx ON invites (token_hash);
+CREATE INDEX IF NOT EXISTS invites_investor_idx ON invites (investor_id);
+
 -- Append-only audit log: every login (success + failure), logout, document access
 -- (granted + denied), request submission and admin action.
 CREATE TABLE IF NOT EXISTS access_logs (

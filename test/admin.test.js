@@ -11,6 +11,7 @@ import { hashPassword } from '../api/_lib/auth.js';
 import adminLogin from '../api/auth/admin-login.js';
 import investorLogin from '../api/auth/investor-login.js';
 import adminInvestors from '../api/admin/investors.js';
+import adminInvite from '../api/admin/invite.js';
 import adminRequests from '../api/admin/requests.js';
 import adminDocuments from '../api/admin/documents.js';
 import roomDocument from '../api/room/document.js';
@@ -55,18 +56,37 @@ test('admin login: wrong password 401 + logged; right password sets vb_adm', asy
   assert.equal(logs.some((l) => l.event === 'login_success' && l.detail === 'console'), true);
 });
 
-test('provisioning creates a working investor login and returns a one-time password', async () => {
+test('provisioning creates a passwordless account + set-password invite (no login until set)', async () => {
   await seedAdmin();
   const cookie = await adminCookie();
   const res = mockRes();
   await adminInvestors(asAdmin(cookie, { method: 'POST', body: { email: 'new@fund.vc', name: 'New Investor', accessLevel: 2 } }), res);
   const j = res.json_();
   assert.equal(j.ok, true);
-  assert.ok(j.tempPassword && j.tempPassword.length >= 10);
-  // the new investor can log in with the issued password
+  assert.match(j.inviteUrl, /\/investor-set-password\?token=/);
+  assert.equal(j.emailed, false); // no SMTP configured in tests
+  assert.equal(res.text.includes('tempPassword'), false); // no password is issued/leaked
+  const inv = await store.getInvestorByEmail('new@fund.vc');
+  assert.equal(inv.hasPassword, false);
+  // cannot log in yet — no password is set
   const login = mockRes();
-  await investorLogin(mockReq({ method: 'POST', headers: { origin: TEST_ORIGIN }, body: { email: 'new@fund.vc', password: j.tempPassword } }), login);
-  assert.equal(login.statusCode, 200);
+  await investorLogin(mockReq({ method: 'POST', headers: { origin: TEST_ORIGIN }, body: { email: 'new@fund.vc', password: 'anything-at-all-1' } }), login);
+  assert.equal(login.statusCode, 401);
+});
+
+test('admin invite endpoint issues a set-password link', async () => {
+  await seedAdmin();
+  const cookie = await adminCookie();
+  const id = await store.createInvestor({ email: 'f@fund.vc', name: 'F', accessLevel: 2 });
+  const res = mockRes();
+  await adminInvite(asAdmin(cookie, { method: 'POST', body: { id } }), res);
+  const j = res.json_();
+  assert.equal(j.ok, true);
+  assert.match(j.inviteUrl, /token=/);
+  // anonymous cannot issue invites
+  const anon = mockRes();
+  await adminInvite(mockReq({ method: 'POST', headers: { origin: TEST_ORIGIN }, body: { id } }), anon);
+  assert.equal(anon.statusCode, 401);
 });
 
 test('Level 4/5 requires a named approver', async () => {

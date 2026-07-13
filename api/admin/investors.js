@@ -6,14 +6,14 @@
 // Level 4 and Level 5 require a named approver (brief: "named approval"). Level 0
 // can never be assigned to an investor account.
 
-import crypto from 'node:crypto';
-import { sendJson, readJsonBody, clientIp, userAgent, requireOrigin } from '../_lib/http.js';
+import { sendJson, readJsonBody, clientIp, userAgent, requireOrigin, baseUrl } from '../_lib/http.js';
 import { normaliseEmail, clean } from '../_lib/validate.js';
 import {
   ensureSchema, listInvestors, getInvestorById, createInvestor, updateInvestor,
-  deleteInvestor, engagementByInvestor, setRequestStatus, logEvent,
+  deleteInvestor, engagementByInvestor, setRequestStatus, createInvite, logEvent,
 } from '../_lib/store.js';
-import { loadAdmin, hashPassword } from '../_lib/auth.js';
+import { loadAdmin } from '../_lib/auth.js';
+import { sendInviteEmail } from '../_lib/mail.js';
 
 function leadScore(inv, eng) {
   const views = eng ? eng.views : 0;
@@ -59,13 +59,14 @@ export default async function handler(req, res) {
     if (level >= 4 && !approvedBy) {
       return sendJson(res, 400, { ok: false, error: 'Level 4/5 requires a named approver.' });
     }
-    const tempPassword = crypto.randomBytes(9).toString('base64').replace(/[+/=]/g, '').slice(0, 12) + 'A9';
+    // Create the account WITHOUT a password — the investor sets their own via the
+    // emailed set-password link. Until then the account cannot be logged into.
     let id;
     try {
       id = await createInvestor({
         email, name: clean(body.name, 120), org: clean(body.org, 160), role: clean(body.role, 120),
         country: clean(body.country, 80), investorType: clean(body.investorType, 80),
-        passwordHash: hashPassword(tempPassword), accessLevel: level,
+        passwordHash: null, accessLevel: level,
         ticket: clean(body.ticket, 40), interest: clean(body.interest, 120), timeline: clean(body.timeline, 60),
         requestId: clean(body.requestId, 60) || null,
       });
@@ -75,8 +76,14 @@ export default async function handler(req, res) {
     }
     if (level >= 4) await updateInvestor(id, { approvedBy, approvedLevel: level, approvedAt: new Date().toISOString() });
     if (body.requestId) await setRequestStatus(clean(body.requestId, 60), 'approved');
-    await logEvent({ actorType: 'admin', actorId: admin.id, email: admin.email, event: 'admin_action', detail: `provisioned ${email} at level ${level}${approvedBy ? ` (approved by ${approvedBy})` : ''}`, ip, userAgent: ua });
-    return sendJson(res, 200, { ok: true, investorId: id, tempPassword });
+
+    // Issue + email the single-use set-password invite.
+    const token = await createInvite(id);
+    const inviteUrl = `${baseUrl()}/investor-set-password?token=${token}`;
+    const mail = await sendInviteEmail({ to: email, name: clean(body.name, 120), url: inviteUrl });
+
+    await logEvent({ actorType: 'admin', actorId: admin.id, email: admin.email, event: 'admin_action', detail: `provisioned ${email} at level ${level}${approvedBy ? ` (approved by ${approvedBy})` : ''}; invite ${mail.sent ? 'emailed' : 'NOT emailed'}`, ip, userAgent: ua });
+    return sendJson(res, 200, { ok: true, investorId: id, inviteUrl, emailed: mail.sent });
   }
 
   // ---- PATCH: update an existing investor ----

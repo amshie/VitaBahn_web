@@ -32,6 +32,25 @@ function transporter() {
   return _transporter;
 }
 
+// Compose + send the set-password invitation. Returns sendMail's result so the
+// caller can tell the founder whether it actually went out.
+export async function sendInviteEmail({ to, name, url, expiresDays = 7 }) {
+  const text = [
+    `${name || 'Hello'},`,
+    '',
+    'You have been approved for access to the VitaBahn investor Data Room.',
+    'Set your password using the secure link below, then sign in:',
+    '',
+    url,
+    '',
+    `This link can be used once and expires in ${expiresDays} days. If it expires, contact us for a new one.`,
+    'If you did not expect this email, you can ignore it.',
+    '',
+    '— VitaBahn',
+  ].join('\n');
+  return sendMail({ to, subject: 'VitaBahn — set your investor Data Room password', text });
+}
+
 export async function sendMail({ to, subject, text, replyTo }) {
   if (!mailConfigured()) {
     if (process.env.NODE_ENV !== 'test') {

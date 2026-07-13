@@ -2,7 +2,11 @@
 // one auditable place. Every function is parameterised; the only dynamic SQL is
 // the column-allowlisted updateInvestor / updateDocument builders below.
 
+import crypto from 'node:crypto';
 import { query, ensureSchema } from './db.js';
+
+const INVITE_TTL_SEC = Number(process.env.INVITE_TTL_SEC || 7 * 24 * 3600); // 7 days
+const hashToken = (raw) => crypto.createHash('sha256').update(String(raw)).digest('hex');
 
 // ---- mappers: coerce driver types to plain JSON-friendly values ----
 const iso = (v) => (v == null ? null : v instanceof Date ? v.toISOString() : String(v));
@@ -182,11 +186,44 @@ export async function updateInvestor(id, patch) {
   return rows[0] ? mapInvestor(rows[0]) : null;
 }
 
-// Hard-delete an investor account together with their access-log history
-// (GDPR erasure). The admin action itself is logged separately by the caller.
+// Hard-delete an investor account together with their access-log history and any
+// invites (GDPR erasure). The admin action itself is logged separately by the caller.
 export async function deleteInvestor(id) {
   await query("DELETE FROM access_logs WHERE actor_id = $1 AND actor_type = 'investor'", [id]);
+  await query('DELETE FROM invites WHERE investor_id = $1', [id]);
   await query('DELETE FROM investors WHERE id = $1', [id]);
+}
+
+// --------------------------------------------------- set-password invites
+// Create a fresh single-use invite, invalidating any prior unused ones for this
+// investor (re-inviting revokes the old link). Returns the RAW token (emailed once;
+// only its hash is stored).
+export async function createInvite(investorId, ttlSec = INVITE_TTL_SEC) {
+  await query('UPDATE invites SET used_at = now() WHERE investor_id = $1 AND used_at IS NULL', [investorId]);
+  const raw = crypto.randomBytes(32).toString('base64url');
+  const expires = new Date(Date.now() + ttlSec * 1000).toISOString();
+  await query('INSERT INTO invites (investor_id, token_hash, expires_at) VALUES ($1,$2,$3)', [investorId, hashToken(raw), expires]);
+  return raw;
+}
+
+// Peek without consuming: is the token currently valid? Returns { investorId } or null.
+export async function peekInvite(rawToken) {
+  if (!rawToken) return null;
+  const { rows } = await query(
+    'SELECT investor_id FROM invites WHERE token_hash = $1 AND used_at IS NULL AND expires_at > now() LIMIT 1',
+    [hashToken(rawToken)]
+  );
+  return rows[0] ? { investorId: rows[0].investor_id } : null;
+}
+
+// Atomically consume the token (mark used) iff still valid. Returns { investorId } or null.
+export async function consumeInvite(rawToken) {
+  if (!rawToken) return null;
+  const { rows } = await query(
+    'UPDATE invites SET used_at = now() WHERE token_hash = $1 AND used_at IS NULL AND expires_at > now() RETURNING investor_id',
+    [hashToken(rawToken)]
+  );
+  return rows[0] ? { investorId: rows[0].investor_id } : null;
 }
 
 // -------------------------------------------------------- access requests

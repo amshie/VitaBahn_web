@@ -98,13 +98,14 @@
     var instr = ['—', 'SAFE', 'Equity'].map(function (o) { return '<option ' + (i.instrument === o ? 'selected' : '') + '>' + o + '</option>'; }).join('');
     $('detail').innerHTML =
       '<div class="sec">' + esc(i.name) + ' — ' + esc(i.email) + (i.revoked ? ' · <span class="tag rev">REVOKED</span>' : '') + (i.isExpired ? ' · <span class="tag due">EXPIRED</span>' : '') + '</div>' +
-      '<div class="muted" style="margin-top:-6px;margin-bottom:10px">' + esc(i.role || '') + ' · ' + esc(i.org || '') + ' · ' + esc(i.country || '') + ' · score <b class="mono">' + (i.score == null ? '—' : i.score) + '</b></div>' +
+      '<div class="muted" style="margin-top:-6px;margin-bottom:10px">' + esc(i.role || '') + ' · ' + esc(i.org || '') + ' · ' + esc(i.country || '') + ' · score <b class="mono">' + (i.score == null ? '—' : i.score) + '</b>' + (i.hasPassword ? '' : ' · <b style="color:var(--gold-ink)">password not set (invite pending)</b>') + '</div>' +
       '<div style="font-size:12px;color:var(--ink-3);margin-bottom:5px">Disclosure level (levels 4 & 5 require a named approver)</div>' +
       '<div class="rail" id="rail">' + rail + '</div>' +
       '<div class="row" style="margin-bottom:8px">' +
         '<button class="tog gold ' + (i.ndaSigned ? 'on' : '') + '" data-tog="ndaSigned">NDA signed</button>' +
         '<button class="tog ' + (i.meetingBooked ? 'on' : '') + '" data-tog="meetingBooked">Meeting booked</button>' +
         (i.revoked ? '<button class="btn" id="reinstate">Reinstate access</button>' : '<button class="btn btn-red" id="revoke">Revoke access</button>') +
+        '<button class="btn" id="sendInvite">' + (i.hasPassword ? 'Reset password (email link)' : 'Send set-password link') + '</button>' +
         '<button class="btn btn-red" id="deleteInv" style="margin-left:auto">Delete investor</button>' +
       '</div>' +
       '<div class="grid2">' +
@@ -215,6 +216,15 @@
       }
       return;
     }
+    if (e.target.id === 'sendInvite') {
+      try {
+        var r = await api('POST', '/api/admin/invite', { id: i.id });
+        await loadInvestorsAndLogs(); renderAll();
+        if (r.emailed) toast('Set-password link emailed to ' + i.email + '.');
+        else window.prompt('Email not configured — copy this one-time set-password link and send it to the investor:', r.inviteUrl);
+      } catch (er) { toast(er.message); }
+      return;
+    }
     var stop = e.target.closest('.stop');
     if (stop) {
       var lvl = Number(stop.getAttribute('data-level'));
@@ -257,8 +267,13 @@
       if (!lvlStr) return; var lvl = Number(lvlStr); if (!(lvl >= 1 && lvl <= 5)) { toast('Level must be 1–5.'); return; }
       var payload = { email: r.email, name: r.fullName, org: r.organisation, role: r.role, country: r.country, investorType: r.investorType, accessLevel: lvl, ticket: r.ticketRange, interest: r.interestArea, timeline: r.timeline, requestId: r.requestId };
       if (lvl >= 4) { var by = prompt('Level ' + lvl + ' requires a named approver:'); if (!by) return; payload.approvedBy = by; }
-      try { var res = await api('POST', '/api/admin/investors', payload); await Promise.all([loadInvestorsAndLogs(), loadRequests()]); renderAll(); window.prompt('Account created. Share these one-time credentials securely (they are not stored in readable form):', r.email + '  /  ' + res.tempPassword); }
-      catch (er) { toast(er.message); }
+      try {
+        var res = await api('POST', '/api/admin/investors', payload);
+        await Promise.all([loadInvestorsAndLogs(), loadRequests()]);
+        renderAll();
+        if (res.emailed) toast('Account created — set-password email sent to ' + r.email + '.');
+        else window.prompt('Account created. Email not configured — copy this one-time set-password link and send it to the investor:', res.inviteUrl);
+      } catch (er) { toast(er.message); }
       return;
     }
     if (dec) { try { await api('PATCH', '/api/admin/requests', { requestId: dec, status: 'declined' }); await loadRequests(); renderRequests(); renderStats(); } catch (er) { toast(er.message); } }

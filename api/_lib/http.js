@@ -111,6 +111,11 @@ export function allowedOrigins() {
     .split(',').map((s) => s.trim()).filter(Boolean);
 }
 
+// Public site origin, used to build links in server-sent emails (set-password link).
+export function baseUrl() {
+  return process.env.PUBLIC_BASE_URL || allowedOrigins()[0] || 'https://vitabahn.com';
+}
+
 // CSRF guard for state-changing requests. Accept only when the Origin (or, if the
 // browser omitted it, the Referer host) is in the allowlist. Cookies are already
 // SameSite=Lax; this is defence-in-depth against cross-site POSTs.
