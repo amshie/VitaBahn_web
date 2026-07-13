@@ -21,16 +21,17 @@
       ]
     },
     {
-      "source": "/(api/(.*)|investor-access|investor-login|founder-login|request-submitted|investor-room|investor-console)",
-      "headers": [
-        { "key": "X-Robots-Tag", "value": "noindex, nofollow" }
-      ]
-    },
-    {
       "source": "/api/(.*)",
       "headers": [
+        { "key": "X-Robots-Tag", "value": "noindex, nofollow" },
         { "key": "Cache-Control", "value": "no-store" }
       ]
-    }
+    },
+    { "source": "/investor-access", "headers": [ { "key": "X-Robots-Tag", "value": "noindex, nofollow" } ] },
+    { "source": "/investor-login", "headers": [ { "key": "X-Robots-Tag", "value": "noindex, nofollow" } ] },
+    { "source": "/founder-login", "headers": [ { "key": "X-Robots-Tag", "value": "noindex, nofollow" } ] },
+    { "source": "/request-submitted", "headers": [ { "key": "X-Robots-Tag", "value": "noindex, nofollow" } ] },
+    { "source": "/investor-room", "headers": [ { "key": "X-Robots-Tag", "value": "noindex, nofollow" } ] },
+    { "source": "/investor-console", "headers": [ { "key": "X-Robots-Tag", "value": "noindex, nofollow" } ] }
   ]
 }
