@@ -105,6 +105,7 @@
         '<button class="tog gold ' + (i.ndaSigned ? 'on' : '') + '" data-tog="ndaSigned">NDA signed</button>' +
         '<button class="tog ' + (i.meetingBooked ? 'on' : '') + '" data-tog="meetingBooked">Meeting booked</button>' +
         (i.revoked ? '<button class="btn" id="reinstate">Reinstate access</button>' : '<button class="btn btn-red" id="revoke">Revoke access</button>') +
+        '<button class="btn btn-red" id="deleteInv" style="margin-left:auto">Delete investor</button>' +
       '</div>' +
       '<div class="grid2">' +
         '<div><div class="sec">Commitment</div>' +
@@ -205,8 +206,15 @@
   $('rows').addEventListener('click', function (e) { var tr = e.target.closest('tr[data-id]'); if (!tr) return; state.selectedId = Number(tr.getAttribute('data-id')); renderTable(); renderDetail(); });
   $('search').addEventListener('input', function (e) { state.search = e.target.value; renderTable(); });
 
-  $('detail').addEventListener('click', function (e) {
+  $('detail').addEventListener('click', async function (e) {
     var i = inv(); if (!i) return;
+    if (e.target.id === 'deleteInv') {
+      if (confirm('Permanently DELETE ' + i.name + ' (' + i.email + ')?\n\nThis removes the account, their access grant, and their entire access-log history. This cannot be undone.')) {
+        try { await api('DELETE', '/api/admin/investors', { id: i.id }); state.selectedId = null; await loadInvestorsAndLogs(); renderAll(); toast('Investor permanently deleted.'); }
+        catch (er) { toast(er.message); }
+      }
+      return;
+    }
     var stop = e.target.closest('.stop');
     if (stop) {
       var lvl = Number(stop.getAttribute('data-level'));

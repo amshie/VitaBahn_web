@@ -11,7 +11,7 @@ import { sendJson, readJsonBody, clientIp, userAgent, requireOrigin } from '../_
 import { normaliseEmail, clean } from '../_lib/validate.js';
 import {
   ensureSchema, listInvestors, getInvestorById, createInvestor, updateInvestor,
-  engagementByInvestor, setRequestStatus, logEvent,
+  deleteInvestor, engagementByInvestor, setRequestStatus, logEvent,
 } from '../_lib/store.js';
 import { loadAdmin, hashPassword } from '../_lib/auth.js';
 
@@ -130,6 +130,16 @@ export default async function handler(req, res) {
       await logEvent({ actorType: 'admin', actorId: admin.id, email: admin.email, event: 'admin_action', detail: `${inv.email}: ${notes.join('; ')}`, ip, userAgent: ua });
     }
     return sendJson(res, 200, { ok: true, investor: updated });
+  }
+
+  // ---- DELETE: permanently remove an investor + their access-log history ----
+  if (req.method === 'DELETE') {
+    const id = Number(body.id);
+    const inv = Number.isFinite(id) ? await getInvestorById(id) : null;
+    if (!inv) return sendJson(res, 404, { ok: false, error: 'Investor not found.' });
+    await deleteInvestor(id);
+    await logEvent({ actorType: 'admin', actorId: admin.id, email: admin.email, event: 'admin_action', detail: `deleted investor ${inv.email} (id ${id}) incl. access-log history`, ip, userAgent: ua });
+    return sendJson(res, 200, { ok: true });
   }
 
   return sendJson(res, 405, { ok: false, error: 'Method not allowed' });

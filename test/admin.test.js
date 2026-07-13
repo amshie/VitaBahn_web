@@ -139,6 +139,28 @@ test('document upload stores bytes served only via the authorised route; list le
   assert.equal(withBytes.bytes.toString(), '%PDF-1.4 fake');
 });
 
+test('deleting an investor removes the account and wipes their access-log history', async () => {
+  await seedAdmin();
+  const cookie = await adminCookie();
+  const id = await store.createInvestor({ email: 'del@fund.vc', name: 'Del', accessLevel: 3 });
+  await store.logEvent({ actorType: 'investor', actorId: id, email: 'del@fund.vc', event: 'login_success' });
+  await store.logEvent({ actorType: 'investor', actorId: id, event: 'document_view', documentId: 'D-x' });
+  const invLogs = async () => (await store.listLogs({ actorId: id })).filter((l) => l.actorType === 'investor');
+  assert.equal((await invLogs()).length, 2);
+
+  const res = mockRes();
+  await adminInvestors(asAdmin(cookie, { method: 'DELETE', body: { id } }), res);
+  assert.equal(res.statusCode, 200);
+  assert.equal(await store.getInvestorById(id), null);
+  assert.equal((await invLogs()).length, 0); // investor's history wiped
+  const all = await store.listLogs({ limit: 20 });
+  assert.equal(all.some((l) => l.event === 'admin_action' && /deleted investor del@fund\.vc/.test(l.detail)), true);
+
+  const res2 = mockRes();
+  await adminInvestors(asAdmin(cookie, { method: 'DELETE', body: { id: 99999 } }), res2);
+  assert.equal(res2.statusCode, 404);
+});
+
 test('access requests are listable and provisioning marks the request approved', async () => {
   await seedAdmin();
   const cookie = await adminCookie();

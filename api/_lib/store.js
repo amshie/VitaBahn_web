@@ -182,6 +182,13 @@ export async function updateInvestor(id, patch) {
   return rows[0] ? mapInvestor(rows[0]) : null;
 }
 
+// Hard-delete an investor account together with their access-log history
+// (GDPR erasure). The admin action itself is logged separately by the caller.
+export async function deleteInvestor(id) {
+  await query("DELETE FROM access_logs WHERE actor_id = $1 AND actor_type = 'investor'", [id]);
+  await query('DELETE FROM investors WHERE id = $1', [id]);
+}
+
 // -------------------------------------------------------- access requests
 export async function insertAccessRequest(f) {
   const { rows } = await query(
