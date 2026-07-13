@@ -16,6 +16,7 @@ const {
 // Address shown to investors for "was this you?" queries. Defaults to the IR inbox;
 // override with IR_CONTACT if you use a different mailbox (e.g. invest@vitabahn.com).
 const IR_CONTACT = process.env.IR_CONTACT || 'investors@vitabahn.com';
+const IR_FROM_NAME = 'VitaBahn Investor Relations';
 
 export function mailConfigured() {
   return Boolean(SMTP_USER && SMTP_PASS && (LEAD_FROM || SMTP_USER));
@@ -38,6 +39,7 @@ function transporter() {
 }
 
 const esc = (s) => String(s == null ? '' : s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const greetingFor = (name) => { const f = String(name || '').trim().split(/\s+/)[0] || ''; return f ? `Dear ${f},` : 'Hello,'; };
 
 // Human, always-truthful expiry text derived from the real invite TTL, so the email
 // can never claim a lifetime the token does not actually have.
@@ -48,15 +50,44 @@ function humanDuration(sec) {
   const d = Math.round(sec / 86400); return `${d} day${d === 1 ? '' : 's'}`;
 }
 
-// Build the set-password / reset email: subject + plain-text + a deployable HTML
-// part. Pure (no I/O), so it can be unit-tested. Personalises the greeting from the
+// Shared, email-client-safe chrome (tricolor rule, header, footer) around the inner
+// rows of a message. Table layout + inline styles + no external assets, so it renders
+// consistently and does not trip spam/phishing heuristics. `inner` is trusted HTML the
+// builder assembled from escaped values.
+function emailShell(preheader, inner) {
+  return `<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="color-scheme" content="light"></head>
+<body style="margin:0;padding:0;background:#f4f5f3;">
+<div style="display:none;max-height:0;overflow:hidden;opacity:0;">${esc(preheader)}</div>
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#f4f5f3;"><tr><td align="center" style="padding:24px 12px;">
+<table role="presentation" width="600" cellpadding="0" cellspacing="0" style="max-width:600px;width:100%;background:#ffffff;border-radius:14px;overflow:hidden;border:1px solid #e2e4e2;">
+  <tr><td style="font-size:0;line-height:0;"><table role="presentation" width="100%" cellpadding="0" cellspacing="0"><tr>
+    <td width="40%" style="background:#0D4D47;height:4px;line-height:4px;font-size:0;">&nbsp;</td>
+    <td width="30%" style="background:#6D948C;height:4px;line-height:4px;font-size:0;">&nbsp;</td>
+    <td width="30%" style="background:#C8A86E;height:4px;line-height:4px;font-size:0;">&nbsp;</td>
+  </tr></table></td></tr>
+  <tr><td style="padding:26px 32px 4px;font-family:Arial,Helvetica,sans-serif;">
+    <div style="font-size:19px;font-weight:700;color:#0D4D47;letter-spacing:.2px;">VitaBahn</div>
+    <div style="font-size:12px;color:#6b7a76;margin-top:2px;">Investor Data Room</div>
+  </td></tr>
+  ${inner}
+  <tr><td style="padding:16px 32px;background:#0B1013;font-family:Arial,Helvetica,sans-serif;color:#9fb0ab;font-size:11px;line-height:1.5;">
+    Confidential — intended only for the named recipient. Access is logged and may be withdrawn. © VitaBahn.
+  </td></tr>
+</table>
+</td></tr></table>
+</body></html>`;
+}
+
+const P = (t) => `<p style="margin:0 0 14px;">${t}</p>`;
+
+// ---- set-password / reset invite ------------------------------------------
+// Pure (no I/O) so it can be unit-tested. Personalises the greeting from the
 // investor name and states the real link lifetime.
 export function buildInviteEmail({ name, url, reset = false }) {
-  const first = String(name || '').trim().split(/\s+/)[0] || '';
-  const greeting = first ? `Dear ${first},` : 'Hello,';
+  const greeting = greetingFor(name);
   const expiry = humanDuration(INVITE_TTL_SEC);
   const safeUrl = esc(url);
-  const safeGreeting = esc(greeting);
 
   const subject = reset
     ? 'Reset your VitaBahn Data Room password'
@@ -74,46 +105,20 @@ export function buildInviteEmail({ name, url, reset = false }) {
     : `If you weren&#39;t expecting this email, please contact us at <a href="mailto:${esc(IR_CONTACT)}" style="color:#0D4D47;">${esc(IR_CONTACT)}</a> and do not use the link above.`;
 
   const text = [
-    greeting,
-    '',
-    intro,
-    '',
-    'Set password & sign in:',
-    url,
-    '',
+    greeting, '', intro, '',
+    'Set password & sign in:', url, '',
     'For your security',
     `• This link can be used once and expires in ${expiry}.`,
     "• Please don't forward it — it grants access to your account.",
-    '• If it expires, request a new one from the sign-in page.',
-    '',
-    'Access is limited to the materials assigned to your review stage. All documents are confidential, watermarked and view-only, and access may be updated or withdrawn as the process progresses.',
-    '',
-    notExpectingText,
-    '',
-    'Kind regards,',
-    'VitaBahn Investor Relations',
+    '• If it expires, request a new one from the sign-in page.', '',
+    'Access is limited to the materials assigned to your review stage. All documents are confidential, watermarked and view-only, and access may be updated or withdrawn as the process progresses.', '',
+    notExpectingText, '',
+    'Kind regards,', 'VitaBahn Investor Relations',
   ].join('\n');
 
-  // Bulletproof, table-based HTML with inline styles (email-client safe). No external
-  // assets, no web fonts — renders consistently and does not trip spam/phishing heuristics.
-  const html = `<!doctype html>
-<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="color-scheme" content="light"></head>
-<body style="margin:0;padding:0;background:#f4f5f3;">
-<div style="display:none;max-height:0;overflow:hidden;opacity:0;">Set your password to activate your VitaBahn investor Data Room access. Link expires in ${expiry}.</div>
-<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#f4f5f3;"><tr><td align="center" style="padding:24px 12px;">
-<table role="presentation" width="600" cellpadding="0" cellspacing="0" style="max-width:600px;width:100%;background:#ffffff;border-radius:14px;overflow:hidden;border:1px solid #e2e4e2;">
-  <tr><td style="font-size:0;line-height:0;"><table role="presentation" width="100%" cellpadding="0" cellspacing="0"><tr>
-    <td width="40%" style="background:#0D4D47;height:4px;line-height:4px;font-size:0;">&nbsp;</td>
-    <td width="30%" style="background:#6D948C;height:4px;line-height:4px;font-size:0;">&nbsp;</td>
-    <td width="30%" style="background:#C8A86E;height:4px;line-height:4px;font-size:0;">&nbsp;</td>
-  </tr></table></td></tr>
-  <tr><td style="padding:26px 32px 4px;font-family:Arial,Helvetica,sans-serif;">
-    <div style="font-size:19px;font-weight:700;color:#0D4D47;letter-spacing:.2px;">VitaBahn</div>
-    <div style="font-size:12px;color:#6b7a76;margin-top:2px;">Investor Data Room</div>
-  </td></tr>
+  const inner = `
   <tr><td style="padding:16px 32px 4px;font-family:Arial,Helvetica,sans-serif;color:#243b36;font-size:15px;line-height:1.6;">
-    <p style="margin:0 0 14px;">${safeGreeting}</p>
-    <p style="margin:0 0 20px;">${esc(intro)}</p>
+    ${P(esc(greeting))}<p style="margin:0 0 20px;">${esc(intro)}</p>
   </td></tr>
   <tr><td align="center" style="padding:2px 32px 6px;">
     <table role="presentation" cellpadding="0" cellspacing="0"><tr><td style="border-radius:10px;background:#0D4D47;">
@@ -137,27 +142,61 @@ export function buildInviteEmail({ name, url, reset = false }) {
   <tr><td style="padding:16px 32px 4px;font-family:Arial,Helvetica,sans-serif;color:#4a5c57;font-size:13px;line-height:1.6;">
     Access is limited to the materials assigned to your review stage. All documents are confidential, watermarked and view-only, and access may be updated or withdrawn as the process progresses.
   </td></tr>
-  <tr><td style="padding:8px 32px 16px;font-family:Arial,Helvetica,sans-serif;color:#6b7a76;font-size:12.5px;line-height:1.6;">
-    ${notExpectingHtml}
-  </td></tr>
-  <tr><td style="padding:0 32px 22px;font-family:Arial,Helvetica,sans-serif;color:#243b36;font-size:14px;line-height:1.6;">
-    Kind regards,<br><b>VitaBahn Investor Relations</b>
-  </td></tr>
-  <tr><td style="padding:16px 32px;background:#0B1013;font-family:Arial,Helvetica,sans-serif;color:#9fb0ab;font-size:11px;line-height:1.5;">
-    Confidential — intended only for the named recipient. Access is logged and may be withdrawn. © VitaBahn.
-  </td></tr>
-</table>
-</td></tr></table>
-</body></html>`;
+  <tr><td style="padding:8px 32px 16px;font-family:Arial,Helvetica,sans-serif;color:#6b7a76;font-size:12.5px;line-height:1.6;">${notExpectingHtml}</td></tr>
+  <tr><td style="padding:0 32px 22px;font-family:Arial,Helvetica,sans-serif;color:#243b36;font-size:14px;line-height:1.6;">Kind regards,<br><b>VitaBahn Investor Relations</b></td></tr>`;
 
-  return { subject, text, html };
+  return { subject, text, html: emailShell(`${reset ? 'Reset your password' : 'Set your password to activate your'} VitaBahn investor Data Room access. Link expires in ${expiry}.`, inner) };
 }
 
-// Compose + send the set-password / reset invitation. Returns sendMail's result so
-// the caller can tell whether it actually went out.
+// ---- access-request received (applicant confirmation) ---------------------
+// Strictly neutral: acknowledges receipt, grants nothing, carries no link.
+export function buildRequestReceivedEmail({ name, reference }) {
+  const greeting = greetingFor(name);
+  const ref = String(reference || '');
+  const subject = "We've received your VitaBahn investor-access request";
+
+  const p1 = 'Thank you for your interest in VitaBahn.';
+  const p2 = 'Your investor-access request has been received and is now subject to verification and internal approval. Submission does not create a right of access, investment allocation, or participation in the financing.';
+  const p3 = 'We review each request individually. If your request proceeds, we will contact you directly with next steps — no further action is needed from you in the meantime.';
+
+  const text = [
+    greeting, '', p1, '', p2, '', p3, '',
+    `Your reference: ${ref}`,
+    'Please quote this reference in any correspondence.', '',
+    `For questions, contact ${IR_CONTACT}.`, '',
+    'Kind regards,', 'VitaBahn Investor Relations',
+  ].join('\n');
+
+  const inner = `
+  <tr><td style="padding:16px 32px 4px;font-family:Arial,Helvetica,sans-serif;color:#243b36;font-size:15px;line-height:1.6;">
+    ${P(esc(greeting))}${P(esc(p1))}${P(esc(p2))}<p style="margin:0 0 6px;">${esc(p3)}</p>
+  </td></tr>
+  <tr><td style="padding:10px 32px 4px;">
+    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#f7f4ee;border:1px solid #ece6d8;border-radius:10px;"><tr>
+      <td style="padding:14px 18px;font-family:Arial,Helvetica,sans-serif;line-height:1.6;">
+        <div style="font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:#8a7a4a;margin-bottom:4px;">Your reference</div>
+        <div style="font-family:'Courier New',Courier,monospace;font-size:16px;font-weight:700;color:#0D4D47;">${esc(ref)}</div>
+        <div style="margin-top:6px;color:#6b7a76;font-size:12.5px;">Please quote this reference in any correspondence.</div>
+      </td>
+    </tr></table>
+  </td></tr>
+  <tr><td style="padding:16px 32px 4px;font-family:Arial,Helvetica,sans-serif;color:#4a5c57;font-size:13px;line-height:1.6;">
+    For questions, contact <a href="mailto:${esc(IR_CONTACT)}" style="color:#0D4D47;">${esc(IR_CONTACT)}</a>.
+  </td></tr>
+  <tr><td style="padding:8px 32px 22px;font-family:Arial,Helvetica,sans-serif;color:#243b36;font-size:14px;line-height:1.6;">Kind regards,<br><b>VitaBahn Investor Relations</b></td></tr>`;
+
+  return { subject, text, html: emailShell(`Your VitaBahn investor-access request has been received. Reference ${ref}.`, inner) };
+}
+
+// ---- senders --------------------------------------------------------------
 export async function sendInviteEmail({ to, name, url, reset = false }) {
   const { subject, text, html } = buildInviteEmail({ name, url, reset });
-  return sendMail({ to, subject, text, html, replyTo: IR_CONTACT, fromName: 'VitaBahn Investor Relations' });
+  return sendMail({ to, subject, text, html, replyTo: IR_CONTACT, fromName: IR_FROM_NAME });
+}
+
+export async function sendRequestReceivedEmail({ to, name, reference }) {
+  const { subject, text, html } = buildRequestReceivedEmail({ name, reference });
+  return sendMail({ to, subject, text, html, replyTo: IR_CONTACT, fromName: IR_FROM_NAME });
 }
 
 export async function sendMail({ to, subject, text, html, replyTo, fromName }) {

@@ -6,6 +6,7 @@ import assert from 'node:assert/strict';
 import handler from '../api/access-request.js';
 import { ensureSchema, resetDbForTests } from '../api/_lib/db.js';
 import * as store from '../api/_lib/store.js';
+import { buildRequestReceivedEmail } from '../api/_lib/mail.js';
 
 test.before(async () => { await ensureSchema(); });
 test.beforeEach(async () => { await resetDbForTests(); });
@@ -121,4 +122,26 @@ test('repeated submissions from one IP are rate-limited', async () => {
   for (let i = 0; i < 7; i++) last = await submit({}, { origin: TEST_ORIGIN }, ip);
   assert.equal(last.statusCode, 429);
   assert.ok(last.getHeader('retry-after'));
+});
+
+test('request-received email: personalised, carries the reference, strictly neutral', () => {
+  const m = buildRequestReceivedEmail({ name: 'Katharina Vogel', reference: 'VB-20260713-ABCDE' });
+  assert.match(m.subject, /received your vitabahn investor-access request/i);
+  assert.match(m.text, /^Dear Katharina,/);
+  assert.match(m.text, /subject to verification and internal approval/i);
+  assert.match(m.text, /does not create a right of access/i);
+  // reference present in both parts, and asked to be quoted
+  assert.ok(m.text.includes('VB-20260713-ABCDE'));
+  assert.ok(m.html.includes('VB-20260713-ABCDE'));
+  assert.match(m.text, /quote this reference/i);
+  // real HTML part…
+  assert.match(m.html, /^<!doctype html>/i);
+  assert.match(m.html, /Your reference/i);
+  // …but strictly neutral: no password/set-password link, no access grant
+  assert.equal(/investor-set-password|set password/i.test(m.html), false);
+});
+
+test('request-received email: neutral greeting when no name is provided', () => {
+  const m = buildRequestReceivedEmail({ name: '', reference: 'VB-X' });
+  assert.match(m.text, /^Hello,/);
 });

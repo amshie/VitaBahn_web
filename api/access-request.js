@@ -14,7 +14,7 @@ import crypto from 'node:crypto';
 import { sendJson, readJsonBody, clientIp, userAgent, allowedOrigins } from './_lib/http.js';
 import { clean, normaliseEmail, isFreemail, consented } from './_lib/validate.js';
 import { ensureSchema, insertAccessRequest, logEvent } from './_lib/store.js';
-import { sendMail } from './_lib/mail.js';
+import { sendMail, sendRequestReceivedEmail } from './_lib/mail.js';
 
 const LEAD_TO = process.env.LEAD_TO || 'invest@vitabahn.com';
 
@@ -204,11 +204,7 @@ export default async function handler(req, res) {
   await sendMail({ to: LEAD_TO, subject: `Investor access — ${f.fullName} (${f.organisation}) [${requestId}]`, text: internalText, replyTo: { name: f.fullName.slice(0, 120), address: email } });
 
   // Applicant confirmation — strictly neutral. No access, no routing, no secure link.
-  await sendMail({
-    to: email,
-    subject: 'VitaBahn — investor-access request received',
-    text: `${f.fullName},\n\n${NEUTRAL_CONFIRMATION}\n\nYour reference: ${requestId}\n\n— VitaBahn`,
-  });
+  await sendRequestReceivedEmail({ to: email, name: f.fullName, reference: requestId });
 
   return sendJson(res, 200, {
     ok: true,
