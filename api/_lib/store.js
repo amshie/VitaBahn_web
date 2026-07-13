@@ -5,7 +5,9 @@
 import crypto from 'node:crypto';
 import { query, ensureSchema } from './db.js';
 
-const INVITE_TTL_SEC = Number(process.env.INVITE_TTL_SEC || 7 * 24 * 3600); // 7 days
+// Set-password / reset links are short-lived (a common phishing-resistant default).
+// Overridable via INVITE_TTL_SEC; the email states the real lifetime.
+export const INVITE_TTL_SEC = Number(process.env.INVITE_TTL_SEC || 3 * 3600); // 3 hours
 const hashToken = (raw) => crypto.createHash('sha256').update(String(raw)).digest('hex');
 
 // ---- mappers: coerce driver types to plain JSON-friendly values ----

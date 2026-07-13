@@ -8,6 +8,7 @@ import * as store from '../api/_lib/store.js';
 import setPassword from '../api/auth/set-password.js';
 import forgotPassword from '../api/auth/forgot-password.js';
 import investorLogin from '../api/auth/investor-login.js';
+import { buildInviteEmail } from '../api/_lib/mail.js';
 
 async function countValidInvites(investorId) {
   const { rows } = await query('SELECT count(*)::int AS n FROM invites WHERE investor_id = $1 AND used_at IS NULL AND expires_at > now()', [investorId]);
@@ -127,4 +128,29 @@ test('setting a password for a revoked account does not sign in', async () => {
   assert.equal(p.statusCode, 200);
   assert.equal(p.json_().redirect, '/investor-login');
   assert.equal(cookieFromRes(p, 'vb_inv'), null); // no session for revoked account
+});
+
+test('invite email: approved copy — personalised, real 3h expiry, html + text', () => {
+  const link = 'https://vitabahn.com/investor-set-password?token=ABC123';
+  const m = buildInviteEmail({ name: 'Katharina Vogel', url: link });
+  assert.match(m.subject, /set your password/i);
+  // personalised greeting + approval language
+  assert.match(m.text, /^Dear Katharina,/);
+  assert.match(m.text, /reviewed and approved/i);
+  // expiry text matches the real token lifetime (default 3 hours) in BOTH parts
+  assert.match(m.text, /expires in 3 hours/);
+  assert.match(m.html, /expires in <b>3 hours<\/b>/);
+  // the secure link is present in text + html
+  assert.ok(m.text.includes(link));
+  assert.ok(m.html.includes(link));
+  // it is a real HTML part with the CTA
+  assert.match(m.html, /^<!doctype html>/i);
+  assert.match(m.html, /Set password &amp; sign in/);
+});
+
+test('invite email: reset variant + neutral greeting without a name', () => {
+  const m = buildInviteEmail({ name: '', url: 'https://vitabahn.com/investor-set-password?token=Z', reset: true });
+  assert.match(m.subject, /reset/i);
+  assert.match(m.text, /^Hello,/);
+  assert.match(m.text, /password reset was requested/i);
 });
