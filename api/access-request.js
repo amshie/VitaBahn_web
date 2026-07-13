@@ -125,7 +125,7 @@ export default async function handler(req, res) {
   };
   const email = normaliseEmail(body.professionalEmail);
 
-  const required = ['fullName', 'organisation', 'role', 'country', 'linkedin', 'investorType', 'ticketRange', 'roleInRound', 'interestArea', 'timeline', 'meetingType', 'message'];
+  const required = ['fullName', 'organisation', 'role', 'country', 'investorType', 'ticketRange', 'roleInRound', 'interestArea', 'timeline', 'meetingType', 'message'];
   const missing = required.filter((k) => !f[k]);
   const validMeeting = Object.prototype.hasOwnProperty.call(MEETINGS, f.meetingType);
   const validTicket = TICKETS.has(f.ticketRange);

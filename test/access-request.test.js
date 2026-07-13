@@ -108,6 +108,13 @@ test('cross-site Origin is forbidden', async () => {
   assert.equal(res.statusCode, 403);
 });
 
+test('LinkedIn / professional profile is optional', async () => {
+  const res = await submit({ linkedin: '' });
+  assert.equal(res.statusCode, 200);
+  assert.equal(res.json_().ok, true);
+  assert.equal((await store.listAccessRequests())[0].linkedin, '');
+});
+
 test('repeated submissions from one IP are rate-limited', async () => {
   const ip = '198.51.100.253';
   let last;
