@@ -122,13 +122,44 @@
   }
 
   function renderRequests() {
+    function dRow(k, v) { return '<div style="display:grid;grid-template-columns:150px 1fr;gap:10px;padding:3px 0"><div class="muted" style="font-size:12px">' + k + '</div><div style="font-size:13px">' + v + '</div></div>'; }
     var rows = state.requests.map(function (r) {
-      return '<div class="req-row" data-req="' + esc(r.requestId) + '">' +
-        '<div><b>' + esc(r.fullName) + '</b><div class="muted" style="font-size:12px">' + esc(r.email) + ' · ' + esc(r.organisation) + '</div><div class="muted" style="font-size:11.5px">ticket ' + esc(r.ticketRange) + ' · ' + esc(r.roleInRound) + ' · ' + esc(r.meetingType) + '</div></div>' +
+      var rid = esc(r.requestId);
+      var lk = r.linkedin || '';
+      // Only render as a clickable link if it is a real http(s) URL — never javascript:/data: etc.
+      var lkHtml = /^https?:\/\//i.test(lk) ? '<a href="' + esc(lk) + '" target="_blank" rel="noopener noreferrer">' + esc(lk) + '</a>' : (lk ? esc(lk) : '<span class="muted">—</span>');
+      var actions = r.status === 'approved'
+        ? '<span class="muted">provisioned</span>'
+        : '<button class="btn btn-teal" data-provision="' + rid + '">Provision</button> <button class="btn" data-decline="' + rid + '">Decline</button>';
+      var summary = '<div class="req-row" data-req="' + rid + '">' +
+        '<div><b>' + esc(r.fullName) + '</b>' +
+          '<div class="muted" style="font-size:12px">' + esc(r.email) + ' · ' + esc(r.organisation) + '</div>' +
+          '<div class="muted" style="font-size:11.5px">ticket ' + esc(r.ticketRange) + ' · ' + esc(r.roleInRound) + ' · ' + esc(r.meetingType) + '</div>' +
+          '<button type="button" data-toggle="' + rid + '" style="background:none;border:0;color:var(--teal-dark);cursor:pointer;font-size:12px;padding:4px 0 0;text-decoration:underline">▾ Full details</button>' +
+        '</div>' +
         '<div class="mono" style="font-size:12px">' + esc(r.status) + '</div>' +
-        '<div class="muted mono" style="font-size:11.5px">' + esc(r.requestId) + '</div>' +
-        '<div class="right">' + (r.status === 'approved' ? '<span class="muted">provisioned</span>' : '<button class="btn btn-teal" data-provision="' + esc(r.requestId) + '">Provision</button> <button class="btn" data-decline="' + esc(r.requestId) + '">Decline</button>') + '</div>' +
+        '<div class="muted mono" style="font-size:11.5px">' + rid + '</div>' +
+        '<div class="right">' + actions + '</div>' +
       '</div>';
+      var details = '<div class="req-details" id="rd-' + rid + '" style="display:none;padding:14px 16px;border:1px solid var(--line-2);border-top:0;background:var(--paper-2);margin:0 0 6px;border-radius:0 0 10px 10px">' +
+        dRow('Full name', esc(r.fullName)) +
+        dRow('Email', esc(r.email)) +
+        dRow('Organisation', esc(r.organisation)) +
+        dRow('Role / title', esc(r.role || '—')) +
+        dRow('Country', esc(r.country || '—')) +
+        dRow('LinkedIn / profile', lkHtml) +
+        dRow('Investor type', esc(r.investorType || '—')) +
+        dRow('Indicative ticket', esc(r.ticketRange || '—')) +
+        dRow('Role in round', esc(r.roleInRound || '—')) +
+        dRow('Interest area', esc(r.interestArea || '—')) +
+        dRow('Decision timeline', esc(r.timeline || '—')) +
+        dRow('Requested meeting', esc(r.meetingType || '—')) +
+        dRow('Referral', esc(r.referral || '—')) +
+        dRow('Submitted', fmtDate(r.createdAt)) +
+        '<div style="margin-top:10px"><div style="font-family:var(--mono);font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-3)">Message from investor</div><div style="white-space:pre-wrap;font-size:13px;margin-top:4px;line-height:1.5">' + esc(r.message || '—') + '</div></div>' +
+        '<div style="margin-top:10px;padding-top:10px;border-top:1px dashed var(--line)"><div style="font-family:var(--mono);font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--gold-ink)">Internal routing (not shown to investor)</div><div style="font-size:12.5px;margin-top:4px;color:var(--gold-ink)">' + esc(r.internalRoutingHint || '—') + '</div></div>' +
+      '</div>';
+      return summary + details;
     }).join('') || '<div class="muted">No access requests yet.</div>';
     $('requests').innerHTML = '<div class="sec">Access requests</div>' + rows;
   }
@@ -204,6 +235,12 @@
   });
 
   $('requests').addEventListener('click', async function (e) {
+    var tog = e.target.getAttribute('data-toggle');
+    if (tog) {
+      var box = document.getElementById('rd-' + tog);
+      if (box) { box.style.display = box.style.display === 'none' ? 'block' : 'none'; e.target.textContent = box.style.display === 'none' ? '▾ Full details' : '▴ Hide details'; }
+      return;
+    }
     var prov = e.target.getAttribute('data-provision');
     var dec = e.target.getAttribute('data-decline');
     if (prov) {
