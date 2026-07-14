@@ -148,7 +148,7 @@ else
     BODY="$(cat /tmp/vb_mail_body.$$ 2>/dev/null)"; rm -f /tmp/vb_mail_body.$$
     if [ "$CODE" = "200" ]; then
       pass "lead submission accepted (HTTP 200) — a solved PoW passed and the server accepted the lead"
-      echo "    -> Now CHECK THE LEAD INBOX (invest@vitabahn.com). Actual delivery depends on the live SMTP path and cannot be asserted from the 200 alone."
+      echo "    -> Now CHECK THE LEAD INBOX (info@vitabahn.com). Actual delivery depends on the live SMTP path and cannot be asserted from the 200 alone."
     else
       fail "lead submission returned HTTP $CODE (expected 200). Body: $BODY"
       echo "    (HTTP 500 'Server email not configured' here means SMTP_* env vars are not set on the deployment.)"

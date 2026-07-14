@@ -19,7 +19,7 @@ Work top to bottom; every command and variable name below matches the code.
 | `PUBLIC_BASE_URL` | recommended | Base URL used to build links in emails (set-password link). Defaults to the first `ALLOWED_ORIGIN`. |
 | `SMTP_HOST` / `SMTP_PORT` / `SMTP_USER` / `SMTP_PASS` | for email | Sends set-password invites, access-request + interest notifications. Without them the app still works but emails no-op (links must be copied manually). |
 | `LEAD_FROM` | optional | `From:` header; defaults to `SMTP_USER` (must match the authenticated mailbox). |
-| `LEAD_TO` | recommended | Where lead / access-request / interest notifications land. Defaults to `invest@vitabahn.com`. |
+| `LEAD_TO` | recommended | Where lead / access-request / interest notifications land. Defaults to `info@vitabahn.com`. |
 | `ADMIN_BOOTSTRAP_TOKEN` | temporary | Enables the one-time admin bootstrap (step 4). **Unset it again afterwards.** |
 | `SESSION_TTL_SEC` | optional | Session lifetime, default `43200` (12h). |
 | `INVITE_TTL_SEC` | optional | Set-password link lifetime, default 7 days. |

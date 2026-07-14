@@ -12,7 +12,7 @@ import { loadInvestor } from '../_lib/auth.js';
 import { sendMail } from '../_lib/mail.js';
 
 const MAX_UPLOAD = 8 * 1024 * 1024; // 8 MB (Vercel caps request bodies near 4.5 MB)
-const LEAD_TO = process.env.LEAD_TO || 'invest@vitabahn.com';
+const LEAD_TO = process.env.LEAD_TO || 'info@vitabahn.com';
 
 export default async function handler(req, res) {
   if (req.method === 'OPTIONS') { res.statusCode = 204; return res.end(); }

@@ -39,7 +39,7 @@
   function lzBits(hex){var n=0;for(var i=0;i<hex.length;i++){var v=parseInt(hex[i],16);if(v===0){n+=4;continue;}return v>=8?n:v>=4?n+1:v>=2?n+2:n+3;}return n;}
   function solvePow(challenge,bits){var nonce=String(challenge).split('.')[0];for(var i=0;i<50000000;i++){if(lzBits(sha256(nonce+'.'+i))>=bits)return i;}throw new Error('pow-timeout');}
 
-  // form submit → Vercel function (rate-limited + proof-of-work gated; emails the lead to invest@vitabahn.com)
+  // form submit → Vercel function (rate-limited + proof-of-work gated; emails the lead to info@vitabahn.com)
   var LEAD_ENDPOINT='/api/lead';
   var f=document.getElementById('drForm'),note=document.getElementById('drNote');
   if(f){var btn=f.querySelector('button[type="submit"]');f.addEventListener('submit',function(ev){ev.preventDefault();var bad=null;
@@ -58,7 +58,7 @@
         return fetch(LEAD_ENDPOINT,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(data)});})
       .then(function(r){if(!r.ok){throw new Error('status '+r.status);}
         note.textContent='Thank you — your request has been received. We will be in touch.';note.style.color='var(--teal-dark)';f.reset();})
-      .catch(function(){note.textContent='Something went wrong. Please email invest@vitabahn.com directly.';note.style.color='#c2453f';})
+      .catch(function(){note.textContent='Something went wrong. Please email info@vitabahn.com directly.';note.style.color='#c2453f';})
       .then(function(){if(btn){btn.disabled=false;}});});}
 })();
 
