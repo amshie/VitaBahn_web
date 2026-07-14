@@ -227,3 +227,16 @@
     }, 180);
   });
 })();
+
+
+/* HADP-in-practice stacking cards — reveal each card's animation as it scrolls into view. */
+(function(){
+  var cards=document.querySelectorAll('.hw-scard');
+  if(!cards.length) return;
+  if(!('IntersectionObserver' in window)){
+    cards.forEach(function(c){c.classList.add('hw-inview');});
+    return;
+  }
+  var io=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){e.target.classList.add('hw-inview');}});},{threshold:.2});
+  cards.forEach(function(c){io.observe(c);});
+})();
