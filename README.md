@@ -4,7 +4,7 @@ A confidential, single-page investor brief. The page is a plain **static site**
 (HTML / CSS / JS with self-hosted IBM Plex fonts) and makes **no third-party
 requests** to render. The lead-capture form posts to a small **Vercel** serverless
 function (`api/lead.js`) that validates the request, blocks spam, and emails each
-lead to **invest@vitabahn.com**.
+lead to **info@vitabahn.com**.
 
 > **Content is frozen.** The copy, numbers, and legal/disclaimer text are the
 > approved, signed-off version and must not be reworded or changed without
@@ -79,12 +79,12 @@ Set these in **Vercel → Project → Settings → Environment Variables** (temp
 
 | Variable         | Example                          | Notes |
 |------------------|----------------------------------|-------|
-| `LEAD_TO`        | `invest@vitabahn.com`            | Where leads land. |
+| `LEAD_TO`        | `info@vitabahn.com`            | Where leads land. |
 | `SMTP_HOST`      | `smtp.porkbun.com`               | Default = Porkbun Email Hosting. |
 | `SMTP_PORT`      | `587`                            | `587` STARTTLS (default) or `465` TLS. |
-| `SMTP_USER`      | `invest@vitabahn.com`            | Full mailbox address. |
+| `SMTP_USER`      | `info@vitabahn.com`            | Full mailbox address. |
 | `SMTP_PASS`      | *(mailbox password)*             | The password of that mailbox. Keep secret. |
-| `LEAD_FROM`      | `invest@vitabahn.com`            | `From:` header; defaults to `SMTP_USER`. Must match the authenticated mailbox. |
+| `LEAD_FROM`      | `info@vitabahn.com`            | `From:` header; defaults to `SMTP_USER`. Must match the authenticated mailbox. |
 | `ALLOWED_ORIGIN` | `https://vitabahn.com`           | Comma-separated allowed origins (add `www`/preview if used). |
 
 SMTP via Porkbun requires a **paid Porkbun Email Hosting** mailbox (free forwarding
@@ -105,7 +105,7 @@ curl -i -X POST https://vita-bahn-web.vercel.app/api/lead \
   -d '{"fn":"Test","ln":"Investor","em":"test@example.com","org":"Test Fund","cs":"on","msg":"Hello"}'
 ```
 
-Expect a **`200`** with `{"ok":true}` and an email in `invest@vitabahn.com`. A missing
+Expect a **`200`** with `{"ok":true}` and an email in `info@vitabahn.com`. A missing
 required field returns `400`; a filled `bot-field` returns `200` but sends nothing.
 (`curl` isn't subject to browser CORS, so also submit once from the real site.)
 
@@ -138,7 +138,7 @@ headers used on some hosts (`X-Frame-Options`, `X-Content-Type-Options`,
 - **Domain & DNS:** managed at Porkbun. Point `vitabahn.com` at the static hosting.
   If you don't serve `www`, drop it from `ALLOWED_ORIGIN`; origins must match
   scheme + host exactly (no trailing slash).
-- **Email:** `invest@vitabahn.com` is the lead inbox and the footer contact link.
+- **Email:** `info@vitabahn.com` is the lead inbox and the footer contact link.
   The Vercel function sends notifications via SMTP (Porkbun by default).
 
 ## Pre-launch checklist
@@ -148,7 +148,7 @@ There is no build/lint step, so these are easy to forget — verify each before 
 - [ ] **Vercel function live** at `/api/lead` (the repo deploys automatically on push).
 - [ ] **Env vars set in Vercel** (`SMTP_*`, `LEAD_TO`, `ALLOWED_ORIGIN`); redeploy after changes.
 - [ ] **`LEAD_ENDPOINT` in `app.js`** points at the Vercel URL (already set).
-- [ ] **Real test submission** from the live site lands in `invest@vitabahn.com`.
+- [ ] **Real test submission** from the live site lands in `info@vitabahn.com`.
 - [ ] *(Optional)* set `og:url` in `index.html` to `https://vitabahn.com/` once the domain is live.
 
 ## Notes
@@ -247,7 +247,7 @@ profile plus a scrypt password hash, access grant and an audit trail of logins a
 - **Security:** passwords hashed (scrypt), transport over HTTPS/HSTS, access controlled per user and
   revocable, all access logged.
 - **Retention & rights:** access requests and audit logs are retained for the fundraise; implement a
-  periodic purge and honour access/erasure requests via `invest@vitabahn.com`. The `documents.bytes`,
+  periodic purge and honour access/erasure requests via `info@vitabahn.com`. The `documents.bytes`,
   `investors` and `access_requests`/`access_logs` tables are the records to include in a data-subject
   export or deletion. **Update `privacy.html`** to describe the investor data-room processing (categories,
   purpose, retention, rights) before go-live.

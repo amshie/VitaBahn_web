@@ -4,7 +4,7 @@
 // This function rate-limits by client IP, requires a self-hosted proof-of-work
 // token (a bot control that a plain curl loop cannot trivially pass), silently
 // drops honeypot spam, validates + normalises the input, and emails the lead to
-// invest@vitabahn.com.
+// info@vitabahn.com.
 //
 // No secrets live in this file. Everything sensitive (SMTP credentials,
 // recipient, allowed origin, the rate-limit store keys and the proof-of-work
@@ -19,7 +19,7 @@ const {
   SMTP_PORT = '587',
   SMTP_USER,
   SMTP_PASS,
-  LEAD_TO = 'invest@vitabahn.com',
+  LEAD_TO = 'info@vitabahn.com',
   LEAD_FROM, // defaults to SMTP_USER below
   ALLOWED_ORIGIN = 'https://vitabahn.com,https://www.vitabahn.com',
 

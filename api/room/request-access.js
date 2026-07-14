@@ -9,7 +9,7 @@ import { ensureSchema, logEvent } from '../_lib/store.js';
 import { loadInvestor } from '../_lib/auth.js';
 import { sendMail } from '../_lib/mail.js';
 
-const LEAD_TO = process.env.LEAD_TO || 'invest@vitabahn.com';
+const LEAD_TO = process.env.LEAD_TO || 'info@vitabahn.com';
 const STAGE = { 2: 'verification / interested', 3: 'NDA diligence', 4: 'lead / anchor', 5: 'closing / signing' };
 
 export default async function handler(req, res) {

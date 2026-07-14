@@ -16,7 +16,7 @@ import { clean, normaliseEmail, isFreemail, consented } from './_lib/validate.js
 import { ensureSchema, insertAccessRequest, logEvent } from './_lib/store.js';
 import { sendMail, sendRequestReceivedEmail } from './_lib/mail.js';
 
-const LEAD_TO = process.env.LEAD_TO || 'invest@vitabahn.com';
+const LEAD_TO = process.env.LEAD_TO || 'info@vitabahn.com';
 
 const MEETINGS = {
   intro20: { label: 'Introductory investor meeting — 20 minutes', env: 'BOOKING_INTRO20', gated: false },
