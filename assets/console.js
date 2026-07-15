@@ -7,7 +7,7 @@
   var LEVEL_DOT = { 1: '#9AA6AC', 2: '#4FB3A3', 3: '#CBA968', 4: '#267F73', 5: '#0B1013' };
   var COMMIT_COLOR = { none: '#9AA6AC', soft: '#CBA968', committed: '#267F73' };
 
-  var state = { investors: [], requests: [], documents: [], logs: [], selectedId: null, search: '' };
+  var state = { investors: [], requests: [], documents: [], logs: [], admins: [], me: null, selectedId: null, search: '' };
   var $ = function (id) { return document.getElementById(id); };
   function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
   function toast(msg) { var t = $('toast'); t.textContent = msg; t.style.display = 'block'; clearTimeout(t._t); t._t = setTimeout(function () { t.style.display = 'none'; }, 4200); }
@@ -203,7 +203,27 @@
     $('logs').innerHTML = '<div class="sec">Audit log (recent)</div>' + rows;
   }
 
-  function renderAll() { renderCockpit(); renderStats(); renderTable(); renderDetail(); renderRequests(); renderLibrary(); renderLogs(); }
+  function renderTeam() {
+    var rows = state.admins.map(function (a) {
+      var isMe = a.id === state.me;
+      return '<div class="req-row" style="grid-template-columns:1fr 150px 90px">'
+        + '<div class="who"><b>' + esc(a.name || a.email) + '</b><small>' + esc(a.email) + (isMe ? ' · you' : '') + '</small></div>'
+        + '<div class="mono muted">' + fmtDate(a.createdAt) + '</div>'
+        + '<div class="right">' + (isMe ? '<span class="muted" style="font-size:12px">—</span>' : '<button class="btn btn-red" data-rmadmin="' + a.id + '">Remove</button>') + '</div>'
+        + '</div>';
+    }).join('') || '<div class="muted">No admins.</div>';
+    $('team').innerHTML = '<div class="sec">Console admins · team</div>' + rows
+      + '<div class="row" style="margin-top:14px;align-items:flex-end;gap:10px">'
+      + '<div style="flex:1;min-width:150px"><label class="fl" for="naEmail">Email</label><input id="naEmail" type="email" placeholder="name@vitabahn.com" autocomplete="off" /></div>'
+      + '<div style="flex:1;min-width:130px"><label class="fl" for="naName">Name</label><input id="naName" type="text" placeholder="Full name" autocomplete="off" /></div>'
+      + '<div style="flex:1;min-width:160px"><label class="fl" for="naPw">Password (min 12)</label><input id="naPw" type="text" placeholder="min 12 chars" autocomplete="new-password" /></div>'
+      + '<button class="btn" id="genPwBtn" type="button" title="Generate a strong password">Generate</button>'
+      + '<button class="btn btn-teal" id="addAdminBtn" type="button">Add admin</button>'
+      + '</div>'
+      + '<div class="muted" style="font-size:11.5px;margin-top:8px">New admins sign in at /founder-login. Share the password securely — it is stored only as a hash and cannot be shown again.</div>';
+  }
+
+  function renderAll() { renderCockpit(); renderStats(); renderTable(); renderDetail(); renderRequests(); renderLibrary(); renderTeam(); renderLogs(); }
 
   // ---------- data loads ----------
   async function loadInvestorsAndLogs() {
@@ -212,6 +232,7 @@
   }
   async function loadRequests() { state.requests = (await api('GET', '/api/admin/requests')).requests; }
   async function loadDocuments() { state.documents = (await api('GET', '/api/admin/documents')).documents; }
+  async function loadAdmins() { var a = await api('GET', '/api/admin/admins'); state.admins = a.admins; state.me = a.you; }
 
   async function patchInvestor(id, changes) {
     try { await api('PATCH', '/api/admin/investors', { id: id, changes: changes }); await loadInvestorsAndLogs(); renderAll(); }
@@ -336,10 +357,38 @@
     }
   });
 
+  $('team').addEventListener('click', async function (e) {
+    if (e.target.id === 'genPwBtn') {
+      var chars = 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnpqrstuvwxyz23456789';
+      var arr = new Uint32Array(16); crypto.getRandomValues(arr);
+      var pw = ''; for (var k = 0; k < 16; k++) pw += chars[arr[k] % chars.length];
+      $('naPw').value = pw; return;
+    }
+    if (e.target.id === 'addAdminBtn') {
+      var email = $('naEmail').value.trim(), name = $('naName').value.trim(), pw = $('naPw').value;
+      if (!email || pw.length < 12) { toast('Email and a password of at least 12 characters are required.'); return; }
+      try {
+        await api('POST', '/api/admin/admins', { email: email, name: name, password: pw });
+        await Promise.all([loadAdmins(), loadInvestorsAndLogs()]); renderAll();
+        toast('Admin ' + email + ' created — they can sign in at /founder-login.');
+      } catch (er) { toast(er.message); }
+      return;
+    }
+    var rm = e.target.getAttribute('data-rmadmin');
+    if (rm) {
+      var a = state.admins.find(function (x) { return String(x.id) === String(rm); });
+      if (a && confirm('Remove console admin ' + a.email + '? They will no longer be able to sign in.')) {
+        try { await api('DELETE', '/api/admin/admins', { id: Number(rm) }); await Promise.all([loadAdmins(), loadInvestorsAndLogs()]); renderAll(); toast('Admin removed.'); }
+        catch (er) { toast(er.message); }
+      }
+      return;
+    }
+  });
+
   $('logoutBtn').addEventListener('click', async function () { try { await api('POST', '/api/auth/logout', {}); } catch (e) {} window.location.href = '/founder-login'; });
 
   (async function init() {
-    try { await Promise.all([loadInvestorsAndLogs(), loadRequests(), loadDocuments()]); if (state.investors[0]) state.selectedId = state.investors[0].id; renderAll(); }
+    try { await Promise.all([loadInvestorsAndLogs(), loadRequests(), loadDocuments(), loadAdmins()]); if (state.investors[0]) state.selectedId = state.investors[0].id; renderAll(); }
     catch (e) { if (e.message !== 'unauth') toast('Failed to load: ' + e.message); }
   })();
 })();

@@ -105,6 +105,15 @@ export async function countAdmins() {
   return rows[0].n;
 }
 
+export async function listAdmins() {
+  const { rows } = await query('SELECT id, email, name, created_at FROM admins ORDER BY created_at ASC');
+  return rows.map((r) => ({ id: r.id, email: r.email, name: r.name, createdAt: iso(r.created_at) }));
+}
+
+export async function deleteAdmin(id) {
+  await query('DELETE FROM admins WHERE id = $1', [id]);
+}
+
 // ------------------------------------------------------------- investors
 // Auth query: also computes is_expired in Postgres so expiry is server-authoritative.
 export async function getInvestorByEmail(email) {

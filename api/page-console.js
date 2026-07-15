@@ -85,6 +85,7 @@ input:focus,select:focus,textarea:focus{outline:none;border-color:var(--teal);bo
   <section class="card" id="detail"><div class="muted">Select an investor above to manage their access.</div></section>
   <section class="card" id="requests"></section>
   <section class="card" id="library"></section>
+  <section class="card" id="team"></section>
   <section class="card" id="logs"></section>
 </div></main>
 <div class="toast" id="toast"></div>

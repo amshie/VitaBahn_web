@@ -41,6 +41,7 @@ const api = {
   '/api/room/nda': (await import('../api/room/nda.js')).default,
   '/api/admin/investors': (await import('../api/admin/investors.js')).default,
   '/api/admin/invite': (await import('../api/admin/invite.js')).default,
+  '/api/admin/admins': (await import('../api/admin/admins.js')).default,
   '/api/admin/requests': (await import('../api/admin/requests.js')).default,
   '/api/admin/logs': (await import('../api/admin/logs.js')).default,
   '/api/admin/documents': (await import('../api/admin/documents.js')).default,

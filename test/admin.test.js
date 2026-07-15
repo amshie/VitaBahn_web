@@ -12,6 +12,7 @@ import adminLogin from '../api/auth/admin-login.js';
 import investorLogin from '../api/auth/investor-login.js';
 import adminInvestors from '../api/admin/investors.js';
 import adminInvite from '../api/admin/invite.js';
+import adminAdmins from '../api/admin/admins.js';
 import adminRequests from '../api/admin/requests.js';
 import adminDocuments from '../api/admin/documents.js';
 import roomDocument from '../api/room/document.js';
@@ -89,6 +90,61 @@ test('admin invite endpoint issues a set-password link', async () => {
   const anon = mockRes();
   await adminInvite(mockReq({ method: 'POST', headers: { origin: TEST_ORIGIN }, body: { id } }), anon);
   assert.equal(anon.statusCode, 401);
+});
+
+test('a founder can create another console admin who can then sign in', async () => {
+  await seedAdmin();
+  const cookie = await adminCookie();
+  const res = mockRes();
+  await adminAdmins(asAdmin(cookie, { method: 'POST', body: { email: 'info@vitabahn.com', name: 'Info Desk', password: 'a-strong-admin-pw-12' } }), res);
+  assert.equal(res.json_().ok, true);
+  // the new admin can authenticate
+  const login = mockRes();
+  await adminLogin(mockReq({ method: 'POST', headers: { origin: TEST_ORIGIN }, body: { email: 'info@vitabahn.com', password: 'a-strong-admin-pw-12' } }), login);
+  assert.equal(login.statusCode, 200);
+  // it is recorded in the audit log
+  assert.equal((await store.listLogs({ limit: 20 })).some((l) => /created console admin info@vitabahn\.com/.test(l.detail)), true);
+});
+
+test('admin creation rejects duplicates and short passwords; list shows you', async () => {
+  await seedAdmin();
+  const cookie = await adminCookie();
+  const dupe = mockRes();
+  await adminAdmins(asAdmin(cookie, { method: 'POST', body: { email: 'founder@vitabahn.com', name: 'x', password: 'a-strong-admin-pw-12' } }), dupe);
+  assert.equal(dupe.statusCode, 409);
+  const shortPw = mockRes();
+  await adminAdmins(asAdmin(cookie, { method: 'POST', body: { email: 'new@vitabahn.com', name: 'x', password: 'short' } }), shortPw);
+  assert.equal(shortPw.statusCode, 400);
+  const list = mockRes();
+  await adminAdmins(asAdmin(cookie, { method: 'GET' }), list);
+  assert.equal(list.json_().admins.length, 1);
+  assert.ok(list.json_().you); // your own id is returned
+});
+
+test('an admin cannot remove themselves or the last admin, but can remove others', async () => {
+  await seedAdmin();
+  const cookie = await adminCookie();
+  const me = (await store.listAdmins())[0];
+  // cannot remove the last (and own) admin
+  const self = mockRes();
+  await adminAdmins(asAdmin(cookie, { method: 'DELETE', body: { id: me.id } }), self);
+  assert.equal(self.statusCode, 400);
+  // add a second admin, then remove it
+  await adminAdmins(asAdmin(cookie, { method: 'POST', body: { email: 'two@vitabahn.com', name: 'Two', password: 'second-admin-pw-123' } }), mockRes());
+  const two = (await store.listAdmins()).find((a) => a.email === 'two@vitabahn.com');
+  const del = mockRes();
+  await adminAdmins(asAdmin(cookie, { method: 'DELETE', body: { id: two.id } }), del);
+  assert.equal(del.json_().ok, true);
+  assert.equal((await store.listAdmins()).length, 1);
+});
+
+test('admin management is Level-0 only (anonymous denied)', async () => {
+  await seedAdmin();
+  for (const method of ['GET', 'POST', 'DELETE']) {
+    const res = mockRes();
+    await adminAdmins(mockReq({ method, headers: { origin: TEST_ORIGIN }, body: { email: 'x@y.z', password: 'a-strong-admin-pw-12', id: 1 } }), res);
+    assert.equal(res.statusCode, 401);
+  }
 });
 
 test('Level 4/5 requires a named approver', async () => {
