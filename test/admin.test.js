@@ -13,6 +13,7 @@ import investorLogin from '../api/auth/investor-login.js';
 import adminInvestors from '../api/admin/investors.js';
 import adminInvite from '../api/admin/invite.js';
 import adminAdmins from '../api/admin/admins.js';
+import adminReset from '../api/admin/reset.js';
 import adminRequests from '../api/admin/requests.js';
 import adminDocuments from '../api/admin/documents.js';
 import roomDocument from '../api/room/document.js';
@@ -136,6 +137,35 @@ test('an admin cannot remove themselves or the last admin, but can remove others
   await adminAdmins(asAdmin(cookie, { method: 'DELETE', body: { id: two.id } }), del);
   assert.equal(del.json_().ok, true);
   assert.equal((await store.listAdmins()).length, 1);
+});
+
+test('reset clears all data, preserves admins, and requires confirm + auth', async () => {
+  await seedAdmin();
+  const cookie = await adminCookie();
+  await store.createInvestor({ email: 'x@fund.vc', name: 'X', accessLevel: 2 });
+  await store.insertAccessRequest({ requestId: 'VB-RESET-1', fullName: 'R', email: 'r@x.com' });
+  await store.insertDocument({ id: 'D-r', title: 'Doc', minLevel: 2, tier: 1, size: 3, bytes: Buffer.from('abc') });
+
+  // wrong confirm phrase → 400, nothing cleared
+  const bad = mockRes();
+  await adminReset(asAdmin(cookie, { method: 'POST', body: { confirm: 'nope' } }), bad);
+  assert.equal(bad.statusCode, 400);
+  assert.equal((await store.listInvestors()).length, 1);
+
+  // anonymous → 401
+  const anon = mockRes();
+  await adminReset(mockReq({ method: 'POST', headers: { origin: TEST_ORIGIN }, body: { confirm: 'RESET' } }), anon);
+  assert.equal(anon.statusCode, 401);
+
+  // real reset
+  const res = mockRes();
+  await adminReset(asAdmin(cookie, { method: 'POST', body: { confirm: 'RESET' } }), res);
+  assert.equal(res.json_().ok, true);
+  assert.equal((await store.listInvestors()).length, 0);
+  assert.equal((await store.listAccessRequests()).length, 0);
+  assert.equal((await store.listDocuments()).length, 0);
+  assert.equal((await store.listAdmins()).length, 1); // admins preserved
+  assert.equal((await store.listLogs({ limit: 5 })).some((l) => /database reset/.test(l.detail)), true);
 });
 
 test('admin management is Level-0 only (anonymous denied)', async () => {

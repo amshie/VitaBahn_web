@@ -114,6 +114,24 @@ export async function deleteAdmin(id) {
   await query('DELETE FROM admins WHERE id = $1', [id]);
 }
 
+// Row counts for the data tables (admins excluded) — reported before a reset.
+export async function dataCounts() {
+  const { rows } = await query(
+    `SELECT (SELECT count(*) FROM investors)::int AS investors,
+            (SELECT count(*) FROM access_requests)::int AS requests,
+            (SELECT count(*) FROM documents)::int AS documents,
+            (SELECT count(*) FROM invites)::int AS invites,
+            (SELECT count(*) FROM access_logs)::int AS logs`
+  );
+  return rows[0];
+}
+
+// Wipe all operational data (investors, requests, documents, invites, logs).
+// Admin accounts are deliberately preserved so the console stays accessible.
+export async function resetData() {
+  await query('TRUNCATE investors, access_requests, documents, invites, access_logs RESTART IDENTITY CASCADE');
+}
+
 // ------------------------------------------------------------- investors
 // Auth query: also computes is_expired in Postgres so expiry is server-authoritative.
 export async function getInvestorByEmail(email) {
