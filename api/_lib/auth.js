@@ -19,7 +19,13 @@ const b64urlToBuf = (s) => Buffer.from(String(s).replace(/-/g, '+').replace(/_/g
 
 let SESSION_SECRET = process.env.SESSION_SECRET;
 if (!SESSION_SECRET) {
-  SESSION_SECRET = crypto.randomBytes(32).toString('hex'); // ephemeral fallback
+  // Fail closed in production: an ephemeral per-instance secret silently breaks
+  // session validation across serverless instances, so refuse to run rather than
+  // degrade insecurely. Dev / preview / test keep the ephemeral fallback below.
+  if (process.env.VERCEL_ENV === 'production') {
+    throw new Error('auth: SESSION_SECRET must be set in production — refusing to start with an ephemeral secret.');
+  }
+  SESSION_SECRET = crypto.randomBytes(32).toString('hex'); // ephemeral fallback (dev/preview/test only)
   if (process.env.NODE_ENV !== 'test') {
     console.warn(
       'auth: SESSION_SECRET is unset — using an ephemeral per-instance secret. Sessions will not validate across instances/restarts. Set SESSION_SECRET in production.'
@@ -28,6 +34,17 @@ if (!SESSION_SECRET) {
 }
 
 const SESSION_TTL_SEC = Number(process.env.SESSION_TTL_SEC || '43200'); // 12h default
+
+// A session issued before the account's last password change is stale. A few
+// seconds of grace absorbs app/DB clock skew and the gap between the password
+// write and the auto-login session that immediately follows a set-password.
+const SESSION_STALE_GRACE_SEC = 10;
+function passwordChangedSince(payload, passwordChangedAt) {
+  if (!passwordChangedAt) return false; // never changed → nothing to invalidate
+  const changed = Math.floor(new Date(passwordChangedAt).getTime() / 1000);
+  if (!Number.isFinite(changed)) return false;
+  return (Number(payload.iat) || 0) + SESSION_STALE_GRACE_SEC < changed;
+}
 
 // ----------------------------------------------------------- passwords
 export function hashPassword(pw) {
@@ -112,6 +129,7 @@ export async function loadInvestor(req) {
   if (!p) return { investor: null, reason: 'unauthenticated' };
   const inv = await getInvestorById(p.sub);
   if (!inv) return { investor: null, reason: 'unknown' };
+  if (passwordChangedSince(p, inv.passwordChangedAt)) return { investor: null, reason: 'stale' };
   if (inv.revoked) return { investor: null, reason: 'revoked' };
   if (inv.isExpired) return { investor: null, reason: 'expired' };
   if (!(inv.accessLevel >= 1)) return { investor: null, reason: 'no-access' };
@@ -123,6 +141,7 @@ export async function loadAdmin(req) {
   if (!p) return { admin: null, reason: 'unauthenticated' };
   const admin = await getAdminById(p.sub);
   if (!admin) return { admin: null, reason: 'unknown' };
+  if (passwordChangedSince(p, admin.passwordChangedAt)) return { admin: null, reason: 'stale' };
   return { admin };
 }
 

@@ -99,7 +99,13 @@ if (!STORE_READY) {
 }
 let powSecret = POW_SECRET;
 if (!powSecret) {
-  powSecret = crypto.randomBytes(32).toString('hex'); // ephemeral, per-instance
+  // Fail closed in production: an ephemeral per-instance secret makes proof-of-work
+  // challenges unverifiable across serverless instances. Dev / preview keep the
+  // fallback below so the form still works locally.
+  if (process.env.VERCEL_ENV === 'production') {
+    throw new Error('lead: POW_SECRET must be set in production — refusing to start with an ephemeral secret.');
+  }
+  powSecret = crypto.randomBytes(32).toString('hex'); // ephemeral, per-instance (dev/preview only)
   console.warn('lead: POW_SECRET is unset — using an ephemeral per-instance secret. Challenges will not validate across instances/restarts. Set POW_SECRET in production.');
 }
 

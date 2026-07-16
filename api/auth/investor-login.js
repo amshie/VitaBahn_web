@@ -5,6 +5,7 @@ import { sendJson, readJsonBody, clientIp, userAgent, requireOrigin } from '../_
 import { normaliseEmail } from '../_lib/validate.js';
 import { ensureSchema, getInvestorByEmail, logEvent } from '../_lib/store.js';
 import { verifyPassword, hashPassword, createSession, setSessionCookie } from '../_lib/auth.js';
+import { loginKey, loginBlocked, loginFailed, loginReset, loginWindowSec } from '../_lib/throttle.js';
 
 // A real hash so a missing-user path still spends scrypt time (reduces the timing
 // side-channel that would otherwise reveal whether an email exists).
@@ -25,15 +26,25 @@ export default async function handler(req, res) {
     return sendJson(res, 400, { ok: false, error: 'Email and password are required.' });
   }
 
+  // Brute-force throttle: too many recent failures for this IP+email → 429.
+  const key = loginKey('inv', ip, email);
+  if (loginBlocked(key)) {
+    await logEvent({ actorType: 'anon', email, event: 'login_failed', detail: 'rate-limited', ip, userAgent: ua });
+    res.setHeader('Retry-After', String(loginWindowSec));
+    return sendJson(res, 429, { ok: false, error: 'Too many failed attempts. Please try again later.' });
+  }
+
   const inv = await getInvestorByEmail(email);
   const passOk = inv && inv.passwordHash
     ? verifyPassword(password, inv.passwordHash)
     : (verifyPassword(password, DUMMY_HASH), false);
 
   if (!passOk) {
+    loginFailed(key);
     await logEvent({ actorType: inv ? 'investor' : 'anon', actorId: inv ? inv.id : null, email, event: 'login_failed', detail: 'bad-credentials', ip, userAgent: ua });
     return sendJson(res, 401, { ok: false, error: 'Invalid credentials.' });
   }
+  loginReset(key); // valid credentials — clear the failure counter
   if (inv.revoked) {
     await logEvent({ actorType: 'investor', actorId: inv.id, email, event: 'login_failed', detail: 'revoked', ip, userAgent: ua });
     return sendJson(res, 403, { ok: false, error: 'Access to the data room has been revoked.' });

@@ -60,6 +60,23 @@ test('admin login: wrong password 401 + logged; right password sets vb_adm', asy
   assert.equal(logs.some((l) => l.event === 'login_success' && l.detail === 'console'), true);
 });
 
+test('admin login is throttled after repeated failures (429 + Retry-After)', async () => {
+  await seedAdmin();
+  const ip = '198.51.100.201'; // dedicated IP so the throttle key is isolated
+  const attempt = async (password) => {
+    const res = mockRes();
+    await adminLogin(mockReq({ method: 'POST', headers: { origin: TEST_ORIGIN }, body: { email: 'founder@vitabahn.com', password }, ip }), res);
+    return res;
+  };
+  // The first 10 failed attempts are answered with 401…
+  for (let i = 0; i < 10; i++) assert.equal((await attempt('wrong')).statusCode, 401);
+  // …the 11th is throttled — the block is checked BEFORE credential verification,
+  // so even the correct password is refused with 429 until the window elapses.
+  const blocked = await attempt(ADMIN_PW);
+  assert.equal(blocked.statusCode, 429);
+  assert.ok(blocked.getHeader('retry-after'));
+});
+
 test('provisioning creates a passwordless account + set-password invite (no login until set)', async () => {
   await seedAdmin();
   const cookie = await adminCookie();

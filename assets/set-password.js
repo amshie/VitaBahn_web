@@ -35,7 +35,7 @@
     status.textContent = '';
     var pw = form.password.value;
     var confirm = form.confirm.value;
-    if (pw.length < 10) { showError('Password must be at least 10 characters.'); return; }
+    if (pw.length < 12) { showError('Password must be at least 12 characters.'); return; }
     if (pw !== confirm) { showError('The two passwords do not match.'); return; }
     btn.disabled = true;
     var old = btn.textContent;
