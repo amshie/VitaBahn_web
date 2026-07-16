@@ -159,15 +159,17 @@ test('an admin cannot remove themselves or the last admin, but can remove others
 test('reset clears all data, preserves admins, and requires confirm + auth', async () => {
   await seedAdmin();
   const cookie = await adminCookie();
-  await store.createInvestor({ email: 'x@fund.vc', name: 'X', accessLevel: 2 });
+  const invId = await store.createInvestor({ email: 'x@fund.vc', name: 'X', accessLevel: 2 });
   await store.insertAccessRequest({ requestId: 'VB-RESET-1', fullName: 'R', email: 'r@x.com' });
   await store.insertDocument({ id: 'D-r', title: 'Doc', minLevel: 2, tier: 1, size: 3, bytes: Buffer.from('abc') });
+  await store.insertNdaSubmission({ investorId: invId, filename: 'nda.pdf', contentType: 'application/pdf', size: 3, bytes: Buffer.from('NDA') });
 
   // wrong confirm phrase → 400, nothing cleared
   const bad = mockRes();
   await adminReset(asAdmin(cookie, { method: 'POST', body: { confirm: 'nope' } }), bad);
   assert.equal(bad.statusCode, 400);
   assert.equal((await store.listInvestors()).length, 1);
+  assert.equal((await store.latestNdaByInvestor()).size, 1);
 
   // anonymous → 401
   const anon = mockRes();
@@ -178,9 +180,13 @@ test('reset clears all data, preserves admins, and requires confirm + auth', asy
   const res = mockRes();
   await adminReset(asAdmin(cookie, { method: 'POST', body: { confirm: 'RESET' } }), res);
   assert.equal(res.json_().ok, true);
+  assert.equal(res.json_().cleared.ndas, 1); // NDA submissions are counted in the report
   assert.equal((await store.listInvestors()).length, 0);
   assert.equal((await store.listAccessRequests()).length, 0);
   assert.equal((await store.listDocuments()).length, 0);
+  // Signed-NDA PDFs (investor PII) must not survive a reset — ids restart, so a
+  // stale submission would re-attach to whichever new investor reuses the id.
+  assert.equal((await store.latestNdaByInvestor()).size, 0);
   assert.equal((await store.listAdmins()).length, 1); // admins preserved
   assert.equal((await store.listLogs({ limit: 5 })).some((l) => /database reset/.test(l.detail)), true);
 });
