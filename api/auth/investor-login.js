@@ -28,7 +28,7 @@ export default async function handler(req, res) {
 
   // Brute-force throttle: too many recent failures for this IP+email → 429.
   const key = loginKey('inv', ip, email);
-  if (loginBlocked(key)) {
+  if (await loginBlocked(key)) {
     await logEvent({ actorType: 'anon', email, event: 'login_failed', detail: 'rate-limited', ip, userAgent: ua });
     res.setHeader('Retry-After', String(loginWindowSec));
     return sendJson(res, 429, { ok: false, error: 'Too many failed attempts. Please try again later.' });
@@ -40,11 +40,11 @@ export default async function handler(req, res) {
     : (verifyPassword(password, DUMMY_HASH), false);
 
   if (!passOk) {
-    loginFailed(key);
+    await loginFailed(key);
     await logEvent({ actorType: inv ? 'investor' : 'anon', actorId: inv ? inv.id : null, email, event: 'login_failed', detail: 'bad-credentials', ip, userAgent: ua });
     return sendJson(res, 401, { ok: false, error: 'Invalid credentials.' });
   }
-  loginReset(key); // valid credentials — clear the failure counter
+  await loginReset(key); // valid credentials — clear the failure counter
   if (inv.revoked) {
     await logEvent({ actorType: 'investor', actorId: inv.id, email, event: 'login_failed', detail: 'revoked', ip, userAgent: ua });
     return sendJson(res, 403, { ok: false, error: 'Access to the data room has been revoked.' });

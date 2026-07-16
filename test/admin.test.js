@@ -4,9 +4,10 @@ import { mockReq, mockRes, cookieFromRes, TEST_ORIGIN } from './helpers.js';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 
-import { ensureSchema, resetDbForTests } from '../api/_lib/db.js';
+import { ensureSchema, resetDbForTests, query } from '../api/_lib/db.js';
 import * as store from '../api/_lib/store.js';
 import { hashPassword } from '../api/_lib/auth.js';
+import { loginKey } from '../api/_lib/throttle.js';
 
 import adminLogin from '../api/auth/admin-login.js';
 import investorLogin from '../api/auth/investor-login.js';
@@ -75,6 +76,13 @@ test('admin login is throttled after repeated failures (429 + Retry-After)', asy
   const blocked = await attempt(ADMIN_PW);
   assert.equal(blocked.statusCode, 429);
   assert.ok(blocked.getHeader('retry-after'));
+  // The counter is persisted in Postgres, not instance memory — so the block
+  // holds across serverless instances and cold starts (a distributed guesser
+  // cannot start from zero on a fresh instance).
+  const { rows } = await query('SELECT fails FROM login_throttle WHERE key = $1', [
+    loginKey('adm', ip, 'founder@vitabahn.com'),
+  ]);
+  assert.ok(rows[0] && Number(rows[0].fails) >= 10, 'failure counter is stored in the database');
 });
 
 test('provisioning creates a passwordless account + set-password invite (no login until set)', async () => {
@@ -159,9 +167,10 @@ test('an admin cannot remove themselves or the last admin, but can remove others
 test('reset clears all data, preserves admins, and requires confirm + auth', async () => {
   await seedAdmin();
   const cookie = await adminCookie();
-  await store.createInvestor({ email: 'x@fund.vc', name: 'X', accessLevel: 2 });
+  const invId = await store.createInvestor({ email: 'x@fund.vc', name: 'X', accessLevel: 2 });
   await store.insertAccessRequest({ requestId: 'VB-RESET-1', fullName: 'R', email: 'r@x.com' });
   await store.insertDocument({ id: 'D-r', title: 'Doc', minLevel: 2, tier: 1, size: 3, bytes: Buffer.from('abc') });
+  await store.insertNdaSubmission({ investorId: invId, filename: 'signed.pdf', contentType: 'application/pdf', size: 3, bytes: Buffer.from('abc') });
 
   // wrong confirm phrase → 400, nothing cleared
   const bad = mockRes();
@@ -181,6 +190,9 @@ test('reset clears all data, preserves admins, and requires confirm + auth', asy
   assert.equal((await store.listInvestors()).length, 0);
   assert.equal((await store.listAccessRequests()).length, 0);
   assert.equal((await store.listDocuments()).length, 0);
+  // Signed NDA uploads (investor PII) must not survive a reset — with IDs
+  // restarting, surviving rows would re-attach to the wrong future investors.
+  assert.equal((await query('SELECT count(*)::int AS n FROM nda_submissions')).rows[0].n, 0);
   assert.equal((await store.listAdmins()).length, 1); // admins preserved
   assert.equal((await store.listLogs({ limit: 5 })).some((l) => /database reset/.test(l.detail)), true);
 });

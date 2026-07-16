@@ -140,6 +140,17 @@ CREATE TABLE IF NOT EXISTS invites (
 CREATE INDEX IF NOT EXISTS invites_token_idx ON invites (token_hash);
 CREATE INDEX IF NOT EXISTS invites_investor_idx ON invites (investor_id);
 
+-- Login brute-force counters (failed attempts only), keyed realm:ip:email.
+-- Kept in Postgres so the limit holds across ALL serverless instances — an
+-- in-memory counter is per-instance and resets on every cold start, which a
+-- distributed guesser can exploit. Rows are dead once expires_at passes and are
+-- purged opportunistically on the failure path (see _lib/throttle.js).
+CREATE TABLE IF NOT EXISTS login_throttle (
+  key        TEXT PRIMARY KEY,
+  fails      INT NOT NULL DEFAULT 0,
+  expires_at TIMESTAMPTZ NOT NULL
+);
+
 -- Investor-submitted signed NDAs (per-investor, private — NOT part of the shared
 -- documents catalogue). The founder reviews and accepts one, which flips
 -- investors.nda_signed. Bytes are served only to the founder via the admin route.
