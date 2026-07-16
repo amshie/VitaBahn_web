@@ -4,9 +4,10 @@ import { mockReq, mockRes, cookieFromRes, TEST_ORIGIN } from './helpers.js';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 
-import { ensureSchema, resetDbForTests } from '../api/_lib/db.js';
+import { ensureSchema, resetDbForTests, query } from '../api/_lib/db.js';
 import * as store from '../api/_lib/store.js';
 import { hashPassword } from '../api/_lib/auth.js';
+import { loginKey } from '../api/_lib/throttle.js';
 
 import adminLogin from '../api/auth/admin-login.js';
 import investorLogin from '../api/auth/investor-login.js';
@@ -75,6 +76,13 @@ test('admin login is throttled after repeated failures (429 + Retry-After)', asy
   const blocked = await attempt(ADMIN_PW);
   assert.equal(blocked.statusCode, 429);
   assert.ok(blocked.getHeader('retry-after'));
+  // The counter is persisted in Postgres, not instance memory — so the block
+  // holds across serverless instances and cold starts (a distributed guesser
+  // cannot start from zero on a fresh instance).
+  const { rows } = await query('SELECT fails FROM login_throttle WHERE key = $1', [
+    loginKey('adm', ip, 'founder@vitabahn.com'),
+  ]);
+  assert.ok(rows[0] && Number(rows[0].fails) >= 10, 'failure counter is stored in the database');
 });
 
 test('provisioning creates a passwordless account + set-password invite (no login until set)', async () => {
