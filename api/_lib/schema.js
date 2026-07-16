@@ -20,6 +20,8 @@ CREATE TABLE IF NOT EXISTS admins (
   email         TEXT UNIQUE NOT NULL,
   name          TEXT NOT NULL DEFAULT '',
   password_hash TEXT NOT NULL,
+  -- Set whenever the password is created/rotated; sessions issued before it are stale.
+  password_changed_at TIMESTAMPTZ,
   created_at    TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 
@@ -33,6 +35,8 @@ CREATE TABLE IF NOT EXISTS investors (
   country        TEXT NOT NULL DEFAULT '',
   investor_type  TEXT NOT NULL DEFAULT '',
   password_hash  TEXT,
+  -- Set whenever the password is set/reset; sessions issued before it are stale.
+  password_changed_at TIMESTAMPTZ,
   -- Enforced disclosure grant. 1..5 for investors; 0 is reserved for admins and
   -- must never be assigned here (guarded in the data layer).
   access_level   INT  NOT NULL DEFAULT 1,
@@ -117,6 +121,10 @@ CREATE INDEX IF NOT EXISTS documents_level_idx ON documents (min_level);
 ALTER TABLE documents ADD COLUMN IF NOT EXISTS pages TEXT NOT NULL DEFAULT '';
 ALTER TABLE documents ADD COLUMN IF NOT EXISTS updated_at TIMESTAMPTZ NOT NULL DEFAULT now();
 ALTER TABLE documents ADD COLUMN IF NOT EXISTS is_nda_template BOOLEAN NOT NULL DEFAULT false;
+
+-- Password-change stamp for session invalidation (added after initial launch).
+ALTER TABLE investors ADD COLUMN IF NOT EXISTS password_changed_at TIMESTAMPTZ;
+ALTER TABLE admins ADD COLUMN IF NOT EXISTS password_changed_at TIMESTAMPTZ;
 
 -- Single-use, time-limited set-password invitations. Only a HASH of the token is
 -- stored, so a database leak never exposes a usable link.

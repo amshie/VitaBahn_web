@@ -8,6 +8,7 @@ import * as store from '../api/_lib/store.js';
 import setPassword from '../api/auth/set-password.js';
 import forgotPassword from '../api/auth/forgot-password.js';
 import investorLogin from '../api/auth/investor-login.js';
+import roomOverview from '../api/room/overview.js';
 import { buildInviteEmail } from '../api/_lib/mail.js';
 
 async function countValidInvites(investorId) {
@@ -32,7 +33,12 @@ test('peek validates, POST sets the password and auto-signs-in', async () => {
   const p = mockRes(); await setPassword(post(token, 'my-strong-pass-1'), p);
   assert.equal(p.statusCode, 200);
   assert.equal(p.json_().redirect, '/investor-room');
-  assert.ok(cookieFromRes(p, 'vb_inv'), 'auto-signed-in');
+  const autoCookie = cookieFromRes(p, 'vb_inv');
+  assert.ok(autoCookie, 'auto-signed-in');
+  // The session issued by set-password must be immediately usable — the new
+  // password_changed_at must not flag this just-issued session as stale.
+  const ov = mockRes(); await roomOverview(mockReq({ cookies: { vb_inv: autoCookie } }), ov);
+  assert.equal(ov.statusCode, 200);
 
   // password_set + login_success logged
   const logs = await store.listLogs({ actorId: id });

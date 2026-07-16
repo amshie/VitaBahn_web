@@ -5,7 +5,7 @@ import { mockReq, mockRes, cookieFromRes, TEST_ORIGIN } from './helpers.js';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 
-import { ensureSchema, resetDbForTests } from '../api/_lib/db.js';
+import { ensureSchema, resetDbForTests, query } from '../api/_lib/db.js';
 import * as store from '../api/_lib/store.js';
 import { hashPassword } from '../api/_lib/auth.js';
 
@@ -71,6 +71,24 @@ test('login: success sets cookie + logs; wrong password 401 + logs failure', asy
   const logs = await store.listLogs({ limit: 20 });
   assert.equal(logs.some((l) => l.event === 'login_success'), true);
   assert.equal(logs.some((l) => l.event === 'login_failed'), true);
+});
+
+test('investor login: failures throttle to 429; a correct login resets the counter', async () => {
+  await seed();
+  const ip = '198.51.100.202'; // dedicated IP so the throttle key is isolated
+  const tryLogin = async (password) => {
+    const res = mockRes();
+    await investorLogin(mockReq({ method: 'POST', headers: { origin: TEST_ORIGIN }, body: { email: 'l2@fund.vc', password }, ip }), res);
+    return res;
+  };
+  // 9 failures stay below the threshold; a correct sign-in clears the counter…
+  for (let i = 0; i < 9; i++) assert.equal((await tryLogin('wrong')).statusCode, 401);
+  assert.equal((await tryLogin(PW)).statusCode, 200);
+  // …so failures accumulate from zero again: 10 more 401s, then the 11th is 429.
+  for (let i = 0; i < 10; i++) assert.equal((await tryLogin('wrong')).statusCode, 401);
+  const blocked = await tryLogin('wrong');
+  assert.equal(blocked.statusCode, 429);
+  assert.ok(blocked.getHeader('retry-after'));
 });
 
 test('unauthenticated: all room routes deny; page redirects to login', async () => {
@@ -162,6 +180,27 @@ test('expiry blocks an existing session immediately', async () => {
   const s = mockRes(); await roomSession(authed(cookie), s);
   assert.equal(s.statusCode, 401);
   assert.equal(s.json_().reason, 'expired');
+});
+
+test('a password change invalidates sessions issued before it', async () => {
+  await seed();
+  const { cookie } = await login('l2@fund.vc');
+  // The session works before any password change…
+  let s = mockRes(); await roomSession(authed(cookie), s);
+  assert.equal(s.statusCode, 200);
+  // …then the investor changes their password. Stamping password_changed_at ahead of
+  // the session's issue time stands in for "this session predates the change".
+  const inv = await store.getInvestorByEmail('l2@fund.vc');
+  await query("UPDATE investors SET password_changed_at = now() + interval '1 hour' WHERE id = $1", [inv.id]);
+  s = mockRes(); await roomSession(authed(cookie), s);
+  assert.equal(s.statusCode, 401);
+  assert.equal(s.json_().reason, 'stale');
+  // A session issued at/after the change is accepted (stamp the change back to now,
+  // then sign in fresh — the new session post-dates password_changed_at).
+  await query('UPDATE investors SET password_changed_at = now() WHERE id = $1', [inv.id]);
+  const fresh = await login('l2@fund.vc');
+  const s2 = mockRes(); await roomSession(authed(fresh.cookie), s2);
+  assert.equal(s2.statusCode, 200);
 });
 
 test('authenticated room page returns the shell (noindex), not a redirect', async () => {

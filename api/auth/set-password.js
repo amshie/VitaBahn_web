@@ -9,7 +9,7 @@ import { sendJson, readJsonBody, requireOrigin, clientIp, userAgent } from '../_
 import { ensureSchema, peekInvite, consumeInvite, getInvestorById, updateInvestor, logEvent } from '../_lib/store.js';
 import { hashPassword, createSession, setSessionCookie } from '../_lib/auth.js';
 
-const MIN_LEN = 10;
+const MIN_LEN = 12; // matches the admin/bootstrap minimum (api/admin/admins.js, bootstrap.js)
 
 export default async function handler(req, res) {
   await ensureSchema();

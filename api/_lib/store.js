@@ -25,6 +25,7 @@ function mapInvestor(r) {
     country: r.country,
     investorType: r.investor_type,
     hasPassword: Boolean(r.password_hash),
+    passwordChangedAt: iso(r.password_changed_at),
     accessLevel: Number(r.access_level),
     ndaSigned: r.nda_signed,
     ndaSignedAt: iso(r.nda_signed_at),
@@ -89,15 +90,15 @@ export async function getAdminByEmail(email) {
 
 export async function createAdmin({ email, name = '', passwordHash }) {
   const { rows } = await query(
-    'INSERT INTO admins (email, name, password_hash) VALUES ($1,$2,$3) ON CONFLICT (email) DO UPDATE SET name = EXCLUDED.name, password_hash = EXCLUDED.password_hash RETURNING id',
+    'INSERT INTO admins (email, name, password_hash, password_changed_at) VALUES ($1,$2,$3, now()) ON CONFLICT (email) DO UPDATE SET name = EXCLUDED.name, password_hash = EXCLUDED.password_hash, password_changed_at = now() RETURNING id',
     [String(email).toLowerCase(), name, passwordHash]
   );
   return rows[0].id;
 }
 
 export async function getAdminById(id) {
-  const { rows } = await query('SELECT id, email, name, created_at FROM admins WHERE id = $1', [id]);
-  return rows[0] ? { id: rows[0].id, email: rows[0].email, name: rows[0].name } : null;
+  const { rows } = await query('SELECT id, email, name, created_at, password_changed_at FROM admins WHERE id = $1', [id]);
+  return rows[0] ? { id: rows[0].id, email: rows[0].email, name: rows[0].name, passwordChangedAt: iso(rows[0].password_changed_at) } : null;
 }
 
 export async function countAdmins() {
@@ -209,6 +210,10 @@ export async function updateInvestor(id, patch) {
     }
   }
   if (!sets.length) return getInvestorById(id);
+  // Setting/resetting the password stamps the change so older sessions become stale.
+  if (Object.prototype.hasOwnProperty.call(patch, 'passwordHash')) {
+    sets.push('password_changed_at = now()');
+  }
   sets.push(`updated_at = now()`);
   vals.push(id);
   const { rows } = await query(
