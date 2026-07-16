@@ -122,15 +122,19 @@ export async function dataCounts() {
             (SELECT count(*) FROM access_requests)::int AS requests,
             (SELECT count(*) FROM documents)::int AS documents,
             (SELECT count(*) FROM invites)::int AS invites,
+            (SELECT count(*) FROM nda_submissions)::int AS ndas,
             (SELECT count(*) FROM access_logs)::int AS logs`
   );
   return rows[0];
 }
 
-// Wipe all operational data (investors, requests, documents, invites, logs).
+// Wipe all operational data (investors, requests, documents, invites, NDA
+// submissions, logs). nda_submissions must be included: it holds signed-NDA PDFs
+// (investor PII), and RESTART IDENTITY reuses investor ids — stale submissions
+// would re-attach to the wrong new investors.
 // Admin accounts are deliberately preserved so the console stays accessible.
 export async function resetData() {
-  await query('TRUNCATE investors, access_requests, documents, invites, access_logs RESTART IDENTITY CASCADE');
+  await query('TRUNCATE investors, access_requests, documents, invites, nda_submissions, access_logs RESTART IDENTITY CASCADE');
 }
 
 // ------------------------------------------------------------- investors

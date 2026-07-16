@@ -1,6 +1,6 @@
 // POST /api/admin/reset { confirm: "RESET" } — clear all operational data
-// (investors, access requests, documents, invites, access logs). Admin accounts
-// are preserved so the console stays accessible. Level-0 only, Origin-checked, and
+// (investors, access requests, documents, invites, NDA submissions, access logs).
+// Admin accounts are preserved so the console stays accessible. Level-0 only, Origin-checked, and
 // requires the explicit confirm phrase. The wipe itself is written to the (now
 // otherwise empty) audit log.
 
@@ -25,7 +25,7 @@ export default async function handler(req, res) {
   await resetData();
   await logEvent({
     actorType: 'admin', actorId: admin.id, email: admin.email, event: 'admin_action',
-    detail: `database reset — cleared ${cleared.investors} investors, ${cleared.requests} requests, ${cleared.documents} documents, ${cleared.invites} invites, ${cleared.logs} logs (admins preserved)`,
+    detail: `database reset — cleared ${cleared.investors} investors, ${cleared.requests} requests, ${cleared.documents} documents, ${cleared.invites} invites, ${cleared.ndas} NDA submissions, ${cleared.logs} logs (admins preserved)`,
     ip: clientIp(req), userAgent: userAgent(req),
   });
   return sendJson(res, 200, { ok: true, cleared });
