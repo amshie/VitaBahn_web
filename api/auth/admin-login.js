@@ -26,7 +26,7 @@ export default async function handler(req, res) {
 
   // Brute-force throttle: too many recent failures for this IP+email → 429.
   const key = loginKey('adm', ip, email);
-  if (loginBlocked(key)) {
+  if (await loginBlocked(key)) {
     await logEvent({ actorType: 'anon', email, event: 'login_failed', detail: 'admin rate-limited', ip, userAgent: ua });
     res.setHeader('Retry-After', String(loginWindowSec));
     return sendJson(res, 429, { ok: false, error: 'Too many failed attempts. Please try again later.' });
@@ -38,12 +38,12 @@ export default async function handler(req, res) {
     : (verifyPassword(password, DUMMY_HASH), false);
 
   if (!passOk) {
-    loginFailed(key);
+    await loginFailed(key);
     await logEvent({ actorType: admin ? 'admin' : 'anon', actorId: admin ? admin.id : null, email, event: 'login_failed', detail: 'admin', ip, userAgent: ua });
     return sendJson(res, 401, { ok: false, error: 'Invalid credentials.' });
   }
 
-  loginReset(key); // valid credentials — clear the failure counter
+  await loginReset(key); // valid credentials — clear the failure counter
   setSessionCookie(res, 'admin', createSession(admin.id, 'admin'));
   await logEvent({ actorType: 'admin', actorId: admin.id, email, event: 'login_success', detail: 'console', ip, userAgent: ua });
   return sendJson(res, 200, { ok: true, redirect: '/investor-console' });
