@@ -7,7 +7,7 @@
 // documents; the next section carries static gate copy (no document names); deeper
 // sections carry a title only.
 
-import { listDocumentsForLevel, viewedDocIdsByInvestor, getLatestNdaSubmission, getNdaTemplate } from './store.js';
+import { listDocumentsForLevel, viewedDocIdsByInvestor, getLatestNdaSubmission, getNdaTemplate, getActiveRoomVideo } from './store.js';
 
 const NDA_MIN_LEVEL = 3;
 const RECENT_DAYS = 14;
@@ -128,6 +128,11 @@ export async function buildRoomOverview(investor) {
     : ndaState === 'required' ? 'Required for L3'
     : 'Not required';
 
+  // The Overview briefing video is shown to every investor at every level, NDA or
+  // not — it is the one item in the room that is not level-gated. Only metadata is
+  // sent; the bytes still come from the authorised /api/room/video route.
+  const activeVideo = await getActiveRoomVideo();
+
   return {
     investor: {
       name: investor.name || investor.email,
@@ -144,6 +149,9 @@ export async function buildRoomOverview(investor) {
       docCount,
     },
     nda: ndaInfo,
+    video: activeVideo
+      ? { id: activeVideo.id, title: activeVideo.title, contentType: activeVideo.contentType, size: activeVideo.size }
+      : null,
     sections,
   };
 }
