@@ -301,7 +301,9 @@
       '<div class="row" style="margin-bottom:12px">' +
         '<label class="fl" style="margin:0">Upload into</label>' +
         '<select id="upFolder" style="width:auto">' + folderOptions(null) + '</select>' +
-        '<select id="upLevel" style="width:auto"><option value="2">L2 · Interested (Open)</option><option value="3" selected>L3 · Qualified/NDA</option><option value="4">L4 · Lead/Anchor</option><option value="5">L5 · Signing</option></select>' +
+        '<select id="upLevel" style="width:auto">' + LEVEL_OPTS.map(function (l) {
+          return '<option value="' + l + '"' + (l === 3 ? ' selected' : '') + '>L' + l + ' · ' + esc(LEVELS[l]) + '</option>';
+        }).join('') + '</select>' +
         '<input type="file" id="upFile" accept="application/pdf,.pdf" style="width:auto" />' +
         '<span class="muted" style="font-size:11.5px">Max ~4.5 MB per file. A folder sets the level; pick one here only when filing outside a folder.</span>' +
       '</div>' + rows;
