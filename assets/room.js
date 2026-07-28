@@ -23,7 +23,9 @@
     dl: '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12M7 10l5 5 5-5M5 21h14"/></svg>',
     lock: '<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="10" width="16" height="10" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg>',
     check: '<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>',
-    person: '<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M5 20a7 7 0 0 1 14 0"/></svg>'
+    person: '<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M5 20a7 7 0 0 1 14 0"/></svg>',
+    folder: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M3 7a2 2 0 0 1 2-2h4l2 2.5h8a2 2 0 0 1 2 2V18a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>',
+    lockrow: '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="10" width="16" height="10" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg>'
   };
 
   var state = { data: null, active: 'overview', search: '' };
@@ -89,6 +91,13 @@
   function sections() { return state.data.sections; }
   function sectionAt(level) { return sections().find(function (s) { return s.level === level; }); }
   function unlockedSections() { return sections().filter(function (s) { return s.state === 'unlocked'; }); }
+  // Every document in a section, folders and loose alike, in display order.
+  function sectionDocs(sec) {
+    var out = [];
+    (sec.folders || []).forEach(function (f) { (f.docs || []).forEach(function (d) { out.push(d); }); });
+    (sec.docs || []).forEach(function (d) { out.push(d); });
+    return out;
+  }
 
   // ---- open / download / request -----------------------------------------
   async function openDoc(id, btn) {
@@ -176,7 +185,7 @@
       if (sec.state === 'unlocked') {
         nav.appendChild(h('button', { class: on.trim(), onclick: navClick(sec.level) },
           h('span', { class: 'nl' }, 'L' + sec.level), h('span', { class: 'nt' }, sec.title),
-          h('span', { class: 'nmeta' }, String(sec.docs.length))));
+          h('span', { class: 'nmeta' }, String(sec.docCount))));
       } else {
         nav.appendChild(h('button', { class: ('locked' + on), onclick: navClick(sec.level) },
           h('span', { class: 'nl' }, 'L' + sec.level), h('span', { class: 'nt' }, sec.title), navTag(sec)));
@@ -208,7 +217,23 @@
     return h('span', { class: 'c-status' }, h('span', { class: 'sdot', style: 'background:var(--teal)' }), 'Not viewed');
   }
 
+  // A locked row names the document but offers no way to open it — the bytes are
+  // refused by the server regardless, so this is presentation, not enforcement.
+  function lockedRow(d) {
+    var req = h('button', { class: 'open req' }, 'Request access');
+    req.addEventListener('click', function () { requestAccess(d.level, req); });
+    return h('div', { class: 'drow locked' },
+      h('div', { class: 'dname' }, setIcon(h('span', { class: 'dlock' }), 'lockrow'),
+        h('div', { class: 'dmeta' }, h('div', { class: 'dt' }, d.name), h('div', { class: 'dsub' }, d.ft + ' · unlocks at Level ' + d.level))),
+      h('div', { class: 'c-pages' }, d.pages),
+      h('div', { class: 'c-upd' }, d.updated),
+      h('div', { class: 'c-status' }, h('span', { class: 'slock' }, 'Locked')),
+      h('div', { class: 'c-act' }, req)
+    );
+  }
+
   function docRow(d) {
+    if (d.locked) return lockedRow(d);
     var openBtn = h('button', { class: 'open' }, 'Open');
     openBtn.addEventListener('click', function () { openDoc(d.id, openBtn); });
 
@@ -242,6 +267,30 @@
     return wrap;
   }
 
+  // A section's contents: folder groups first, then anything filed loose. Used for
+  // unlocked AND gated sections — names are listed either way, only the row differs.
+  function docListing(sec) {
+    var q = state.search.trim().toLowerCase();
+    var match = function (d) { return !q || d.name.toLowerCase().indexOf(q) >= 0; };
+    var blocks = [];
+    (sec.folders || []).forEach(function (f) {
+      var docs = (f.docs || []).filter(match);
+      if (!docs.length) return;
+      blocks.push(h('div', { class: 'folder' },
+        h('div', { class: 'folder-h' },
+          setIcon(h('span', { class: 'folder-ic' }), 'folder'),
+          h('span', { class: 'folder-n' }, f.name),
+          h('span', { class: 'folder-c' }, docs.length + (docs.length === 1 ? ' file' : ' files'))),
+        docTable(docs)));
+    });
+    var loose = (sec.docs || []).filter(match);
+    if (loose.length) blocks.push(docTable(loose));
+    if (!blocks.length) {
+      return h('div', { class: 'noresults' }, q ? 'No documents match “' + state.search + '”.' : 'No documents here yet.');
+    }
+    return blocks;
+  }
+
   // The briefing video is the one item every investor sees at every level — the
   // server sends metadata only, and the bytes stream from the authorised route,
   // which re-checks the session on each range request.
@@ -271,7 +320,7 @@
     var L = LEVELS[a.level] || LEVELS[1];
     var first = (inv.name || '').split(/\s+/)[0] || inv.name || 'there';
     var newDocs = [];
-    unlockedSections().forEach(function (s) { s.docs.forEach(function (d) { if (d.status === 'new') newDocs.push(d); }); });
+    unlockedSections().forEach(function (s) { sectionDocs(s).forEach(function (d) { if (d.status === 'new' && !d.locked) newDocs.push(d); }); });
     return [
       h('div', { class: 'crumb' }, 'Data room / ', h('b', {}, 'Overview')),
       h('div', { class: 'ch' }, h('div', {}, h('h1', {}, 'Welcome, ' + first),
@@ -290,17 +339,26 @@
   }
 
   function sectionView(sec) {
-    var q = state.search.trim().toLowerCase();
-    var list = q ? sec.docs.filter(function (d) { return d.name.toLowerCase().indexOf(q) >= 0; }) : sec.docs;
-    var n = sec.docs.length;
+    var n = sec.docCount;
     return [
       h('div', { class: 'crumb' }, 'Data room / ', h('b', {}, sec.title)),
       h('div', { class: 'ch' },
         h('div', {}, h('h1', {}, sec.title), h('div', { class: 'cn' }, 'Level ' + sec.level + ' · ' + n + ' document' + (n === 1 ? '' : 's') + ' · view-only, watermarked.')),
         h('span', { class: 'tiertag ' + sec.tier }, sec.tier === 'nda' ? 'NDA tier' : 'Open tier')),
       banner(),
-      docTable(list),
+      docListing(sec),
       conf()
+    ];
+  }
+
+  // Shown under a gate or locked panel: the contents are named so an investor knows
+  // what this stage holds and can ask for it, but every row is locked.
+  function lockedListing(sec) {
+    if (!sec.docCount) return null;
+    return [
+      h('div', { class: 'subhead' }, 'In this section'),
+      h('div', { class: 'lockednote' }, sec.docCount + (sec.docCount === 1 ? ' document is' : ' documents are') + ' filed here. Names are shown so you know what this stage contains; the contents open once your access reaches Level ' + sec.level + '.'),
+      docListing(sec)
     ];
   }
 
@@ -373,6 +431,7 @@
         h('p', {}, g.body),
         action,
         h('div', { class: 'gate-note' }, g.note)),
+      lockedListing(sec),
       conf()
     ];
   }
@@ -383,8 +442,9 @@
       h('div', { class: 'ch' }, h('div', {}, h('h1', {}, sec.title), h('div', { class: 'cn' }, 'Level ' + sec.level + ' · unlocks at a later stage.'))),
       h('div', { class: 'gate named' },
         h('div', { class: 'gate-h' }, setIcon(h('div', { class: 'gate-ic' }), 'lock'), h('h2', {}, 'Not yet available')),
-        h('p', {}, 'These materials are released according to qualification, NDA status and named approval as diligence progresses. They will appear here once your access level reaches Level ' + sec.level + '.'),
+        h('p', {}, 'These materials are released according to qualification, NDA status and named approval as diligence progresses. They will open here once your access level reaches Level ' + sec.level + '.'),
         h('div', { class: 'gate-note' }, 'Access is assigned manually by the VitaBahn team.')),
+      lockedListing(sec),
       conf()
     ];
   }

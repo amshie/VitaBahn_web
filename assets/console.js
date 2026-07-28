@@ -7,7 +7,7 @@
   var LEVEL_DOT = { 1: '#9AA6AC', 2: '#4FB3A3', 3: '#CBA968', 4: '#267F73', 5: '#0B1013' };
   var COMMIT_COLOR = { none: '#9AA6AC', soft: '#CBA968', committed: '#267F73' };
 
-  var state = { investors: [], requests: [], documents: [], logs: [], admins: [], me: null, selectedId: null, search: '', video: null, videoLimits: { maxBytes: 0, chunkSize: 3145728 }, uploading: null };
+  var state = { investors: [], requests: [], documents: [], folders: [], logs: [], admins: [], me: null, selectedId: null, search: '', video: null, videoLimits: { maxBytes: 0, chunkSize: 3145728 }, uploading: null };
   var $ = function (id) { return document.getElementById(id); };
   function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
   function toast(msg) { var t = $('toast'); t.textContent = msg; t.style.display = 'block'; clearTimeout(t._t); t._t = setTimeout(function () { t.style.display = 'none'; }, 4200); }
@@ -238,21 +238,73 @@
     }
   }
 
+  var LEVEL_OPTS = [1, 2, 3, 4, 5];
+  function levelSelect(attr, id, current) {
+    return '<select ' + attr + '="' + esc(id) + '">' + LEVEL_OPTS.map(function (l) {
+      return '<option value="' + l + '"' + (current === l ? ' selected' : '') + '>L' + l + '</option>';
+    }).join('') + '</select>';
+  }
+
+  // Folders group documents inside ONE level; everything filed in a folder takes
+  // that folder's level, so changing it here moves the contents with it.
+  function renderFolders() {
+    var byLevel = '';
+    LEVEL_OPTS.forEach(function (lvl) {
+      var list = state.folders.filter(function (f) { return f.minLevel === lvl; });
+      if (!list.length) return;
+      byLevel += '<div class="lvl-head">L' + lvl + ' · ' + esc(LEVELS[lvl]) + '</div>' + list.map(function (f) {
+        return '<div class="fld-row">' +
+          '<div><b>' + esc(f.name) + '</b></div>' +
+          '<div class="mono muted">' + f.docCount + (f.docCount === 1 ? ' file' : ' files') + '</div>' +
+          '<div>' + levelSelect('data-fldlevel', f.id, f.minLevel) + '</div>' +
+          '<div class="right"><button class="btn" data-fldren="' + esc(f.id) + '">Rename</button> ' +
+          '<button class="btn btn-red" data-flddel="' + esc(f.id) + '">Delete</button></div>' +
+        '</div>';
+      }).join('');
+    });
+    if (!byLevel) byLevel = '<div class="muted">No folders yet — documents sit directly in their level.</div>';
+    $('folders').innerHTML = '<div class="sec">Data room folders</div>' +
+      '<div class="row" style="margin-bottom:14px">' +
+        '<input id="fldName" type="text" placeholder="New folder name…" style="width:auto;min-width:200px" autocomplete="off" />' +
+        '<select id="fldLevel" style="width:auto">' + LEVEL_OPTS.map(function (l) {
+          return '<option value="' + l + '"' + (l === 3 ? ' selected' : '') + '>L' + l + ' · ' + esc(LEVELS[l]) + '</option>';
+        }).join('') + '</select>' +
+        '<button class="btn btn-teal" id="fldAdd">Create folder</button>' +
+        '<span class="muted" style="font-size:11.5px">Investors see folder and file names at every level; only the contents stay gated.</span>' +
+      '</div>' + byLevel;
+  }
+
+  function folderOptions(current) {
+    return '<option value="">— no folder —</option>' + state.folders.map(function (f) {
+      return '<option value="' + esc(f.id) + '"' + (current === f.id ? ' selected' : '') + '>L' + f.minLevel + ' · ' + esc(f.name) + '</option>';
+    }).join('');
+  }
+
   function renderLibrary() {
     var rows = state.documents.map(function (d) {
-      var sel = [1, 2, 3, 4, 5].map(function (l) { return '<option value="' + l + '"' + (d.minLevel === l ? ' selected' : '') + '>L' + l + '</option>'; }).join('');
       var isTpl = d.isNdaTemplate;
       var tplTag = isTpl ? ' <span class="tag" style="background:#F4EBD8;color:#6E5423">NDA template</span>' : '';
+      // A filed document takes its folder's level, so editing it here would be a lie.
+      var inFolder = !!d.folderId;
+      var lvlSel = '<select data-doclevel="' + esc(d.id) + '"' + (inFolder ? ' disabled title="Level is set by the folder"' : '') + '>' +
+        LEVEL_OPTS.map(function (l) { return '<option value="' + l + '"' + (d.minLevel === l ? ' selected' : '') + '>L' + l + '</option>'; }).join('') + '</select>';
       return '<div class="lib-row" data-doc="' + esc(d.id) + '">' +
-        '<div><b>' + esc(d.title) + '</b> <span class="tag ' + (d.tier === 2 ? '' : '') + '" style="background:' + (d.minLevel >= 3 ? 'var(--gold-soft);color:var(--gold-ink)' : 'var(--teal-soft);color:var(--teal-dark)') + '">' + (d.minLevel >= 3 ? 'NDA' : 'Open') + '</span>' + tplTag + '</div>' +
+        '<div><b>' + esc(d.title) + '</b> <span class="tag" style="background:' + (d.minLevel >= 3 ? 'var(--gold-soft);color:var(--gold-ink)' : 'var(--teal-soft);color:var(--teal-dark)') + '">' + (d.minLevel >= 3 ? 'NDA' : 'Open') + '</span>' + tplTag + '</div>' +
         '<div class="mono muted">' + fmtSize(d.size) + '</div>' +
         '<div class="muted mono" style="font-size:12px">' + fmtDate(d.addedAt) + '</div>' +
-        '<div><select data-doclevel="' + esc(d.id) + '">' + sel + '</select></div>' +
+        '<div><select data-docfolder="' + esc(d.id) + '">' + folderOptions(d.folderId) + '</select></div>' +
+        '<div>' + lvlSel + '</div>' +
         '<div class="right"><button class="btn" data-ndatpl="' + esc(d.id) + '" data-on="' + (isTpl ? '1' : '0') + '">' + (isTpl ? 'Unset NDA' : 'Set as NDA') + '</button> <button class="btn btn-red" data-del="' + esc(d.id) + '">Delete</button></div>' +
       '</div>';
     }).join('') || '<div class="muted">No documents in the data room yet.</div>';
     $('library').innerHTML = '<div class="sec">Data room documents</div>' +
-      '<div class="row" style="margin-bottom:12px"><label class="fl" style="margin:0">New upload level</label><select id="upLevel" style="width:auto"><option value="2">L2 · Interested (Open)</option><option value="3" selected>L3 · Qualified/NDA</option><option value="4">L4 · Lead/Anchor</option><option value="5">L5 · Signing</option></select><input type="file" id="upFile" style="width:auto" /><span class="muted" style="font-size:11.5px">Max ~4.5 MB per file.</span></div>' + rows;
+      '<div class="row" style="margin-bottom:12px">' +
+        '<label class="fl" style="margin:0">Upload into</label>' +
+        '<select id="upFolder" style="width:auto">' + folderOptions(null) + '</select>' +
+        '<select id="upLevel" style="width:auto"><option value="2">L2 · Interested (Open)</option><option value="3" selected>L3 · Qualified/NDA</option><option value="4">L4 · Lead/Anchor</option><option value="5">L5 · Signing</option></select>' +
+        '<input type="file" id="upFile" accept="application/pdf,.pdf" style="width:auto" />' +
+        '<span class="muted" style="font-size:11.5px">Max ~4.5 MB per file. A folder sets the level; pick one here only when filing outside a folder.</span>' +
+      '</div>' + rows;
   }
 
   function renderLogs() {
@@ -282,7 +334,7 @@
       + '<div class="muted" style="font-size:11.5px;margin-top:8px">New admins sign in at /founder-login. Share the password securely — it is stored only as a hash and cannot be shown again.</div>';
   }
 
-  function renderAll() { renderCockpit(); renderStats(); renderTable(); renderDetail(); renderRequests(); renderVideo(); renderLibrary(); renderTeam(); renderLogs(); }
+  function renderAll() { renderCockpit(); renderStats(); renderTable(); renderDetail(); renderRequests(); renderVideo(); renderFolders(); renderLibrary(); renderTeam(); renderLogs(); }
 
   // ---------- data loads ----------
   async function loadInvestorsAndLogs() {
@@ -291,6 +343,7 @@
   }
   async function loadRequests() { state.requests = (await api('GET', '/api/admin/requests')).requests; }
   async function loadDocuments() { state.documents = (await api('GET', '/api/admin/documents')).documents; }
+  async function loadFolders() { state.folders = (await api('GET', '/api/admin/folders')).folders; }
   async function loadVideo() {
     var v = await api('GET', '/api/admin/video');
     state.video = v.video;
@@ -410,14 +463,70 @@
     } catch (er) { toast(er.message); }
   });
 
+  $('folders').addEventListener('click', async function (e) {
+    if (e.target.id === 'fldAdd') {
+      var name = $('fldName').value.trim();
+      if (!name) { toast('Give the folder a name first.'); return; }
+      try {
+        await api('POST', '/api/admin/folders', { name: name, minLevel: Number($('fldLevel').value) || 3 });
+        await loadFolders(); renderFolders(); renderLibrary();
+        toast('Folder "' + name + '" created.');
+      } catch (er) { toast(er.message); }
+      return;
+    }
+    var ren = e.target.getAttribute('data-fldren');
+    if (ren) {
+      var f = state.folders.find(function (x) { return x.id === ren; });
+      var next = window.prompt('Rename folder', f ? f.name : '');
+      if (next == null || !next.trim()) return;
+      try { await api('PATCH', '/api/admin/folders', { id: ren, changes: { name: next.trim() } }); await loadFolders(); renderFolders(); renderLibrary(); }
+      catch (er) { toast(er.message); }
+      return;
+    }
+    var del = e.target.getAttribute('data-flddel');
+    if (del) {
+      var d = state.folders.find(function (x) { return x.id === del; });
+      var note = d && d.docCount
+        ? 'Delete folder "' + d.name + '"? Its ' + d.docCount + ' document(s) are kept and stay at Level ' + d.minLevel + ', just no longer in a folder.'
+        : 'Delete this empty folder?';
+      if (!confirm(note)) return;
+      try {
+        var r = await api('DELETE', '/api/admin/folders', { id: del });
+        await Promise.all([loadFolders(), loadDocuments()]); renderFolders(); renderLibrary();
+        toast(r.unfiled ? 'Folder deleted — ' + r.unfiled + ' document(s) kept, now unfiled.' : 'Folder deleted.');
+      } catch (er) { toast(er.message); }
+    }
+  });
+  $('folders').addEventListener('change', async function (e) {
+    var fl = e.target.getAttribute('data-fldlevel');
+    if (!fl) return;
+    try {
+      await api('PATCH', '/api/admin/folders', { id: fl, changes: { minLevel: Number(e.target.value) } });
+      await Promise.all([loadFolders(), loadDocuments()]); renderFolders(); renderLibrary(); renderStats();
+      toast('Folder level changed — its documents moved with it.');
+    } catch (er) { toast(er.message); }
+  });
+
   $('library').addEventListener('change', async function (e) {
+    if (e.target.id === 'upFolder') {
+      // A folder decides the level, so the level picker only applies without one.
+      $('upLevel').disabled = !!e.target.value;
+      return;
+    }
     if (e.target.id === 'upFile') {
       var file = e.target.files && e.target.files[0]; if (!file) return;
-      var lvl = Number($('upLevel').value) || 3;
-      var qs = '?title=' + encodeURIComponent(file.name) + '&minLevel=' + lvl + '&filename=' + encodeURIComponent(file.name) + '&contentType=' + encodeURIComponent(file.type || 'application/octet-stream');
-      try { await api('POST', '/api/admin/documents' + qs, undefined, file); await loadDocuments(); renderLibrary(); renderStats(); toast('Uploaded "' + file.name + '".'); }
+      var folderId = $('upFolder') ? $('upFolder').value : '';
+      var qs = '?title=' + encodeURIComponent(file.name) + '&filename=' + encodeURIComponent(file.name) + '&contentType=' + encodeURIComponent(file.type || 'application/octet-stream');
+      qs += folderId ? '&folderId=' + encodeURIComponent(folderId) : '&minLevel=' + (Number($('upLevel').value) || 3);
+      try { await api('POST', '/api/admin/documents' + qs, undefined, file); await Promise.all([loadDocuments(), loadFolders()]); renderFolders(); renderLibrary(); renderStats(); toast('Uploaded "' + file.name + '".'); }
       catch (er) { toast(er.message); }
       e.target.value = '';
+      return;
+    }
+    var df = e.target.getAttribute('data-docfolder');
+    if (df) {
+      try { await api('PATCH', '/api/admin/documents', { id: df, changes: { folderId: e.target.value || null } }); await Promise.all([loadDocuments(), loadFolders()]); renderFolders(); renderLibrary(); }
+      catch (er) { toast(er.message); }
       return;
     }
     var dl = e.target.getAttribute('data-doclevel');
@@ -469,7 +578,7 @@
   $('logoutBtn').addEventListener('click', async function () { try { await api('POST', '/api/auth/logout', {}); } catch (e) {} window.location.href = '/founder-login'; });
 
   (async function init() {
-    try { await Promise.all([loadInvestorsAndLogs(), loadRequests(), loadDocuments(), loadVideo(), loadAdmins()]); if (state.investors[0]) state.selectedId = state.investors[0].id; renderAll(); }
+    try { await Promise.all([loadInvestorsAndLogs(), loadRequests(), loadDocuments(), loadFolders(), loadVideo(), loadAdmins()]); if (state.investors[0]) state.selectedId = state.investors[0].id; renderAll(); }
     catch (e) { if (e.message !== 'unauth') toast('Failed to load: ' + e.message); }
   })();
 })();

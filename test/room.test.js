@@ -219,9 +219,10 @@ test('authenticated room page returns the shell (noindex), not a redirect', asyn
 // ---------------------------------------------------------------------------
 async function overview(cookie) { const r = mockRes(); await roomOverview(authed(cookie), r); return r; }
 const secOf = (j, lvl) => j.sections.find((s) => s.level === lvl);
-// Titles of the seeded restricted docs that must never leak above their tier.
-const RESTRICTED_NAMES = ['One-Pager', 'Financial Model', 'Cap Table'];
-const leaksAny = (raw) => RESTRICTED_NAMES.some((n) => raw.includes(n));
+// Documents are LISTED at every level and gated only on content, so these helpers
+// reach into folders as well as the loose documents of a section.
+const allDocsOf = (j) => j.sections.flatMap((s) => [...(s.folders || []).flatMap((f) => f.docs), ...(s.docs || [])]);
+const docNamed = (j, name) => allDocsOf(j).find((d) => d.name === name);
 
 test('overview: unauthenticated is denied', async () => {
   await seed();
@@ -229,60 +230,81 @@ test('overview: unauthenticated is denied', async () => {
   assert.equal(r.statusCode, 401);
 });
 
-test('overview L1: only the (empty) Overview tier; next is the verify gate; no names leak', async () => {
+test('overview L1: nothing open yet, but the whole catalogue is named and locked', async () => {
   await seed();
   const { cookie } = await login('l1@fund.vc');
   const r = await overview(cookie); const j = r.json_();
   assert.equal(r.statusCode, 200);
   assert.equal(j.access.level, 1);
-  assert.equal(j.access.docCount, 0);
+  assert.equal(j.access.docCount, 0); // docCount counts what is OPENABLE
   assert.equal(secOf(j, 1).state, 'unlocked');
   assert.equal(secOf(j, 2).state, 'gate');
   assert.equal(secOf(j, 2).gate.kind, 'verify');
   assert.equal(secOf(j, 3).state, 'locked');
-  // gate + locked sections carry NO docs array…
-  assert.equal('docs' in secOf(j, 2), false);
-  assert.equal('docs' in secOf(j, 3), false);
-  // …and no restricted document name appears anywhere in the payload.
-  assert.equal(leaksAny(r.text), false);
+  // Gate and locked sections now carry their listing…
+  assert.deepEqual(secOf(j, 2).docs.map((d) => d.name), ['One-Pager']);
+  assert.deepEqual(secOf(j, 3).docs.map((d) => d.name), ['Financial Model']);
+  // …and every one of them is flagged locked, at every level above the grant.
+  assert.equal(allDocsOf(j).length, 3);
+  assert.ok(allDocsOf(j).every((d) => d.locked === true));
+  assert.ok(allDocsOf(j).every((d) => d.downloadable === false));
+  assert.equal(docNamed(j, 'Cap Table').level, 4);
 });
 
-test('overview L2: open docs shown; Diligence is an NDA gate; NDA/lead names hidden', async () => {
+test('overview L2: the open tier opens; deeper tiers stay named but locked', async () => {
   await seed();
   const { cookie } = await login('l2@fund.vc');
   const r = await overview(cookie); const j = r.json_();
   assert.equal(secOf(j, 2).state, 'unlocked');
   assert.deepEqual(secOf(j, 2).docs.map((d) => d.name), ['One-Pager']);
+  assert.equal(docNamed(j, 'One-Pager').locked, false);
   assert.equal(secOf(j, 3).state, 'gate');
   assert.equal(secOf(j, 3).gate.kind, 'nda');
   assert.equal(secOf(j, 4).state, 'locked');
   assert.equal(j.access.docCount, 1);
-  // The L3/L4 document names are not in the response.
-  assert.equal(r.text.includes('Financial Model'), false);
-  assert.equal(r.text.includes('Cap Table'), false);
+  // Named, but not openable.
+  assert.equal(docNamed(j, 'Financial Model').locked, true);
+  assert.equal(docNamed(j, 'Cap Table').locked, true);
 });
 
-test('overview L3 WITHOUT NDA: Diligence is a gate (not docs); NDA name never sent', async () => {
+test('overview L3 WITHOUT NDA: Diligence is named but the NDA still gates its contents', async () => {
   await seed();
   const { cookie } = await login('l3no@fund.vc');
   const r = await overview(cookie); const j = r.json_();
   assert.equal(secOf(j, 3).state, 'gate');
   assert.equal(secOf(j, 3).gate.kind, 'nda');
-  assert.equal('docs' in secOf(j, 3), false);
-  assert.equal(r.text.includes('Financial Model'), false);
+  assert.deepEqual(secOf(j, 3).docs.map((d) => d.name), ['Financial Model']);
+  // Reaching the level is not enough — without the NDA the row stays locked.
+  assert.equal(docNamed(j, 'Financial Model').locked, true);
   assert.equal(j.access.docCount, 1); // only the open-tier One-Pager
 });
 
-test('overview L3 WITH NDA: Diligence unlocked; named-approval gate next; L4 name hidden', async () => {
+test('overview L3 WITH NDA: Diligence unlocks; the level above stays named and locked', async () => {
   await seed();
   const { cookie } = await login('l3nda@fund.vc');
   const r = await overview(cookie); const j = r.json_();
   assert.equal(secOf(j, 3).state, 'unlocked');
   assert.deepEqual(secOf(j, 3).docs.map((d) => d.name), ['Financial Model']);
+  assert.equal(docNamed(j, 'Financial Model').locked, false);
   assert.equal(secOf(j, 4).state, 'gate');
   assert.equal(secOf(j, 4).gate.kind, 'named');
-  assert.equal(r.text.includes('Cap Table'), false);
+  assert.equal(docNamed(j, 'Cap Table').locked, true);
   assert.equal(j.access.docCount, 2);
+});
+
+test('a listed but locked document is still refused at the bytes', async () => {
+  await seed();
+  const { cookie } = await login('l1@fund.vc');
+  const j = (await overview(cookie)).json_();
+  // The L1 investor can read the name off the payload…
+  const capTable = docNamed(j, 'Cap Table');
+  assert.equal(capTable.locked, true);
+  // …and asking for its content with that very id is denied and logged.
+  const r = mockRes();
+  await roomDocument(authed(cookie, { query: { id: capTable.id } }), r);
+  assert.equal(r.statusCode, 403);
+  const logs = await store.listLogs({ limit: 20 });
+  assert.ok(logs.some((l) => l.event === 'document_denied' && l.documentId === capTable.id));
 });
 
 test('overview L4: Lead/Anchor unlocked; closing gate next; no Level 0 anywhere', async () => {

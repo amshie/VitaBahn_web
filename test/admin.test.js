@@ -364,10 +364,16 @@ test('preview-room shows EXACTLY the investor view (matches /api/room/overview) 
   assert.deepEqual(pvJson.access, ovJson.access);
   assert.equal(pvJson.preview.investorId, invId);
   assert.equal(pvJson.preview.email, 'a@fund.vc');
-  // L3+NDA: 1-3 unlocked, 4 gated, and no higher-tier document name leaks.
+  // L3+NDA: 1-3 unlocked, 4 gated. The L4 document is listed by name — the room
+  // shows the whole catalogue — but the preview must reproduce it as LOCKED, or the
+  // founder would be shown access the investor does not have.
   assert.equal(pvJson.sections.find((s) => s.level === 3).state, 'unlocked');
   assert.equal(pvJson.sections.find((s) => s.level === 4).state, 'gate');
-  assert.equal(JSON.stringify(pvJson).includes('Cap Table'), false);
+  const pvDocs = pvJson.sections.flatMap((s) => [...(s.folders || []).flatMap((f) => f.docs), ...(s.docs || [])]);
+  const capTable = pvDocs.find((d) => d.name === 'Cap Table');
+  assert.ok(capTable, 'the L4 document is listed');
+  assert.equal(capTable.locked, true);
+  assert.equal(pvDocs.find((d) => d.name === 'Financial Model').locked, false);
   // The preview is written to the audit log.
   const logs = await store.listLogs({ limit: 20 });
   assert.equal(logs.some((l) => l.event === 'admin_action' && /previewed data room as a@fund\.vc/.test(l.detail)), true);

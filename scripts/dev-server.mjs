@@ -47,6 +47,8 @@ const api = {
   '/api/admin/requests': (await import('../api/admin/requests.js')).default,
   '/api/admin/logs': (await import('../api/admin/logs.js')).default,
   '/api/admin/documents': (await import('../api/admin/documents.js')).default,
+  '/api/admin/folders': (await import('../api/admin/folders.js')).default,
+  '/api/admin/video': (await import('../api/admin/video.js')).default,
   '/api/admin/video': (await import('../api/admin/video.js')).default,
   '/api/admin/nda': (await import('../api/admin/nda.js')).default,
   '/api/admin/preview-room': (await import('../api/admin/preview-room.js')).default,
