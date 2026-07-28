@@ -3,11 +3,13 @@
 // call buildRoomOverview(investor) so the preview is computed by the SAME
 // authorisation logic the investor is served — there is no second, drifting copy.
 //
-// It returns ONLY what the given grant is cleared to see: unlocked sections carry
-// documents; the next section carries static gate copy (no document names); deeper
-// sections carry a title only.
+// Every section carries its folders and document NAMES at every level, so an
+// investor can see the shape and extent of the data room and ask for what they
+// need. What a name does NOT carry is content: each document is flagged
+// `locked` unless this grant may open it, and the bytes are refused independently
+// by /api/room/document — this payload is a listing, never an authorisation.
 
-import { listDocumentsForLevel, viewedDocIdsByInvestor, getLatestNdaSubmission, getNdaTemplate, getActiveRoomVideo } from './store.js';
+import { listDocuments, viewedDocIdsByInvestor, getLatestNdaSubmission, getNdaTemplate, getActiveRoomVideo, listFolders } from './store.js';
 
 const NDA_MIN_LEVEL = 3;
 const RECENT_DAYS = 14;
@@ -68,25 +70,34 @@ export async function buildRoomOverview(investor) {
   const level = investor.accessLevel;
   const nda = investor.ndaSigned;
 
-  const authorised = (await listDocumentsForLevel(level)).filter((d) => d.minLevel < NDA_MIN_LEVEL || nda);
+  const allDocs = await listDocuments();
+  const allFolders = await listFolders();
   const viewed = await viewedDocIdsByInvestor(investor.id);
   const now = Date.now();
 
+  // Whether this grant may OPEN material at `lvl` — the same rule the document
+  // route enforces on the bytes. Listing is unconditional; this governs access.
+  const authorisedFor = (lvl) => level >= lvl && (SECTION_META[lvl].tier === 'open' || nda);
+
   const toDocView = (d) => {
-    const isViewed = viewed.has(d.id);
+    const openable = authorisedFor(d.minLevel);
+    const isViewed = openable && viewed.has(d.id);
     const recent = d.updatedAt && now - new Date(d.updatedAt).getTime() < RECENT_DAYS * 86400000;
     return {
       id: d.id,
       name: d.title,
+      // The level this document sits at, so a locked row can ask for the right grant.
+      level: d.minLevel,
       ft: ftLabel(d.contentType),
       pages: d.pages || humanSize(d.size),
       updated: fmtDate(d.updatedAt) || fmtDate(d.addedAt) || '—',
       status: isViewed ? 'viewed' : recent ? 'new' : 'unviewed',
-      downloadable: d.minLevel < NDA_MIN_LEVEL,
+      locked: !openable,
+      // Only ever true for material this grant can open; the NDA tier stays view-only.
+      downloadable: openable && d.minLevel < NDA_MIN_LEVEL,
     };
   };
 
-  const authorisedFor = (lvl) => level >= lvl && (SECTION_META[lvl].tier === 'open' || nda);
   let gateLevel = null;
   for (let lvl = 1; lvl <= 5; lvl++) {
     if (!authorisedFor(lvl)) { gateLevel = lvl; break; }
@@ -96,15 +107,26 @@ export async function buildRoomOverview(investor) {
   const sections = [];
   for (let lvl = 1; lvl <= 5; lvl++) {
     const meta = SECTION_META[lvl];
-    if (authorisedFor(lvl)) {
-      const docs = authorised.filter((d) => d.minLevel === lvl).map(toDocView);
-      docCount += docs.length;
-      sections.push({ level: lvl, title: meta.title, tier: meta.tier, state: 'unlocked', docs });
-    } else if (lvl === gateLevel) {
-      sections.push({ level: lvl, title: meta.title, tier: meta.tier, state: 'gate', gate: GATE[lvl] || null });
-    } else {
-      sections.push({ level: lvl, title: meta.title, tier: meta.tier, state: 'locked' });
-    }
+    const unlocked = authorisedFor(lvl);
+    const levelDocs = allDocs.filter((d) => d.minLevel === lvl);
+    if (unlocked) docCount += levelDocs.length;
+
+    // Folders first, then anything filed loose in the level.
+    const folders = allFolders
+      .filter((f) => f.minLevel === lvl)
+      .map((f) => ({ id: f.id, name: f.name, docs: levelDocs.filter((d) => d.folderId === f.id).map(toDocView) }));
+    const loose = levelDocs.filter((d) => !d.folderId || !allFolders.some((f) => f.id === d.folderId)).map(toDocView);
+
+    sections.push({
+      level: lvl,
+      title: meta.title,
+      tier: meta.tier,
+      state: unlocked ? 'unlocked' : lvl === gateLevel ? 'gate' : 'locked',
+      gate: unlocked ? undefined : lvl === gateLevel ? GATE[lvl] || null : undefined,
+      folders,
+      docs: loose,
+      docCount: levelDocs.length,
+    });
   }
 
   // NDA state for the gate: template to download + this investor's latest submission.

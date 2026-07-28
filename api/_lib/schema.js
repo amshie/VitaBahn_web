@@ -116,6 +116,26 @@ CREATE TABLE IF NOT EXISTS documents (
 
 CREATE INDEX IF NOT EXISTS documents_level_idx ON documents (min_level);
 
+-- Folders group documents inside ONE disclosure level. A folder carries the level;
+-- every document filed in it inherits that level, so a folder never shows a mix of
+-- what an investor may and may not open. documents.min_level stays the single value
+-- authorisation is checked against — the folder only decides what it is set to.
+CREATE TABLE IF NOT EXISTS folders (
+  id         TEXT PRIMARY KEY,
+  name       TEXT NOT NULL,
+  min_level  INT  NOT NULL DEFAULT 1,
+  sort_order INT  NOT NULL DEFAULT 0,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+
+CREATE INDEX IF NOT EXISTS folders_level_idx ON folders (min_level, sort_order);
+
+-- NULL = filed directly in the level, outside any folder.
+ALTER TABLE documents ADD COLUMN IF NOT EXISTS folder_id TEXT;
+
+CREATE INDEX IF NOT EXISTS documents_folder_idx ON documents (folder_id);
+
 -- Additive migrations for databases created before these columns existed. Each is
 -- idempotent, so ensureSchema() can run them on every cold start without harm.
 ALTER TABLE documents ADD COLUMN IF NOT EXISTS pages TEXT NOT NULL DEFAULT '';

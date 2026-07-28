@@ -58,7 +58,9 @@ input:focus,select:focus,textarea:focus{outline:none;border-color:var(--teal);bo
 .timeline{list-style:none;margin:0;padding:0 0 0 16px;border-left:2px solid var(--line)}
 .timeline li{position:relative;padding:0 0 12px 6px;font-size:12.5px}.timeline li b{font-weight:600}.timeline .ts{font-family:var(--mono);font-size:11px;color:var(--ink-3)}
 .lib-row,.req-row,.log-row{display:grid;gap:12px;align-items:center;padding:11px 0;border-bottom:1px solid var(--line-2)}
-.lib-row{grid-template-columns:1fr 90px 120px 70px 90px}.req-row{grid-template-columns:1fr 120px 130px 150px}.log-row{grid-template-columns:150px 1fr 1fr;font-size:12px}
+.lib-row{grid-template-columns:1fr 90px 120px 140px 70px 90px}
+.fld-row{display:grid;grid-template-columns:1fr 90px 80px 90px;gap:12px;align-items:center;padding:11px 0;border-bottom:1px solid var(--line-2)}
+.lvl-head{font-family:var(--mono);font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-3);margin:14px 0 2px}.req-row{grid-template-columns:1fr 120px 130px 150px}.log-row{grid-template-columns:150px 1fr 1fr;font-size:12px}
 .toast{position:fixed;left:50%;bottom:22px;transform:translateX(-50%);background:var(--ink);color:#fff;padding:12px 18px;border-radius:10px;font-size:13.5px;box-shadow:0 10px 30px rgba(0,0,0,.25);display:none;z-index:50;max-width:90vw}
 .mono{font-family:var(--mono)}.muted{color:var(--ink-3)}.right{text-align:right}
 .search{max-width:280px;margin-bottom:12px}
@@ -88,6 +90,7 @@ input:focus,select:focus,textarea:focus{outline:none;border-color:var(--teal);bo
   <section class="card" id="detail"><div class="muted">Select an investor above to manage their access.</div></section>
   <section class="card" id="requests"></section>
   <section class="card" id="video"></section>
+  <section class="card" id="folders"></section>
   <section class="card" id="library"></section>
   <section class="card" id="team"></section>
   <section class="card" id="logs"></section>

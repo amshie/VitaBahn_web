@@ -72,6 +72,6 @@ export async function ensureSchema() {
 export async function resetDbForTests() {
   await ensureSchema();
   await query(
-    'TRUNCATE access_logs, access_requests, documents, investors, admins, invites, nda_submissions, login_throttle, room_videos, room_video_chunks RESTART IDENTITY CASCADE'
+    'TRUNCATE access_logs, access_requests, documents, folders, investors, admins, invites, nda_submissions, login_throttle, room_videos, room_video_chunks RESTART IDENTITY CASCADE'
   );
 }

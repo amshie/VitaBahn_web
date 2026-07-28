@@ -61,6 +61,7 @@ function mapDoc(r) {
     contentType: r.content_type,
     size: Number(r.size || 0),
     pages: r.pages || '',
+    folderId: r.folder_id || null,
     isNdaTemplate: r.is_nda_template === true || r.is_nda_template === 't',
     addedAt: iso(r.added_at),
     updatedAt: iso(r.updated_at),
@@ -135,7 +136,7 @@ export async function dataCounts() {
 // chunks are included so a reset leaves no confidential footage behind.
 // Admin accounts are deliberately preserved so the console stays accessible.
 export async function resetData() {
-  await query('TRUNCATE investors, access_requests, documents, invites, nda_submissions, room_videos, room_video_chunks, access_logs RESTART IDENTITY CASCADE');
+  await query('TRUNCATE investors, access_requests, documents, folders, invites, nda_submissions, room_videos, room_video_chunks, access_logs RESTART IDENTITY CASCADE');
 }
 
 // ------------------------------------------------------------- investors
@@ -321,7 +322,7 @@ export async function setRequestStatus(requestId, status) {
 // Metadata only (never selects bytes) — for the console and the room listing.
 export async function listDocuments() {
   const { rows } = await query(
-    'SELECT id, title, min_level, tier, content_type, size, pages, is_nda_template, added_at, updated_at FROM documents ORDER BY min_level ASC, updated_at DESC'
+    'SELECT id, title, min_level, tier, content_type, size, pages, folder_id, is_nda_template, added_at, updated_at FROM documents ORDER BY min_level ASC, updated_at DESC'
   );
   return rows.map(mapDoc);
 }
@@ -329,7 +330,7 @@ export async function listDocuments() {
 // Documents an investor at `level` is authorised to see (min_level <= level).
 export async function listDocumentsForLevel(level) {
   const { rows } = await query(
-    'SELECT id, title, min_level, tier, content_type, size, pages, is_nda_template, added_at, updated_at FROM documents WHERE min_level <= $1 ORDER BY min_level ASC, updated_at DESC',
+    'SELECT id, title, min_level, tier, content_type, size, pages, folder_id, is_nda_template, added_at, updated_at FROM documents WHERE min_level <= $1 ORDER BY min_level ASC, updated_at DESC',
     [Number(level)]
   );
   return rows.map(mapDoc);
@@ -337,7 +338,7 @@ export async function listDocumentsForLevel(level) {
 
 export async function getDocumentMeta(id) {
   const { rows } = await query(
-    'SELECT id, title, min_level, tier, content_type, size, pages, is_nda_template, added_at, updated_at FROM documents WHERE id = $1',
+    'SELECT id, title, min_level, tier, content_type, size, pages, folder_id, is_nda_template, added_at, updated_at FROM documents WHERE id = $1',
     [id]
   );
   return rows[0] ? mapDoc(rows[0]) : null;
@@ -353,13 +354,13 @@ export async function getDocumentWithBytes(id) {
 
 export async function insertDocument(d) {
   await query(
-    'INSERT INTO documents (id, title, min_level, tier, content_type, size, pages, bytes) VALUES ($1,$2,$3,$4,$5,$6,$7,$8)',
-    [d.id, d.title, Number(d.minLevel), Number(d.tier), d.contentType || 'application/octet-stream', Number(d.size || 0), d.pages || '', d.bytes || null]
+    'INSERT INTO documents (id, title, min_level, tier, content_type, size, pages, folder_id, bytes) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9)',
+    [d.id, d.title, Number(d.minLevel), Number(d.tier), d.contentType || 'application/octet-stream', Number(d.size || 0), d.pages || '', d.folderId || null, d.bytes || null]
   );
   return getDocumentMeta(d.id);
 }
 
-const DOC_PATCH = { title: 'title', minLevel: 'min_level', tier: 'tier', pages: 'pages' };
+const DOC_PATCH = { title: 'title', minLevel: 'min_level', tier: 'tier', pages: 'pages', folderId: 'folder_id' };
 export async function updateDocument(id, patch) {
   const sets = [];
   const vals = [];
@@ -382,6 +383,81 @@ export async function deleteDocument(id) {
   await query('DELETE FROM documents WHERE id = $1', [id]);
 }
 
+// ------------------------------------------------------------------ folders
+// A folder lives in exactly one disclosure level and every document filed in it
+// inherits that level, so a folder is never half-open. Changing a folder's level
+// therefore has to move its documents with it (see updateFolder).
+
+function mapFolder(r) {
+  if (!r) return null;
+  return {
+    id: r.id,
+    name: r.name,
+    minLevel: Number(r.min_level),
+    sortOrder: Number(r.sort_order || 0),
+    createdAt: iso(r.created_at),
+    updatedAt: iso(r.updated_at),
+  };
+}
+
+const FOLDER_COLS = 'id, name, min_level, sort_order, created_at, updated_at';
+
+export async function listFolders() {
+  const { rows } = await query(`SELECT ${FOLDER_COLS} FROM folders ORDER BY min_level ASC, sort_order ASC, name ASC`);
+  return rows.map(mapFolder);
+}
+
+export async function getFolder(id) {
+  const { rows } = await query(`SELECT ${FOLDER_COLS} FROM folders WHERE id = $1`, [id]);
+  return rows[0] ? mapFolder(rows[0]) : null;
+}
+
+export async function createFolder(f) {
+  await query(
+    'INSERT INTO folders (id, name, min_level, sort_order) VALUES ($1,$2,$3,$4)',
+    [f.id, f.name, Number(f.minLevel), Number(f.sortOrder || 0)]
+  );
+  return getFolder(f.id);
+}
+
+const FOLDER_PATCH = { name: 'name', minLevel: 'min_level', sortOrder: 'sort_order' };
+export async function updateFolder(id, patch) {
+  const sets = [];
+  const vals = [];
+  let i = 1;
+  for (const [k, col] of Object.entries(FOLDER_PATCH)) {
+    if (Object.prototype.hasOwnProperty.call(patch, k)) {
+      sets.push(`${col} = $${i++}`);
+      vals.push(patch[k]);
+    }
+  }
+  if (!sets.length) return getFolder(id);
+  sets.push('updated_at = now()');
+  vals.push(id);
+  await query(`UPDATE folders SET ${sets.join(', ')} WHERE id = $${i}`, vals);
+
+  // Re-level the contents. Without this a document could keep an old level while
+  // sitting in a folder that claims another — and min_level is what the document
+  // route actually enforces, so the folder label would be a lie.
+  if (Object.prototype.hasOwnProperty.call(patch, 'minLevel')) {
+    const lvl = Number(patch.minLevel);
+    await query('UPDATE documents SET min_level = $1, tier = $2, updated_at = now() WHERE folder_id = $3', [lvl, lvl <= 2 ? 1 : 2, id]);
+  }
+  return getFolder(id);
+}
+
+// Documents are unfiled rather than destroyed: deleting a folder is an act of
+// tidying, and silently taking confidential files with it would be a trap.
+export async function deleteFolder(id) {
+  await query('UPDATE documents SET folder_id = NULL WHERE folder_id = $1', [id]);
+  await query('DELETE FROM folders WHERE id = $1', [id]);
+}
+
+export async function countDocumentsInFolder(id) {
+  const { rows } = await query('SELECT COUNT(*)::int AS n FROM documents WHERE folder_id = $1', [id]);
+  return Number(rows[0] ? rows[0].n : 0);
+}
+
 // The NDA template = the single document flagged is_nda_template, that investors
 // download to sign. Setting one clears the flag on any other (at most one template).
 export async function setNdaTemplate(id) {
@@ -391,7 +467,7 @@ export async function setNdaTemplate(id) {
 }
 export async function getNdaTemplate() {
   const { rows } = await query(
-    'SELECT id, title, min_level, tier, content_type, size, pages, is_nda_template, added_at, updated_at FROM documents WHERE is_nda_template = true ORDER BY updated_at DESC LIMIT 1'
+    'SELECT id, title, min_level, tier, content_type, size, pages, folder_id, is_nda_template, added_at, updated_at FROM documents WHERE is_nda_template = true ORDER BY updated_at DESC LIMIT 1'
   );
   return rows[0] ? mapDoc(rows[0]) : null;
 }
