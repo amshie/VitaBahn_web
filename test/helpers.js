@@ -41,6 +41,10 @@ export function mockRes() {
     setHeader(k, v) { this.headers[String(k).toLowerCase()] = v; },
     getHeader(k) { return this.headers[String(k).toLowerCase()]; },
     removeHeader(k) { delete this.headers[String(k).toLowerCase()]; },
+    // Streaming path (used by the video route): collect writes like a real socket.
+    // Always returns true, so the backpressure/'drain' branch is never taken here.
+    write(c) { if (c != null) this._chunks.push(c); return true; },
+    once() { return this; },
     end(c) { if (c != null) this._chunks.push(c); this.finished = true; return this; },
     // Express-style sugar, in case any handler uses it.
     status(c) { this.statusCode = c; return this; },

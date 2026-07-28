@@ -125,6 +125,9 @@ main{padding:26px 0 40px}
 .ov-card .k{font-family:var(--mono);font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-3)}
 .ov-card .v{font-size:22px;font-weight:600;margin-top:4px;letter-spacing:-.01em}
 .ov-card .v.sm{font-size:15px}
+.ov-video-wrap{border:1px solid var(--line);border-radius:12px;overflow:hidden;background:#0B1013;line-height:0}
+.ov-video{display:block;width:100%;max-height:min(56vh,520px);background:#0B1013}
+.ov-video-cap{margin-top:8px;font-size:12.5px;color:var(--ink-3)}
 .subhead{font-family:var(--mono);font-size:10.5px;letter-spacing:.11em;text-transform:uppercase;color:var(--teal-dark);font-weight:600;display:flex;align-items:center;gap:10px;margin:24px 0 10px}
 .subhead::after{content:"";flex:1;height:1px;background:var(--line)}
 .gate{border-radius:14px;padding:22px 24px;margin-top:18px;border:1px solid var(--line);max-width:640px}

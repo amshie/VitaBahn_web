@@ -85,6 +85,7 @@
   // ---- data helpers -------------------------------------------------------
   function investor() { return state.data.investor; }
   function access() { return state.data.access; }
+  function video() { return state.data.video || null; }
   function sections() { return state.data.sections; }
   function sectionAt(level) { return sections().find(function (s) { return s.level === level; }); }
   function unlockedSections() { return sections().filter(function (s) { return s.state === 'unlocked'; }); }
@@ -241,6 +242,29 @@
     return wrap;
   }
 
+  // The briefing video is the one item every investor sees at every level — the
+  // server sends metadata only, and the bytes stream from the authorised route,
+  // which re-checks the session on each range request.
+  function videoBlock() {
+    var v = video();
+    if (!v) return null;
+    var player = h('video', {
+      class: 'ov-video',
+      controls: true,
+      preload: 'metadata',
+      playsinline: true,
+      controlslist: 'nodownload noplaybackrate',
+      disablepictureinpicture: true,
+      src: '/api/room/video?v=' + encodeURIComponent(v.id)
+    });
+    player.addEventListener('contextmenu', function (e) { e.preventDefault(); });
+    return [
+      h('div', { class: 'subhead' }, 'Briefing'),
+      h('div', { class: 'ov-video-wrap' }, player),
+      h('div', { class: 'ov-video-cap' }, v.title)
+    ];
+  }
+
   function overviewView() {
     var a = access();
     var inv = investor();
@@ -258,6 +282,7 @@
         h('div', { class: 'ov-card' }, h('div', { class: 'k' }, 'Documents'), h('div', { class: 'v' }, String(a.docCount))),
         h('div', { class: 'ov-card' }, h('div', { class: 'k' }, 'NDA status'), h('div', { class: 'v sm' }, a.ndaStatus)),
         h('div', { class: 'ov-card' }, h('div', { class: 'k' }, 'Valid until'), h('div', { class: 'v sm' }, a.validUntil || '—'))),
+      videoBlock(),
       h('div', { class: 'subhead' }, 'Recently updated'),
       newDocs.length ? docTable(newDocs) : h('div', { class: 'noresults' }, 'No recent updates at your level.'),
       conf()

@@ -129,12 +129,13 @@ export async function dataCounts() {
 }
 
 // Wipe all operational data (investors, requests, documents, invites, NDA
-// submissions, logs). nda_submissions must be included: it holds signed-NDA PDFs
-// (investor PII), and RESTART IDENTITY reuses investor ids — stale submissions
-// would re-attach to the wrong new investors.
+// submissions, the briefing video, logs). nda_submissions must be included: it
+// holds signed-NDA PDFs (investor PII), and RESTART IDENTITY reuses investor ids —
+// stale submissions would re-attach to the wrong new investors. room_videos and its
+// chunks are included so a reset leaves no confidential footage behind.
 // Admin accounts are deliberately preserved so the console stays accessible.
 export async function resetData() {
-  await query('TRUNCATE investors, access_requests, documents, invites, nda_submissions, access_logs RESTART IDENTITY CASCADE');
+  await query('TRUNCATE investors, access_requests, documents, invites, nda_submissions, room_videos, room_video_chunks, access_logs RESTART IDENTITY CASCADE');
 }
 
 // ------------------------------------------------------------- investors
@@ -393,6 +394,114 @@ export async function getNdaTemplate() {
     'SELECT id, title, min_level, tier, content_type, size, pages, is_nda_template, added_at, updated_at FROM documents WHERE is_nda_template = true ORDER BY updated_at DESC LIMIT 1'
   );
   return rows[0] ? mapDoc(rows[0]) : null;
+}
+
+// ---------------------------------------------------- Overview briefing video
+// One video, shown to every authenticated investor regardless of level or NDA.
+// Stored in fixed-size chunks so uploads can exceed the serverless body cap and so
+// a Range read touches only the chunks it needs (see schema.js for the rationale).
+
+function mapVideo(r) {
+  if (!r) return null;
+  return {
+    id: r.id,
+    title: r.title,
+    contentType: r.content_type,
+    size: Number(r.size),
+    chunkSize: Number(r.chunk_size),
+    status: r.status,
+    createdAt: iso(r.created_at),
+    readyAt: iso(r.ready_at),
+  };
+}
+
+const VIDEO_COLS = 'id, title, content_type, size, chunk_size, status, created_at, ready_at';
+
+// The video the room serves: the most recent COMPLETE upload. A half-finished
+// upload is never returned, so investors cannot hit a truncated file.
+export async function getActiveRoomVideo() {
+  const { rows } = await query(
+    `SELECT ${VIDEO_COLS} FROM room_videos WHERE status = 'ready' ORDER BY ready_at DESC LIMIT 1`
+  );
+  return rows[0] ? mapVideo(rows[0]) : null;
+}
+
+export async function getRoomVideoById(id) {
+  const { rows } = await query(`SELECT ${VIDEO_COLS} FROM room_videos WHERE id = $1`, [id]);
+  return rows[0] ? mapVideo(rows[0]) : null;
+}
+
+export async function createRoomVideo(v) {
+  await query(
+    "INSERT INTO room_videos (id, title, content_type, size, chunk_size, status) VALUES ($1,$2,$3,$4,$5,'uploading')",
+    [v.id, v.title || '', v.contentType || 'video/mp4', Number(v.size || 0), Number(v.chunkSize || 0)]
+  );
+  return getRoomVideoById(v.id);
+}
+
+// Idempotent per (video, seq) so a retried chunk overwrites rather than duplicates.
+export async function putRoomVideoChunk(videoId, seq, bytes) {
+  await query(
+    'INSERT INTO room_video_chunks (video_id, seq, bytes) VALUES ($1,$2,$3) ON CONFLICT (video_id, seq) DO UPDATE SET bytes = EXCLUDED.bytes',
+    [videoId, Number(seq), bytes]
+  );
+}
+
+// Bytes actually stored so far — used to verify an upload is complete before it is
+// published, and to report progress.
+export async function roomVideoUploadedBytes(videoId) {
+  const { rows } = await query(
+    'SELECT COALESCE(SUM(length(bytes)), 0) AS total, COUNT(*) AS n FROM room_video_chunks WHERE video_id = $1',
+    [videoId]
+  );
+  return { total: Number(rows[0] ? rows[0].total : 0), chunks: Number(rows[0] ? rows[0].n : 0) };
+}
+
+// Publish `id` and drop every other video. Exactly one video exists afterwards, so
+// replacing the briefing never leaves the old bytes behind in the database.
+export async function finishRoomVideo(id) {
+  await query("UPDATE room_videos SET status = 'ready', ready_at = now() WHERE id = $1", [id]);
+  await query('DELETE FROM room_video_chunks WHERE video_id <> $1', [id]);
+  await query('DELETE FROM room_videos WHERE id <> $1', [id]);
+  return getRoomVideoById(id);
+}
+
+export async function deleteRoomVideo(id) {
+  await query('DELETE FROM room_video_chunks WHERE video_id = $1', [id]);
+  await query('DELETE FROM room_videos WHERE id = $1', [id]);
+}
+
+// Drop uploads that were started but never finished (abandoned tab, failed upload),
+// so orphaned chunks cannot accumulate. Called opportunistically when a new upload
+// begins; never touches a 'ready' video.
+export async function purgeStaleRoomVideoUploads(olderThanSec = 6 * 3600) {
+  // Cutoff is computed here rather than in SQL so the query stays free of interval
+  // syntax and parameter-type inference, which differ subtly across drivers.
+  const cutoff = new Date(Date.now() - Math.max(0, Number(olderThanSec) || 0) * 1000).toISOString();
+  const { rows } = await query(
+    "SELECT id FROM room_videos WHERE status = 'uploading' AND created_at < $1::timestamptz",
+    [cutoff]
+  );
+  for (const r of rows) await deleteRoomVideo(r.id);
+  return rows.length;
+}
+
+// Read the inclusive byte range [start, end] by fetching only the chunks that
+// overlap it. Returns a Buffer (possibly shorter than requested if the row set is
+// incomplete); callers size their headers from what actually comes back.
+export async function readRoomVideoRange(video, start, end) {
+  const chunkSize = Number(video.chunkSize) || 0;
+  if (!chunkSize || end < start) return Buffer.alloc(0);
+  const firstSeq = Math.floor(start / chunkSize);
+  const lastSeq = Math.floor(end / chunkSize);
+  const { rows } = await query(
+    'SELECT seq, bytes FROM room_video_chunks WHERE video_id = $1 AND seq >= $2 AND seq <= $3 ORDER BY seq ASC',
+    [video.id, firstSeq, lastSeq]
+  );
+  if (!rows.length) return Buffer.alloc(0);
+  const joined = Buffer.concat(rows.map((r) => Buffer.from(r.bytes)));
+  const offset = start - firstSeq * chunkSize;
+  return joined.subarray(offset, offset + (end - start + 1));
 }
 
 // -------------------------------------------------------- NDA submissions

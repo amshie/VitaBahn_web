@@ -7,7 +7,7 @@
   var LEVEL_DOT = { 1: '#9AA6AC', 2: '#4FB3A3', 3: '#CBA968', 4: '#267F73', 5: '#0B1013' };
   var COMMIT_COLOR = { none: '#9AA6AC', soft: '#CBA968', committed: '#267F73' };
 
-  var state = { investors: [], requests: [], documents: [], logs: [], admins: [], me: null, selectedId: null, search: '' };
+  var state = { investors: [], requests: [], documents: [], logs: [], admins: [], me: null, selectedId: null, search: '', video: null, videoLimits: { maxBytes: 0, chunkSize: 3145728 }, uploading: null };
   var $ = function (id) { return document.getElementById(id); };
   function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
   function toast(msg) { var t = $('toast'); t.textContent = msg; t.style.display = 'block'; clearTimeout(t._t); t._t = setTimeout(function () { t.style.display = 'none'; }, 4200); }
@@ -179,6 +179,65 @@
     $('requests').innerHTML = '<div class="sec">Access requests</div>' + rows;
   }
 
+  // Overview briefing video — one video, shown to every investor at every level.
+  // Deliberately separate from the document library, which is level-gated.
+  function renderVideo() {
+    var v = state.video;
+    var up = state.uploading;
+    var maxMb = Math.round((state.videoLimits.maxBytes || 0) / 1048576);
+    var current = v
+      ? '<div class="row" style="justify-content:space-between;align-items:flex-start;gap:16px">' +
+          '<div style="flex:1;min-width:220px"><b>' + esc(v.title) + '</b>' +
+          '<div class="muted mono" style="font-size:12px;margin-top:3px">' + fmtSize(v.size) + ' · ' + esc(v.contentType) + ' · published ' + fmtDate(v.readyAt) + '</div>' +
+          '<video class="vid-prev" controls preload="metadata" src="/api/room/video?v=' + encodeURIComponent(v.id) + '"></video></div>' +
+          '<button class="btn btn-red" id="delVideo">Remove video</button>' +
+        '</div>'
+      : '<div class="muted">No briefing video published — the Overview shows none.</div>';
+    var footer = up
+      ? '<div class="bar"><i style="width:' + up.pct + '%"></i></div>' +
+        '<div class="muted mono" style="font-size:12px;margin-top:6px">Uploading ' + esc(up.name) + ' — ' + up.pct + '% · keep this tab open.</div>'
+      : '<div class="row" style="margin-top:14px"><input type="file" id="upVideo" accept="video/*" style="width:auto" />' +
+        '<span class="muted" style="font-size:11.5px">MP4 (H.264) recommended · max ' + maxMb + ' MB · uploading replaces the current video.</span></div>';
+    $('video').innerHTML = '<div class="sec">Overview briefing video</div>' + current + footer;
+  }
+
+  // Uploaded in pieces: a single serverless request body caps out near 4.5 MB, so
+  // the file is sliced client-side and only published once every chunk has landed.
+  async function uploadVideo(file) {
+    var CHUNK = state.videoLimits.chunkSize || 3145728;
+    if (state.videoLimits.maxBytes && file.size > state.videoLimits.maxBytes) {
+      toast('That video is ' + fmtSize(file.size) + ' — the limit is ' + fmtSize(state.videoLimits.maxBytes) + '.');
+      return;
+    }
+    state.uploading = { name: file.name, pct: 0 };
+    renderVideo();
+    try {
+      var init = await api('POST', '/api/admin/video?action=init', {
+        title: file.name.replace(/\.[^.]+$/, '') || 'Investor briefing',
+        contentType: file.type || 'video/mp4',
+        size: file.size,
+        chunkSize: CHUNK
+      });
+      var id = init.video.id;
+      var total = Math.ceil(file.size / CHUNK);
+      for (var i = 0; i < total; i++) {
+        var blob = file.slice(i * CHUNK, Math.min(file.size, (i + 1) * CHUNK));
+        await api('POST', '/api/admin/video?action=chunk&id=' + encodeURIComponent(id) + '&seq=' + i, undefined, blob);
+        state.uploading.pct = Math.round(((i + 1) / total) * 100);
+        renderVideo();
+      }
+      await api('POST', '/api/admin/video?action=finish&id=' + encodeURIComponent(id), {});
+      state.uploading = null;
+      await Promise.all([loadVideo(), loadInvestorsAndLogs()]);
+      renderAll();
+      toast('Briefing video published — every investor sees it on the Overview.');
+    } catch (er) {
+      state.uploading = null;
+      renderVideo();
+      toast(er.message === 'unauth' ? 'Session expired.' : 'Upload failed: ' + er.message);
+    }
+  }
+
   function renderLibrary() {
     var rows = state.documents.map(function (d) {
       var sel = [1, 2, 3, 4, 5].map(function (l) { return '<option value="' + l + '"' + (d.minLevel === l ? ' selected' : '') + '>L' + l + '</option>'; }).join('');
@@ -223,7 +282,7 @@
       + '<div class="muted" style="font-size:11.5px;margin-top:8px">New admins sign in at /founder-login. Share the password securely — it is stored only as a hash and cannot be shown again.</div>';
   }
 
-  function renderAll() { renderCockpit(); renderStats(); renderTable(); renderDetail(); renderRequests(); renderLibrary(); renderTeam(); renderLogs(); }
+  function renderAll() { renderCockpit(); renderStats(); renderTable(); renderDetail(); renderRequests(); renderVideo(); renderLibrary(); renderTeam(); renderLogs(); }
 
   // ---------- data loads ----------
   async function loadInvestorsAndLogs() {
@@ -232,6 +291,11 @@
   }
   async function loadRequests() { state.requests = (await api('GET', '/api/admin/requests')).requests; }
   async function loadDocuments() { state.documents = (await api('GET', '/api/admin/documents')).documents; }
+  async function loadVideo() {
+    var v = await api('GET', '/api/admin/video');
+    state.video = v.video;
+    state.videoLimits = { maxBytes: v.maxBytes, chunkSize: Math.min(v.chunkSize, 3145728) };
+  }
   async function loadAdmins() { var a = await api('GET', '/api/admin/admins'); state.admins = a.admins; state.me = a.you; }
 
   async function patchInvestor(id, changes) {
@@ -329,6 +393,23 @@
     if (dec) { try { await api('PATCH', '/api/admin/requests', { requestId: dec, status: 'declined' }); await loadRequests(); renderRequests(); renderStats(); } catch (er) { toast(er.message); } }
   });
 
+  $('video').addEventListener('change', async function (e) {
+    if (e.target.id !== 'upVideo') return;
+    var f = e.target.files && e.target.files[0];
+    e.target.value = '';
+    if (f) await uploadVideo(f);
+  });
+  $('video').addEventListener('click', async function (e) {
+    if (e.target.id !== 'delVideo') return;
+    if (!confirm('Remove the briefing video from the Overview? Investors will no longer see it and its bytes are deleted.')) return;
+    try {
+      await api('DELETE', '/api/admin/video', { id: state.video ? state.video.id : '' });
+      await Promise.all([loadVideo(), loadInvestorsAndLogs()]);
+      renderAll();
+      toast('Briefing video removed.');
+    } catch (er) { toast(er.message); }
+  });
+
   $('library').addEventListener('change', async function (e) {
     if (e.target.id === 'upFile') {
       var file = e.target.files && e.target.files[0]; if (!file) return;
@@ -388,7 +469,7 @@
   $('logoutBtn').addEventListener('click', async function () { try { await api('POST', '/api/auth/logout', {}); } catch (e) {} window.location.href = '/founder-login'; });
 
   (async function init() {
-    try { await Promise.all([loadInvestorsAndLogs(), loadRequests(), loadDocuments(), loadAdmins()]); if (state.investors[0]) state.selectedId = state.investors[0].id; renderAll(); }
+    try { await Promise.all([loadInvestorsAndLogs(), loadRequests(), loadDocuments(), loadVideo(), loadAdmins()]); if (state.investors[0]) state.selectedId = state.investors[0].id; renderAll(); }
     catch (e) { if (e.message !== 'unauth') toast('Failed to load: ' + e.message); }
   })();
 })();

@@ -169,6 +169,37 @@ CREATE TABLE IF NOT EXISTS nda_submissions (
 
 CREATE INDEX IF NOT EXISTS nda_submissions_investor_idx ON nda_submissions (investor_id, submitted_at DESC);
 
+-- The Overview briefing video: ONE video shown to every authenticated investor on
+-- the room's Overview, at every level and with or without an NDA. It is deliberately
+-- NOT part of the documents catalogue — documents are level-gated, this is not.
+--
+-- Bytes live in room_video_chunks rather than a single BYTEA column for two reasons:
+-- an upload can then exceed the ~4.5 MB serverless request-body cap by arriving in
+-- pieces, and a Range request (seeking in the player) reads only the chunks it needs
+-- instead of loading the whole file into function memory.
+CREATE TABLE IF NOT EXISTS room_videos (
+  id           TEXT PRIMARY KEY,
+  title        TEXT NOT NULL DEFAULT '',
+  content_type TEXT NOT NULL DEFAULT 'video/mp4',
+  size         BIGINT NOT NULL DEFAULT 0,
+  -- Byte length of every chunk except the last; lets a byte offset be mapped to a
+  -- chunk number arithmetically, with no per-chunk length bookkeeping.
+  chunk_size   INT  NOT NULL DEFAULT 0,
+  -- uploading = chunks still arriving (never served); ready = complete and playable.
+  status       TEXT NOT NULL DEFAULT 'uploading',
+  created_at   TIMESTAMPTZ NOT NULL DEFAULT now(),
+  ready_at     TIMESTAMPTZ
+);
+
+CREATE INDEX IF NOT EXISTS room_videos_ready_idx ON room_videos (status, ready_at DESC);
+
+CREATE TABLE IF NOT EXISTS room_video_chunks (
+  video_id TEXT  NOT NULL,
+  seq      INT   NOT NULL,
+  bytes    BYTEA NOT NULL,
+  PRIMARY KEY (video_id, seq)
+);
+
 -- Append-only audit log: every login (success + failure), logout, document access
 -- (granted + denied), request submission and admin action.
 CREATE TABLE IF NOT EXISTS access_logs (

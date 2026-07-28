@@ -62,6 +62,9 @@ input:focus,select:focus,textarea:focus{outline:none;border-color:var(--teal);bo
 .toast{position:fixed;left:50%;bottom:22px;transform:translateX(-50%);background:var(--ink);color:#fff;padding:12px 18px;border-radius:10px;font-size:13.5px;box-shadow:0 10px 30px rgba(0,0,0,.25);display:none;z-index:50;max-width:90vw}
 .mono{font-family:var(--mono)}.muted{color:var(--ink-3)}.right{text-align:right}
 .search{max-width:280px;margin-bottom:12px}
+.vid-prev{width:100%;max-width:420px;border-radius:10px;background:#0B1013;display:block;margin-top:10px}
+.bar{height:8px;border-radius:5px;background:var(--paper-2);overflow:hidden;margin-top:10px}
+.bar i{display:block;height:100%;background:var(--teal-dark);width:0;transition:width .2s}
 </style>
 </head>
 <body>
@@ -84,6 +87,7 @@ input:focus,select:focus,textarea:focus{outline:none;border-color:var(--teal);bo
   </section>
   <section class="card" id="detail"><div class="muted">Select an investor above to manage their access.</div></section>
   <section class="card" id="requests"></section>
+  <section class="card" id="video"></section>
   <section class="card" id="library"></section>
   <section class="card" id="team"></section>
   <section class="card" id="logs"></section>
