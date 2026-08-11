@@ -14,7 +14,9 @@ test('password hash verifies correct password and rejects wrong/tampered', () =>
   const h = hashPassword('Correct-Horse-9');
   assert.equal(verifyPassword('Correct-Horse-9', h), true);
   assert.equal(verifyPassword('wrong', h), false);
-  assert.equal(verifyPassword('Correct-Horse-9', h.replace(/.$/, '0')), false);
+  // Flip the last hex digit to a DIFFERENT one. Replacing it with a fixed '0' left
+  // the hash untouched whenever it already ended in '0' — a 1-in-16 false failure.
+  assert.equal(verifyPassword('Correct-Horse-9', h.replace(/.$/, (c) => (c === '0' ? '1' : '0'))), false);
   assert.equal(verifyPassword('x', 'garbage'), false);
   assert.equal(verifyPassword('x', ''), false);
 });
