@@ -84,6 +84,20 @@ input:focus,select:focus,textarea:focus{outline:none;border-color:var(--teal);bo
   <section class="card" id="cockpit"></section>
   <div class="stats" id="stats"></div>
   <section class="card"><div class="sec">Investor pipeline</div>
+    <div class="row" style="margin-bottom:14px">
+      <input id="niEmail" type="email" placeholder="investor@example.com" autocomplete="off" style="width:auto;min-width:220px" />
+      <input id="niName" type="text" placeholder="Full name (optional)" autocomplete="off" style="width:auto;min-width:160px" />
+      <input id="niOrg" type="text" placeholder="Organisation (optional)" autocomplete="off" style="width:auto;min-width:160px" />
+      <select id="niLevel" style="width:auto">
+        <option value="1">L1 · Public / First Contact</option>
+        <option value="2" selected>L2 · Interested Investor</option>
+        <option value="3">L3 · Qualified / NDA</option>
+        <option value="4">L4 · Lead / Anchor</option>
+        <option value="5">L5 · Signing / Closing</option>
+      </select>
+      <button class="btn btn-teal" id="addInvBtn">Add investor</button>
+      <span class="muted" style="font-size:11.5px">Creates the account and emails a one-time set-password link. No password is ever set here.</span>
+    </div>
     <input class="search" id="search" type="search" placeholder="Search name or organisation…" autocomplete="off" />
     <div style="overflow-x:auto"><table><thead><tr><th>Investor</th><th>Level</th><th>NDA</th><th>Commitment</th><th>Score</th><th>Views</th><th>Last activity</th></tr></thead><tbody id="rows"></tbody></table></div>
   </section>
