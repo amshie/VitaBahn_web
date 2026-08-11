@@ -3,10 +3,10 @@
 // founder can share it manually if SMTP is not configured. Re-issuing revokes any
 // previous unused link. Level-0 only.
 
-import { sendJson, readJsonBody, requireOrigin, clientIp, userAgent, baseUrl } from '../_lib/http.js';
-import { ensureSchema, getInvestorById, createInvite, logEvent } from '../_lib/store.js';
-import { loadAdmin } from '../_lib/auth.js';
-import { sendInviteEmail } from '../_lib/mail.js';
+import { sendJson, readJsonBody, requireOrigin, clientIp, userAgent, baseUrl } from '../../_lib/http.js';
+import { ensureSchema, getInvestorById, createInvite, logEvent } from '../../_lib/store.js';
+import { loadAdmin } from '../../_lib/auth.js';
+import { sendInviteEmail } from '../../_lib/mail.js';
 
 export default async function handler(req, res) {
   if (req.method !== 'POST') return sendJson(res, 405, { ok: false, error: 'Method not allowed' });

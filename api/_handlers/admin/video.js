@@ -13,13 +13,13 @@
 // object URL, exactly as for documents.
 
 import crypto from 'node:crypto';
-import { sendJson, readJsonBody, readRawBody, requireOrigin, clientIp, userAgent } from '../_lib/http.js';
-import { clean } from '../_lib/validate.js';
+import { sendJson, readJsonBody, readRawBody, requireOrigin, clientIp, userAgent } from '../../_lib/http.js';
+import { clean } from '../../_lib/validate.js';
 import {
   ensureSchema, getActiveRoomVideo, getRoomVideoById, createRoomVideo, putRoomVideoChunk,
   roomVideoUploadedBytes, finishRoomVideo, deleteRoomVideo, purgeStaleRoomVideoUploads, logEvent,
-} from '../_lib/store.js';
-import { loadAdmin } from '../_lib/auth.js';
+} from '../../_lib/store.js';
+import { loadAdmin } from '../../_lib/auth.js';
 
 // Total video size ceiling. Bytes live in Postgres, so this is a deliberate brake
 // on database growth rather than a protocol limit — raise via VIDEO_MAX_BYTES.

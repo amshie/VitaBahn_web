@@ -1,9 +1,9 @@
 // POST /api/auth/logout — clears both session cookies and logs the logout for any
 // currently-valid session. Idempotent.
 
-import { sendJson, clientIp, userAgent, requireOrigin, parseCookies } from '../_lib/http.js';
-import { ensureSchema, logEvent } from '../_lib/store.js';
-import { verifySessionToken, clearSessionCookie, cookieNames } from '../_lib/auth.js';
+import { sendJson, clientIp, userAgent, requireOrigin, parseCookies } from '../../_lib/http.js';
+import { ensureSchema, logEvent } from '../../_lib/store.js';
+import { verifySessionToken, clearSessionCookie, cookieNames } from '../../_lib/auth.js';
 
 export default async function handler(req, res) {
   if (req.method !== 'POST') return sendJson(res, 405, { ok: false, error: 'Method not allowed' });

@@ -1,11 +1,11 @@
 // POST /api/auth/investor-login — { email, password } → session cookie.
 // Logs every attempt (success + failure). Revoked/expired accounts cannot log in.
 
-import { sendJson, readJsonBody, clientIp, userAgent, requireOrigin } from '../_lib/http.js';
-import { normaliseEmail } from '../_lib/validate.js';
-import { ensureSchema, getInvestorByEmail, logEvent } from '../_lib/store.js';
-import { verifyPassword, hashPassword, createSession, setSessionCookie } from '../_lib/auth.js';
-import { loginKey, loginBlocked, loginFailed, loginReset, loginWindowSec } from '../_lib/throttle.js';
+import { sendJson, readJsonBody, clientIp, userAgent, requireOrigin } from '../../_lib/http.js';
+import { normaliseEmail } from '../../_lib/validate.js';
+import { ensureSchema, getInvestorByEmail, logEvent } from '../../_lib/store.js';
+import { verifyPassword, hashPassword, createSession, setSessionCookie } from '../../_lib/auth.js';
+import { loginKey, loginBlocked, loginFailed, loginReset, loginWindowSec } from '../../_lib/throttle.js';
 
 // A real hash so a missing-user path still spends scrypt time (reduces the timing
 // side-channel that would otherwise reveal whether an email exists).

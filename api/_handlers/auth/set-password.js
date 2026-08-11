@@ -5,9 +5,9 @@
 // The token is single-use and time-limited; only its hash is stored. Setting the
 // password signs the investor in (unless their access is revoked/expired).
 
-import { sendJson, readJsonBody, requireOrigin, clientIp, userAgent } from '../_lib/http.js';
-import { ensureSchema, peekInvite, consumeInvite, getInvestorById, updateInvestor, logEvent } from '../_lib/store.js';
-import { hashPassword, createSession, setSessionCookie } from '../_lib/auth.js';
+import { sendJson, readJsonBody, requireOrigin, clientIp, userAgent } from '../../_lib/http.js';
+import { ensureSchema, peekInvite, consumeInvite, getInvestorById, updateInvestor, logEvent } from '../../_lib/store.js';
+import { hashPassword, createSession, setSessionCookie } from '../../_lib/auth.js';
 
 const MIN_LEN = 12; // matches the admin/bootstrap minimum (api/admin/admins.js, bootstrap.js)
 

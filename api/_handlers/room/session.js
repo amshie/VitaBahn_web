@@ -1,9 +1,9 @@
 // GET /api/room/session — the authenticated investor's own profile + grant, for
 // the room shell to render. Returns 401 for any invalid/removed session.
 
-import { sendJson, clientIp, userAgent } from '../_lib/http.js';
-import { ensureSchema, logEvent } from '../_lib/store.js';
-import { loadInvestor } from '../_lib/auth.js';
+import { sendJson, clientIp, userAgent } from '../../_lib/http.js';
+import { ensureSchema, logEvent } from '../../_lib/store.js';
+import { loadInvestor } from '../../_lib/auth.js';
 
 const LEVEL_LABELS = {
   1: 'Public / First Contact',

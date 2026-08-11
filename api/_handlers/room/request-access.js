@@ -4,10 +4,10 @@
 // audit event (which the founder console's lead-scoring consumes) and best-effort
 // notifies the team. Requires a same-site origin (CSRF defence on top of SameSite).
 
-import { sendJson, readJsonBody, requireOrigin, clientIp, userAgent } from '../_lib/http.js';
-import { ensureSchema, logEvent } from '../_lib/store.js';
-import { loadInvestor } from '../_lib/auth.js';
-import { sendMail } from '../_lib/mail.js';
+import { sendJson, readJsonBody, requireOrigin, clientIp, userAgent } from '../../_lib/http.js';
+import { ensureSchema, logEvent } from '../../_lib/store.js';
+import { loadInvestor } from '../../_lib/auth.js';
+import { sendMail } from '../../_lib/mail.js';
 
 const LEAD_TO = process.env.LEAD_TO || 'info@vitabahn.com';
 const STAGE = { 2: 'verification / interested', 3: 'NDA diligence', 4: 'lead / anchor', 5: 'closing / signing' };

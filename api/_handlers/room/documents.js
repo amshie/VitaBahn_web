@@ -4,9 +4,9 @@
 // directory listing, no name leakage). Metadata only — bytes come from
 // /api/room/document.
 
-import { sendJson } from '../_lib/http.js';
-import { ensureSchema, listDocumentsForLevel } from '../_lib/store.js';
-import { loadInvestor } from '../_lib/auth.js';
+import { sendJson } from '../../_lib/http.js';
+import { ensureSchema, listDocumentsForLevel } from '../../_lib/store.js';
+import { loadInvestor } from '../../_lib/auth.js';
 
 // Documents at min_level >= 3 are NDA-restricted and require an executed NDA.
 const NDA_MIN_LEVEL = 3;

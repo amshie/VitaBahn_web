@@ -6,14 +6,14 @@
 // Level 4 and Level 5 require a named approver (brief: "named approval"). Level 0
 // can never be assigned to an investor account.
 
-import { sendJson, readJsonBody, clientIp, userAgent, requireOrigin, baseUrl } from '../_lib/http.js';
-import { normaliseEmail, clean } from '../_lib/validate.js';
+import { sendJson, readJsonBody, clientIp, userAgent, requireOrigin, baseUrl } from '../../_lib/http.js';
+import { normaliseEmail, clean } from '../../_lib/validate.js';
 import {
   ensureSchema, listInvestors, getInvestorById, createInvestor, updateInvestor,
   deleteInvestor, engagementByInvestor, latestNdaByInvestor, setRequestStatus, createInvite, logEvent,
-} from '../_lib/store.js';
-import { loadAdmin } from '../_lib/auth.js';
-import { sendInviteEmail } from '../_lib/mail.js';
+} from '../../_lib/store.js';
+import { loadAdmin } from '../../_lib/auth.js';
+import { sendInviteEmail } from '../../_lib/mail.js';
 
 function leadScore(inv, eng) {
   const views = eng ? eng.views : 0;

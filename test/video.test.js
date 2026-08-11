@@ -9,11 +9,11 @@ import { ensureSchema, resetDbForTests } from '../api/_lib/db.js';
 import * as store from '../api/_lib/store.js';
 import { hashPassword } from '../api/_lib/auth.js';
 
-import investorLogin from '../api/auth/investor-login.js';
-import adminLogin from '../api/auth/admin-login.js';
-import adminVideo from '../api/admin/video.js';
-import roomVideo from '../api/room/video.js';
-import roomOverview from '../api/room/overview.js';
+import investorLogin from '../api/_handlers/auth/investor-login.js';
+import adminLogin from '../api/_handlers/auth/admin-login.js';
+import adminVideo from '../api/_handlers/admin/video.js';
+import roomVideo from '../api/_handlers/room/video.js';
+import roomOverview from '../api/_handlers/room/overview.js';
 
 const PW = 'Investor-Pass-1';
 const ADMIN_PW = 'Founder-Console-Pass-1';

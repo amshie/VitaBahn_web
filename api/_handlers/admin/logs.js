@@ -1,9 +1,9 @@
 // GET /api/admin/logs (Level-0 only) — the audit trail. Optional ?investorId= to
 // scope to one investor, ?limit= (capped at 500).
 
-import { sendJson } from '../_lib/http.js';
-import { ensureSchema, listLogs } from '../_lib/store.js';
-import { loadAdmin } from '../_lib/auth.js';
+import { sendJson } from '../../_lib/http.js';
+import { ensureSchema, listLogs } from '../../_lib/store.js';
+import { loadAdmin } from '../../_lib/auth.js';
 
 export default async function handler(req, res) {
   if (req.method !== 'GET') return sendJson(res, 405, { ok: false, error: 'Method not allowed' });

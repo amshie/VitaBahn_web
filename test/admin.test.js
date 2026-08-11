@@ -9,17 +9,17 @@ import * as store from '../api/_lib/store.js';
 import { hashPassword } from '../api/_lib/auth.js';
 import { loginKey } from '../api/_lib/throttle.js';
 
-import adminLogin from '../api/auth/admin-login.js';
-import investorLogin from '../api/auth/investor-login.js';
-import adminInvestors from '../api/admin/investors.js';
-import adminInvite from '../api/admin/invite.js';
-import adminAdmins from '../api/admin/admins.js';
-import adminReset from '../api/admin/reset.js';
-import adminRequests from '../api/admin/requests.js';
-import adminDocuments from '../api/admin/documents.js';
-import roomDocument from '../api/room/document.js';
-import previewRoom from '../api/admin/preview-room.js';
-import roomOverview from '../api/room/overview.js';
+import adminLogin from '../api/_handlers/auth/admin-login.js';
+import investorLogin from '../api/_handlers/auth/investor-login.js';
+import adminInvestors from '../api/_handlers/admin/investors.js';
+import adminInvite from '../api/_handlers/admin/invite.js';
+import adminAdmins from '../api/_handlers/admin/admins.js';
+import adminReset from '../api/_handlers/admin/reset.js';
+import adminRequests from '../api/_handlers/admin/requests.js';
+import adminDocuments from '../api/_handlers/admin/documents.js';
+import roomDocument from '../api/_handlers/room/document.js';
+import previewRoom from '../api/_handlers/admin/preview-room.js';
+import roomOverview from '../api/_handlers/room/overview.js';
 
 const ADMIN_PW = 'Founder-Console-Pass-1';
 

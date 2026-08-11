@@ -28,31 +28,15 @@ const { hashPassword } = await import('../api/_lib/auth.js');
 
 const api = {
   '/api/access-request': (await import('../api/access-request.js')).default,
-  '/api/auth/investor-login': (await import('../api/auth/investor-login.js')).default,
-  '/api/auth/admin-login': (await import('../api/auth/admin-login.js')).default,
-  '/api/auth/logout': (await import('../api/auth/logout.js')).default,
-  '/api/auth/set-password': (await import('../api/auth/set-password.js')).default,
-  '/api/auth/forgot-password': (await import('../api/auth/forgot-password.js')).default,
-  '/api/room/session': (await import('../api/room/session.js')).default,
-  '/api/room/overview': (await import('../api/room/overview.js')).default,
-  '/api/room/documents': (await import('../api/room/documents.js')).default,
-  '/api/room/document': (await import('../api/room/document.js')).default,
-  '/api/room/request-access': (await import('../api/room/request-access.js')).default,
-  '/api/room/nda': (await import('../api/room/nda.js')).default,
-  '/api/room/video': (await import('../api/room/video.js')).default,
-  '/api/admin/investors': (await import('../api/admin/investors.js')).default,
-  '/api/admin/invite': (await import('../api/admin/invite.js')).default,
-  '/api/admin/admins': (await import('../api/admin/admins.js')).default,
-  '/api/admin/reset': (await import('../api/admin/reset.js')).default,
-  '/api/admin/requests': (await import('../api/admin/requests.js')).default,
-  '/api/admin/logs': (await import('../api/admin/logs.js')).default,
-  '/api/admin/documents': (await import('../api/admin/documents.js')).default,
-  '/api/admin/folders': (await import('../api/admin/folders.js')).default,
-  '/api/admin/video': (await import('../api/admin/video.js')).default,
-  '/api/admin/video': (await import('../api/admin/video.js')).default,
-  '/api/admin/nda': (await import('../api/admin/nda.js')).default,
-  '/api/admin/preview-room': (await import('../api/admin/preview-room.js')).default,
-  '/api/admin/bootstrap': (await import('../api/admin/bootstrap.js')).default,
+  '/api/lead': (await import('../api/lead.js')).default,
+};
+// Grouped endpoints go through the SAME dynamic routes Vercel serves in production,
+// so local dev exercises the real dispatch instead of a hand-maintained list that
+// silently falls out of date whenever an endpoint is added.
+const apiGroups = {
+  '/api/admin/': (await import('../api/admin/[route].js')).default,
+  '/api/auth/': (await import('../api/auth/[route].js')).default,
+  '/api/room/': (await import('../api/room/[route].js')).default,
 };
 const pages = {
   '/investor-room': (await import('../api/page-room.js')).default,
@@ -161,7 +145,11 @@ const server = http.createServer((req, res) => {
   // apply prod-like CSP to dynamic responses too
   res.setHeader('Content-Security-Policy', CSP);
   if (!req.headers.origin && (req.method === 'POST' || req.method === 'PATCH' || req.method === 'DELETE')) req.headers.origin = ORIGIN;
-  const handler = api[url.pathname] || pages[url.pathname];
+  let handler = api[url.pathname] || pages[url.pathname];
+  if (!handler) {
+    const group = Object.keys(apiGroups).find((p) => url.pathname.startsWith(p));
+    if (group) handler = apiGroups[group];
+  }
   if (handler) {
     Promise.resolve(handler(req, res)).catch((e) => { console.error('handler error', url.pathname, e); if (!res.finished) { res.statusCode = 500; res.end(JSON.stringify({ ok: false, error: 'server error' })); } });
     return;

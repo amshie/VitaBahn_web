@@ -1,11 +1,11 @@
 // POST /api/auth/admin-login — founder / Level-0 console login. Separate cookie
 // realm (vb_adm) from investor sessions. Every attempt is logged.
 
-import { sendJson, readJsonBody, clientIp, userAgent, requireOrigin } from '../_lib/http.js';
-import { normaliseEmail } from '../_lib/validate.js';
-import { ensureSchema, getAdminByEmail, logEvent } from '../_lib/store.js';
-import { verifyPassword, hashPassword, createSession, setSessionCookie } from '../_lib/auth.js';
-import { loginKey, loginBlocked, loginFailed, loginReset, loginWindowSec } from '../_lib/throttle.js';
+import { sendJson, readJsonBody, clientIp, userAgent, requireOrigin } from '../../_lib/http.js';
+import { normaliseEmail } from '../../_lib/validate.js';
+import { ensureSchema, getAdminByEmail, logEvent } from '../../_lib/store.js';
+import { verifyPassword, hashPassword, createSession, setSessionCookie } from '../../_lib/auth.js';
+import { loginKey, loginBlocked, loginFailed, loginReset, loginWindowSec } from '../../_lib/throttle.js';
 
 const DUMMY_HASH = hashPassword('dummy-password-for-constant-time');
 

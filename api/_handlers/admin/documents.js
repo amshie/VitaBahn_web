@@ -8,10 +8,10 @@
 // route — never at a public URL.
 
 import crypto from 'node:crypto';
-import { sendJson, readJsonBody, readRawBody, requireOrigin, clientIp, userAgent } from '../_lib/http.js';
-import { clean } from '../_lib/validate.js';
-import { ensureSchema, listDocuments, getDocumentMeta, insertDocument, updateDocument, deleteDocument, setNdaTemplate, getFolder, logEvent } from '../_lib/store.js';
-import { loadAdmin } from '../_lib/auth.js';
+import { sendJson, readJsonBody, readRawBody, requireOrigin, clientIp, userAgent } from '../../_lib/http.js';
+import { clean } from '../../_lib/validate.js';
+import { ensureSchema, listDocuments, getDocumentMeta, insertDocument, updateDocument, deleteDocument, setNdaTemplate, getFolder, logEvent } from '../../_lib/store.js';
+import { loadAdmin } from '../../_lib/auth.js';
 
 const MAX_UPLOAD = 8 * 1024 * 1024; // 8 MB (note: Vercel request-body limit is ~4.5 MB)
 const tierForLevel = (lvl) => (lvl <= 2 ? 1 : 2);

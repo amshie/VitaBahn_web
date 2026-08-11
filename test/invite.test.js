@@ -5,10 +5,10 @@ import assert from 'node:assert/strict';
 
 import { ensureSchema, resetDbForTests, query } from '../api/_lib/db.js';
 import * as store from '../api/_lib/store.js';
-import setPassword from '../api/auth/set-password.js';
-import forgotPassword from '../api/auth/forgot-password.js';
-import investorLogin from '../api/auth/investor-login.js';
-import roomOverview from '../api/room/overview.js';
+import setPassword from '../api/_handlers/auth/set-password.js';
+import forgotPassword from '../api/_handlers/auth/forgot-password.js';
+import investorLogin from '../api/_handlers/auth/investor-login.js';
+import roomOverview from '../api/_handlers/room/overview.js';
 import { buildInviteEmail } from '../api/_lib/mail.js';
 
 async function countValidInvites(investorId) {

@@ -9,9 +9,9 @@
 // needs (which is what makes seeking work) and a single response never has to hold
 // more than one window in function memory.
 
-import { sendJson, clientIp, userAgent } from '../_lib/http.js';
-import { ensureSchema, getActiveRoomVideo, readRoomVideoRange, logEvent } from '../_lib/store.js';
-import { loadInvestor, loadAdmin } from '../_lib/auth.js';
+import { sendJson, clientIp, userAgent } from '../../_lib/http.js';
+import { ensureSchema, getActiveRoomVideo, readRoomVideoRange, logEvent } from '../../_lib/store.js';
+import { loadInvestor, loadAdmin } from '../../_lib/auth.js';
 
 // Largest slice returned in one response. Keeps each response comfortably inside
 // serverless payload limits and bounds the memory a single request can use.

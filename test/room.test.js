@@ -9,12 +9,12 @@ import { ensureSchema, resetDbForTests, query } from '../api/_lib/db.js';
 import * as store from '../api/_lib/store.js';
 import { hashPassword } from '../api/_lib/auth.js';
 
-import investorLogin from '../api/auth/investor-login.js';
+import investorLogin from '../api/_handlers/auth/investor-login.js';
 import pageRoom from '../api/page-room.js';
-import roomSession from '../api/room/session.js';
-import roomOverview from '../api/room/overview.js';
-import roomDocuments from '../api/room/documents.js';
-import roomDocument from '../api/room/document.js';
+import roomSession from '../api/_handlers/room/session.js';
+import roomOverview from '../api/_handlers/room/overview.js';
+import roomDocuments from '../api/_handlers/room/documents.js';
+import roomDocument from '../api/_handlers/room/document.js';
 import { PDFDocument } from 'pdf-lib';
 
 const PW = 'Investor-Pass-1';

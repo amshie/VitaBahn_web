@@ -4,9 +4,9 @@
 // requires the explicit confirm phrase. The wipe itself is written to the (now
 // otherwise empty) audit log.
 
-import { sendJson, readJsonBody, requireOrigin, clientIp, userAgent } from '../_lib/http.js';
-import { ensureSchema, dataCounts, resetData, logEvent } from '../_lib/store.js';
-import { loadAdmin } from '../_lib/auth.js';
+import { sendJson, readJsonBody, requireOrigin, clientIp, userAgent } from '../../_lib/http.js';
+import { ensureSchema, dataCounts, resetData, logEvent } from '../../_lib/store.js';
+import { loadAdmin } from '../../_lib/auth.js';
 
 export default async function handler(req, res) {
   if (req.method !== 'POST') return sendJson(res, 405, { ok: false, error: 'Method not allowed' });

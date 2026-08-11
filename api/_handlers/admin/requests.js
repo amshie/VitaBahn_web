@@ -2,9 +2,9 @@
 //   GET   → all investor-access gateway submissions (newest first)
 //   PATCH → { requestId, status } to move a request through review states
 
-import { sendJson, readJsonBody, requireOrigin, clientIp, userAgent } from '../_lib/http.js';
-import { ensureSchema, listAccessRequests, setRequestStatus, logEvent } from '../_lib/store.js';
-import { loadAdmin } from '../_lib/auth.js';
+import { sendJson, readJsonBody, requireOrigin, clientIp, userAgent } from '../../_lib/http.js';
+import { ensureSchema, listAccessRequests, setRequestStatus, logEvent } from '../../_lib/store.js';
+import { loadAdmin } from '../../_lib/auth.js';
 
 const STATUS = new Set(['pending', 'reviewed', 'approved', 'declined']);
 

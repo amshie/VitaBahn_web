@@ -6,9 +6,9 @@
 //        reject → marks it rejected so the investor can re-upload
 // Every view and decision is logged.
 
-import { sendJson, readJsonBody, requireOrigin, clientIp, userAgent } from '../_lib/http.js';
-import { ensureSchema, getLatestNdaSubmission, getNdaSubmissionWithBytes, setNdaSubmissionStatus, getInvestorById, logEvent } from '../_lib/store.js';
-import { loadAdmin } from '../_lib/auth.js';
+import { sendJson, readJsonBody, requireOrigin, clientIp, userAgent } from '../../_lib/http.js';
+import { ensureSchema, getLatestNdaSubmission, getNdaSubmissionWithBytes, setNdaSubmissionStatus, getInvestorById, logEvent } from '../../_lib/store.js';
+import { loadAdmin } from '../../_lib/auth.js';
 
 export default async function handler(req, res) {
   if (req.method === 'OPTIONS') { res.statusCode = 204; return res.end(); }

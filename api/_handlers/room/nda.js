@@ -5,11 +5,11 @@
 // what flips nda_signed and opens Diligence (Level 3). Every submission is logged and
 // the founder is notified. Bytes are served only to the founder via the admin route.
 
-import { sendJson, readRawBody, requireOrigin, clientIp, userAgent } from '../_lib/http.js';
-import { clean } from '../_lib/validate.js';
-import { ensureSchema, insertNdaSubmission, logEvent } from '../_lib/store.js';
-import { loadInvestor } from '../_lib/auth.js';
-import { sendMail } from '../_lib/mail.js';
+import { sendJson, readRawBody, requireOrigin, clientIp, userAgent } from '../../_lib/http.js';
+import { clean } from '../../_lib/validate.js';
+import { ensureSchema, insertNdaSubmission, logEvent } from '../../_lib/store.js';
+import { loadInvestor } from '../../_lib/auth.js';
+import { sendMail } from '../../_lib/mail.js';
 
 const MAX_UPLOAD = 8 * 1024 * 1024; // 8 MB (Vercel caps request bodies near 4.5 MB)
 const LEAD_TO = process.env.LEAD_TO || 'info@vitabahn.com';

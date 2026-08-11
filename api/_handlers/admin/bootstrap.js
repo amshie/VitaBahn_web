@@ -6,10 +6,10 @@
 // it can also rotate an admin password in an emergency.
 
 import crypto from 'node:crypto';
-import { sendJson, readJsonBody, requireOrigin, clientIp, userAgent } from '../_lib/http.js';
-import { normaliseEmail, clean } from '../_lib/validate.js';
-import { ensureSchema, createAdmin, logEvent } from '../_lib/store.js';
-import { hashPassword } from '../_lib/auth.js';
+import { sendJson, readJsonBody, requireOrigin, clientIp, userAgent } from '../../_lib/http.js';
+import { normaliseEmail, clean } from '../../_lib/validate.js';
+import { ensureSchema, createAdmin, logEvent } from '../../_lib/store.js';
+import { hashPassword } from '../../_lib/auth.js';
 
 function tokenOk(provided) {
   const expected = process.env.ADMIN_BOOTSTRAP_TOKEN || '';

@@ -10,13 +10,13 @@
 // gated — that check lives in /api/room/document and is untouched by this route.
 
 import crypto from 'node:crypto';
-import { sendJson, readJsonBody, requireOrigin, clientIp, userAgent } from '../_lib/http.js';
-import { clean } from '../_lib/validate.js';
+import { sendJson, readJsonBody, requireOrigin, clientIp, userAgent } from '../../_lib/http.js';
+import { clean } from '../../_lib/validate.js';
 import {
   ensureSchema, listFolders, getFolder, createFolder, updateFolder, deleteFolder,
   countDocumentsInFolder, logEvent,
-} from '../_lib/store.js';
-import { loadAdmin } from '../_lib/auth.js';
+} from '../../_lib/store.js';
+import { loadAdmin } from '../../_lib/auth.js';
 
 const validLevel = (lvl) => Number.isInteger(lvl) && lvl >= 1 && lvl <= 5;
 

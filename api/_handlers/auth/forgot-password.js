@@ -5,10 +5,10 @@
 // use reset link is emailed. Rate-limited per IP. The link is NEVER returned in the
 // response body (unlike the founder console) — delivery is by email only.
 
-import { sendJson, readJsonBody, clientIp, userAgent, requireOrigin, baseUrl } from '../_lib/http.js';
-import { normaliseEmail } from '../_lib/validate.js';
-import { ensureSchema, getInvestorByEmail, createInvite, logEvent } from '../_lib/store.js';
-import { sendInviteEmail } from '../_lib/mail.js';
+import { sendJson, readJsonBody, clientIp, userAgent, requireOrigin, baseUrl } from '../../_lib/http.js';
+import { normaliseEmail } from '../../_lib/validate.js';
+import { ensureSchema, getInvestorByEmail, createInvite, logEvent } from '../../_lib/store.js';
+import { sendInviteEmail } from '../../_lib/mail.js';
 
 const NEUTRAL = 'If an account exists for that email, a link to reset your password has been sent.';
 

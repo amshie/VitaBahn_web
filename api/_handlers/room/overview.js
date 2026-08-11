@@ -5,10 +5,10 @@
 // this investor is cleared to see. Documents above the grant are never included —
 // not their names, not their counts.
 
-import { sendJson } from '../_lib/http.js';
-import { ensureSchema } from '../_lib/store.js';
-import { loadInvestor } from '../_lib/auth.js';
-import { buildRoomOverview } from '../_lib/room-view.js';
+import { sendJson } from '../../_lib/http.js';
+import { ensureSchema } from '../../_lib/store.js';
+import { loadInvestor } from '../../_lib/auth.js';
+import { buildRoomOverview } from '../../_lib/room-view.js';
 
 export default async function handler(req, res) {
   if (req.method !== 'GET') return sendJson(res, 405, { ok: false, error: 'Method not allowed' });

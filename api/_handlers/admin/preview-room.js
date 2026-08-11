@@ -5,10 +5,10 @@
 // precisely what an investor sees (which tiers are unlocked, gated or locked) without
 // impersonation or any investor session. Admin-gated; every preview is logged.
 
-import { sendJson, clientIp, userAgent } from '../_lib/http.js';
-import { ensureSchema, getInvestorById, logEvent } from '../_lib/store.js';
-import { loadAdmin } from '../_lib/auth.js';
-import { buildRoomOverview } from '../_lib/room-view.js';
+import { sendJson, clientIp, userAgent } from '../../_lib/http.js';
+import { ensureSchema, getInvestorById, logEvent } from '../../_lib/store.js';
+import { loadAdmin } from '../../_lib/auth.js';
+import { buildRoomOverview } from '../../_lib/room-view.js';
 
 export default async function handler(req, res) {
   if (req.method !== 'GET') return sendJson(res, 405, { ok: false, error: 'Method not allowed' });

@@ -6,12 +6,12 @@
 // Level-0 only (loadAdmin). Passwords are scrypt-hashed; only the hash is stored.
 // Every create/remove is written to the audit log.
 
-import { sendJson, readJsonBody, requireOrigin, clientIp, userAgent } from '../_lib/http.js';
-import { normaliseEmail, clean } from '../_lib/validate.js';
+import { sendJson, readJsonBody, requireOrigin, clientIp, userAgent } from '../../_lib/http.js';
+import { normaliseEmail, clean } from '../../_lib/validate.js';
 import {
   ensureSchema, listAdmins, getAdminByEmail, createAdmin, deleteAdmin, countAdmins, logEvent,
-} from '../_lib/store.js';
-import { loadAdmin, hashPassword } from '../_lib/auth.js';
+} from '../../_lib/store.js';
+import { loadAdmin, hashPassword } from '../../_lib/auth.js';
 
 const MIN_PW = 12;
 

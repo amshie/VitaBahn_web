@@ -4,10 +4,10 @@
 // streamed only after this handler re-checks the session, the account status, the
 // required access level and NDA state. Every grant AND every denial is logged.
 
-import { sendJson, clientIp, userAgent } from '../_lib/http.js';
-import { ensureSchema, getDocumentMeta, getDocumentWithBytes, logEvent } from '../_lib/store.js';
-import { loadInvestor } from '../_lib/auth.js';
-import { looksLikePdf, watermarkPdf } from '../_lib/watermark.js';
+import { sendJson, clientIp, userAgent } from '../../_lib/http.js';
+import { ensureSchema, getDocumentMeta, getDocumentWithBytes, logEvent } from '../../_lib/store.js';
+import { loadInvestor } from '../../_lib/auth.js';
+import { looksLikePdf, watermarkPdf } from '../../_lib/watermark.js';
 
 const NDA_MIN_LEVEL = 3;
 // Documents at the NDA tier (min_level >= 3) are view-only: the room hides their
