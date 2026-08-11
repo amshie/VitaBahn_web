@@ -577,6 +577,32 @@
     }
   });
 
+  // Add an investor directly, without waiting for them to submit the access-request
+  // form. Same endpoint the request flow uses, so the account is provisioned exactly
+  // the same way: no password is set here — the investor sets their own via the
+  // single-use emailed link.
+  $('addInvBtn').addEventListener('click', async function () {
+    var email = $('niEmail').value.trim();
+    if (!email || email.indexOf('@') < 1) { toast('Enter a valid email address.'); return; }
+    var lvl = Number($('niLevel').value) || 2;
+    var payload = { email: email, name: $('niName').value.trim(), org: $('niOrg').value.trim(), accessLevel: lvl };
+    if (lvl >= 4) {
+      var by = prompt('Level ' + lvl + ' requires a named approver.\nEnter approver name:');
+      if (!by) return;
+      payload.approvedBy = by;
+    }
+    this.disabled = true;
+    try {
+      var res = await api('POST', '/api/admin/investors', payload);
+      $('niEmail').value = ''; $('niName').value = ''; $('niOrg').value = '';
+      await Promise.all([loadInvestorsAndLogs(), loadRequests()]);
+      renderAll();
+      if (res.emailed) toast('Account created — set-password email sent to ' + email + '.');
+      else window.prompt('Account created. Email not configured — copy this one-time set-password link and send it to the investor:', res.inviteUrl);
+    } catch (er) { toast(er.message); }
+    finally { var b = $('addInvBtn'); if (b) b.disabled = false; }
+  });
+
   $('logoutBtn').addEventListener('click', async function () { try { await api('POST', '/api/auth/logout', {}); } catch (e) {} window.location.href = '/founder-login'; });
 
   (async function init() {
