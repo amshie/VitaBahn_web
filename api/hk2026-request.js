@@ -55,6 +55,20 @@ function field(fields, name, max, singleLine = true) {
 }
 const oneOf = (value, allowed) => (allowed.includes(value) ? value : '');
 
+// The meeting forms send the calendar pick as meeting_date (YYYY-MM-DD) and
+// meeting_time (HH:MM, Hong Kong time). Returns the human line for the email,
+// or '' when either part is missing or not a real date/time.
+const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+const WDAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+function meetingSlot(date, time) {
+  const d = /^(\d{4})-(\d{2})-(\d{2})$/.exec(date);
+  const t = /^([01]\d|2[0-3]):([0-5]\d)$/.exec(time);
+  if (!d || !t) return '';
+  const dt = new Date(Date.UTC(+d[1], +d[2] - 1, +d[3]));
+  if (dt.getUTCFullYear() !== +d[1] || dt.getUTCMonth() !== +d[2] - 1 || dt.getUTCDate() !== +d[3]) return '';
+  return `${WDAYS[dt.getUTCDay()]} ${+d[3]} ${MONTHS[+d[2] - 1]} ${d[1]}, ${t[1]}:${t[2]} (Hong Kong time, UTC+8)`;
+}
+
 // The forms POST multipart/form-data (FormData). Vercel pre-parses JSON and
 // urlencoded bodies into req.body but leaves multipart as a Buffer, so parse it
 // with the platform FormData parser. Returns a flat { name: string } map, or
@@ -137,7 +151,12 @@ export default async function handler(req, res) {
     data['Country / market'] = field(fields, 'country', 120);
     data['Interest'] = oneOf(field(fields, 'interest', 60), INTERESTS);
     data['Objective'] = field(fields, 'objective', 500, false);
-    data['Preferred timing'] = field(fields, 'timing', 200);
+    if (type === 'MEETING' || type === 'INVESTOR_MEETING') {
+      data['Requested slot'] = meetingSlot(field(fields, 'meeting_date', 10), field(fields, 'meeting_time', 5));
+      if (data['Requested slot'] === '') missing.push('Meeting slot');
+    } else {
+      data['Preferred timing'] = field(fields, 'timing', 200);
+    }
     if (data['Country / market'] === '') missing.push('Country / market');
     if (data['Objective'] === '') missing.push('Objective');
     if (type === 'PARTNERSHIP') {

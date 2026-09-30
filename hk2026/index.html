@@ -316,6 +316,27 @@ dialog::backdrop{background:rgba(4,42,30,.62)}
 .success .icon{width:44px;height:44px;color:var(--green);stroke-width:1.6}
 .success h3{margin-top:12px;font-size:22px;font-weight:900;color:var(--deep)}
 .success p{margin-top:8px;font-size:17px}
+/* Meeting calendar (Book a meeting) */
+.field .label{display:block;margin-bottom:6px;font-size:14px;font-weight:700;color:var(--ink)}
+.cal{border:1.5px solid #B9C4BE;border-radius:10px;padding:12px;background:#fff}
+.cal-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
+.cal-title{font-weight:700;font-size:15px;color:var(--ink)}
+.cal-nav{width:40px;height:40px;border:0;border-radius:8px;background:#EEF3F0;color:var(--deep);font-size:22px;line-height:1;cursor:pointer}
+.cal-nav:hover:not(:disabled){background:#DFE8E3}
+.cal-nav:disabled{color:#B9C4BE;cursor:default}
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;text-align:center}
+.cal-dow{font-size:12px;font-weight:700;color:var(--muted);padding:4px 0}
+.cal-day{min-height:40px;border:0;border-radius:8px;background:transparent;color:var(--ink);font:500 15px/1 var(--sans);cursor:pointer}
+.cal-day:hover:not(:disabled){background:#EEF3F0}
+.cal-day:disabled{color:#B9C4BE;cursor:default}
+.cal-day[aria-pressed="true"],.cal-day[aria-pressed="true"]:hover{background:var(--green);color:#fff;font-weight:700}
+.cal-slots{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+.cal-slots:empty{display:none}
+.cal-slot{min-height:40px;padding:0 12px;border:1.5px solid #B9C4BE;border-radius:8px;background:#fff;color:var(--ink);font:600 14px/1 var(--sans);cursor:pointer}
+.cal-slot:hover{border-color:var(--green)}
+.cal-slot[aria-pressed="true"],.cal-slot[aria-pressed="true"]:hover{background:var(--green);border-color:var(--green);color:#fff}
+.cal-pick{margin-top:10px;font-size:14px;font-weight:700;color:var(--deep)}
+.cal-tz{margin-top:8px;font-size:13px;color:var(--muted)}
 .btn[disabled]{opacity:.6;cursor:progress}
 @media (min-width:640px){.fields.two{grid-template-columns:repeat(2,minmax(0,1fr))}.fields .full{grid-column:1 / -1}.dlg-head{padding:24px 28px 16px}.dlg-body{padding:22px 28px 28px}}
 </style>
@@ -675,7 +696,18 @@ dialog::backdrop{background:rgba(4,42,30,.62)}
             <option>APAC market-entry and institutional partners</option>
           </select></div>
         <div class="field full"><label for="rq-obj">One-sentence problem or objective <span class="req" aria-hidden="true">*</span></label><textarea id="rq-obj" name="objective" required maxlength="500" rows="3"></textarea><p class="hint">Please do not include patient data or confidential information.</p></div>
-        <div class="field full"><label for="rq-time">Preferred meeting timing <span class="opt">(optional)</span></label><input id="rq-time" name="timing" maxlength="200" placeholder="e.g. 2 Oct afternoon, Hong Kong time"></div>
+        <div class="field full" data-not="MEETING"><label for="rq-time">Preferred meeting timing <span class="opt">(optional)</span></label><input id="rq-time" name="timing" maxlength="200" placeholder="e.g. 2 Oct afternoon, Hong Kong time"></div>
+        <div class="field full" data-only="MEETING" hidden>
+          <span class="label" id="cal-label">Choose a date and time <span class="req" aria-hidden="true">*</span></span>
+          <div class="cal" role="group" aria-labelledby="cal-label">
+            <div class="cal-head"><button class="cal-nav" type="button" data-cal-nav="-1" aria-label="Previous month">&#8249;</button><span class="cal-title" id="cal-title" aria-live="polite"></span><button class="cal-nav" type="button" data-cal-nav="1" aria-label="Next month">&#8250;</button></div>
+            <div class="cal-grid" id="cal-grid"></div>
+            <div class="cal-slots" id="cal-slots" role="group" aria-label="Available times"></div>
+            <p class="cal-pick" id="cal-pick" aria-live="polite" hidden></p>
+            <p class="cal-tz">20-minute slots, 09:00–18:00 Hong Kong time (UTC+8). Dr. Motaz Shieban confirms the time by email.</p>
+          </div>
+          <input type="hidden" name="meeting_date" value=""><input type="hidden" name="meeting_time" value="">
+        </div>
         <div class="field full"><label class="consent"><input type="checkbox" name="consent" value="yes" required><span>I agree that VitaBahn may use these details to respond to my request, as described in the <a href="/privacy" target="_blank" rel="noopener">privacy notice</a>. <span class="req" aria-hidden="true">*</span></span></label></div>
       </div>
       <div class="form-actions"><button class="btn btn-primary" type="submit">Send request</button></div>
@@ -683,8 +715,8 @@ dialog::backdrop{background:rgba(4,42,30,.62)}
     </form>
     <div class="success" hidden tabindex="-1">
       <svg class="icon" aria-hidden="true"><use href="#i-check-circle"/></svg>
-      <h3>Request received</h3>
-      <p>Thank you. We will reply by email to arrange the next step.</p>
+      <h3 id="rq-ok-title">Request received</h3>
+      <p id="rq-ok-text">Thank you. We will reply by email to arrange the next step.</p>
       <div class="form-actions"><button class="btn btn-outline" type="button" data-close>Close</button></div>
     </div>
   </div>

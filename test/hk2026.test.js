@@ -17,8 +17,9 @@ test.after(() => _setMailerForTests(null));
 const MEETING = {
   request_type: 'MEETING', src: 'card', elapsed_ms: '8000', website_url: '',
   full_name: 'Wei Lin', email: 'wei.lin@example-clinic.hk', organization: 'Example Clinic', role: 'Medical Director',
-  country: 'Hong Kong', interest: 'Pilot', objective: 'Discuss a one-site pilot.', timing: 'During the event', consent: 'yes',
+  country: 'Hong Kong', interest: 'Pilot', objective: 'Discuss a one-site pilot.', meeting_date: '2026-10-02', meeting_time: '14:20', consent: 'yes',
 };
+const PILOT = { ...MEETING, request_type: 'PILOT', meeting_date: undefined, meeting_time: undefined, timing: 'During the event' };
 const DATAROOM = {
   request_type: 'DATAROOM', src: 'card', elapsed_ms: '8000', website_url: '',
   full_name: 'Ana Costa', email: 'ana@example-capital.com', organization: 'Example Capital', role: 'Partner',
@@ -44,7 +45,23 @@ test('meeting request is mailed to the recipient with Source: card and {ok:true}
   assert.match(m.text, /^Meeting request via www\.vitabahn\.com\/hk2026\n/);
   assert.match(m.text, /Source: {15}card\n/);
   assert.match(m.text, /Country \/ market: {5}Hong Kong\n/);
+  assert.match(m.text, /Requested slot: {7}Fri 2 Oct 2026, 14:20 \(Hong Kong time, UTC\+8\)\n/);
   assert.deepEqual(m.replyTo, { name: 'Wei Lin', address: 'wei.lin@example-clinic.hk' });
+});
+
+test('meeting forms require a real calendar slot; pilot/partnership keep the free-text timing', async () => {
+  const none = await post({ ...MEETING, meeting_date: '', meeting_time: '' });
+  assert.equal(none.statusCode, 422);
+  assert.deepEqual(none.json_().fields, ['Meeting slot']);
+  const bogus = await post({ ...MEETING, meeting_date: '2026-02-30', meeting_time: '14:20' });
+  assert.deepEqual(bogus.json_().fields, ['Meeting slot']);
+  const badTime = await post({ ...MEETING, request_type: 'INVESTOR_MEETING', meeting_time: '25:00' });
+  assert.deepEqual(badTime.json_().fields, ['Meeting slot']);
+  assert.equal(outbox.length, 0);
+  const pilot = await post(PILOT);
+  assert.equal(pilot.statusCode, 200);
+  assert.match(outbox[0].text, /Preferred timing: {5}During the event\n/);
+  assert.doesNotMatch(outbox[0].text, /Requested slot/);
 });
 
 test('data-room request keeps the multi-line message, normalises the website and carries the review reminder', async () => {
