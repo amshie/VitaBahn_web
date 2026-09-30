@@ -1,7 +1,11 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "cleanUrls": true,
+  "redirects": [
+    { "source": "/(.*)", "has": [{ "type": "host", "value": "vitabahn.com" }], "destination": "https://www.vitabahn.com/$1", "statusCode": 301 }
+  ],
   "rewrites": [
+    { "source": "/hk2026", "destination": "/hk2026/index.html" },
     { "source": "/investor-room", "destination": "/api/page-room" },
     { "source": "/investor-console/preview", "destination": "/api/page-room-preview" },
     { "source": "/investor-console", "destination": "/api/page-console" }
@@ -28,6 +32,7 @@
         { "key": "Cache-Control", "value": "no-store" }
       ]
     },
+    { "source": "/downloads/Dr_Motaz_Shieban_VitaBahn.vcf", "headers": [ { "key": "Content-Type", "value": "text/vcard; charset=utf-8" } ] },
     { "source": "/investor-access", "headers": [ { "key": "X-Robots-Tag", "value": "noindex, nofollow" } ] },
     { "source": "/investor-login", "headers": [ { "key": "X-Robots-Tag", "value": "noindex, nofollow" } ] },
     { "source": "/investor-set-password", "headers": [ { "key": "X-Robots-Tag", "value": "noindex, nofollow" } ] },

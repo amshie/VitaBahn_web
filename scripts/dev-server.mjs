@@ -29,6 +29,7 @@ const { hashPassword } = await import('../api/_lib/auth.js');
 const api = {
   '/api/access-request': (await import('../api/access-request.js')).default,
   '/api/lead': (await import('../api/lead.js')).default,
+  '/api/hk2026-request': (await import('../api/hk2026-request.js')).default,
 };
 // Grouped endpoints go through the SAME dynamic routes Vercel serves in production,
 // so local dev exercises the real dispatch instead of a hand-maintained list that
@@ -44,7 +45,7 @@ const pages = {
   '/investor-console/preview': (await import('../api/page-room-preview.js')).default,
 };
 
-const CT = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.css': 'text/css; charset=utf-8', '.woff2': 'font/woff2', '.svg': 'image/svg+xml', '.png': 'image/png', '.jpg': 'image/jpeg', '.ico': 'image/x-icon', '.txt': 'text/plain; charset=utf-8', '.json': 'application/json', '.webmanifest': 'application/manifest+json' };
+const CT = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.css': 'text/css; charset=utf-8', '.woff2': 'font/woff2', '.svg': 'image/svg+xml', '.png': 'image/png', '.jpg': 'image/jpeg', '.ico': 'image/x-icon', '.txt': 'text/plain; charset=utf-8', '.json': 'application/json', '.webmanifest': 'application/manifest+json', '.webp': 'image/webp', '.pdf': 'application/pdf', '.vcf': 'text/vcard; charset=utf-8' };
 const CSP = "default-src 'self'; base-uri 'none'; object-src 'none'; frame-ancestors 'none'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src 'self'; form-action 'self'";
 
 // Build a small but genuine PDF so the preview exercises real per-recipient
@@ -119,8 +120,9 @@ async function seed() {
 function serveStatic(req, res) {
   let p = decodeURIComponent(new URL(req.url, ORIGIN).pathname);
   if (p === '/') p = '/index.html';
-  // cleanUrls: extensionless → .html
-  const tryPaths = path.extname(p) ? [p] : [`${p}.html`, p];
+  // cleanUrls: extensionless → .html; a directory serves its index.html with or
+  // without the trailing slash (mirrors the /hk2026 rewrite in vercel.json).
+  const tryPaths = path.extname(p) ? [p] : [`${p}.html`, p, path.posix.join(p, 'index.html')];
   (async () => {
     for (const rel of tryPaths) {
       const abs = path.join(ROOT, path.normalize(rel));
