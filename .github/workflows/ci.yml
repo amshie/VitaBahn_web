@@ -34,6 +34,8 @@ jobs:
       - name: Syntax-check JavaScript
         run: |
           node --check api/lead.js
+          node --check api/hk2026-request.js
+          node --check assets/hk2026/hk2026.js
           node --check app.js
           node --check middleware.js
 

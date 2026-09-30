@@ -12,3 +12,6 @@
 *.webp  binary
 *.ico   binary
 *.pdf   binary
+
+# vCard: RFC 6350 requires CRLF line endings — never normalise.
+*.vcf -text

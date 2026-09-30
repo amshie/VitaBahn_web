@@ -133,6 +133,32 @@ headers used on some hosts (`X-Frame-Options`, `X-Content-Type-Options`,
 > If those HTTP headers are required, route the domain through a proxy that can inject
 > them (e.g. Cloudflare in front of the Porkbun origin) — ask before changing hosting.
 
+## Hong Kong 2026 landing page (`/hk2026`)
+
+The public event page for the TOP 10 Longevity Breakthrough Awards 2026, printed on
+the business cards as **https://www.vitabahn.com/hk2026?src=card** (the QR in
+`assets/hk2026/qr-hk2026.svg` encodes exactly that URL). It is a standalone static
+page with its own header/footer — the copy, layout and QR must not be changed.
+
+- `hk2026/index.html` — the page (CSS inline; fonts, images and the JS under `assets/hk2026/`).
+- `assets/hk2026/hk2026.js` — `CONFIG`: form endpoint, optional booking URL, verified contact channels
+  (LinkedIn is set; WhatsApp/WeChat stay hidden until a verified link exists).
+- `downloads/` — vCard and the two PDF briefs. **The Investor One-Pager and Pilot Partner Brief are
+  only committed once they pass the wording check** (no "Selected cohort", no universal "USD 25,000"
+  pilot price); replace them under the same file names and the page needs no change.
+- `api/hk2026-request.js` — the four request forms (Data Room / Pilot / Partnership / Meeting), a
+  1:1 port of the PHP handler from the deploy package: honeypot `website_url`, `elapsed_ms < 3000`
+  rejected, 6 sent requests per IP per hour, JSON `{ok:true}` / `{ok:false,error,fields}`. Delivered
+  through the same SMTP mailbox as the lead form to `HK2026_TO` (default `drmotazshieban@vitabahn.com`).
+- Routing (`vercel.json`): `/hk2026` is rewritten to `hk2026/index.html` so it answers **200 without a
+  redirect** (`/hk2026/` works too); `vitabahn.com` → `https://www.vitabahn.com` is a 301 so the
+  canonical is the www host; the vCard is served as `text/vcard`.
+- Analytics: the page loads the site's existing Vercel Web Analytics (cookieless); `hk2026.js`
+  forwards its `hk2026_*` events to it.
+
+**Rule: `/hk2026` must never return 404.** The QR is printed. After the event the page stays live, or
+the rewrite is replaced by a redirect to the home/contact page.
+
 ## Custom domain & email (vitabahn.com)
 
 - **Domain & DNS:** managed at Porkbun. Point `vitabahn.com` at the static hosting.
