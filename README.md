@@ -143,9 +143,11 @@ page with its own header/footer — the copy, layout and QR must not be changed.
 - `hk2026/index.html` — the page (CSS inline; fonts, images and the JS under `assets/hk2026/`).
 - `assets/hk2026/hk2026.js` — `CONFIG`: form endpoint, optional booking URL, verified contact channels
   (LinkedIn is set; WhatsApp/WeChat stay hidden until a verified link exists).
-- `downloads/` — vCard and the two PDF briefs. **The Investor One-Pager and Pilot Partner Brief are
-  only committed once they pass the wording check** (no "Selected cohort", no universal "USD 25,000"
-  pilot price); replace them under the same file names and the page needs no change.
+- `downloads/` — vCard and the two PDF briefs (Investor One-Pager, Pilot Partner Brief, both v1.1).
+  The v1.1 PDFs still read "Selected cohort" (One-Pager) and "USD 25,000" standard fee (Pilot Brief),
+  which the page's wording rules otherwise avoid; the owner chose to publish them as they are on
+  2026-10-01. To swap in corrected versions, replace the files under the same names — the page
+  needs no change.
 - `api/hk2026-request.js` — the four request forms (Data Room / Pilot / Partnership / Meeting), a
   1:1 port of the PHP handler from the deploy package: honeypot `website_url`, `elapsed_ms < 3000`
   rejected, 6 sent requests per IP per hour, JSON `{ok:true}` / `{ok:false,error,fields}`. Delivered
