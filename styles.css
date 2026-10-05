@@ -354,6 +354,11 @@ header.site .brand small{opacity:0;animation:vb-fade .7s ease 2.0s forwards}
 .grid.five>.card{flex:1 1 calc((100% - 36px)/3);max-width:calc((100% - 36px)/3);min-width:260px}
 @media(max-width:900px){.grid.five>.card{max-width:calc((100% - 18px)/2)}}
 @media(max-width:560px){.grid.five>.card{max-width:100%}}
+/* ---- team of five: same pattern — three founders, then the board row centered ---- */
+.team.five{display:flex;flex-wrap:wrap;justify-content:center}
+.team.five>.member{flex:1 1 calc((100% - 36px)/3);max-width:calc((100% - 36px)/3);min-width:260px}
+@media(max-width:900px){.team.five>.member{max-width:calc((100% - 18px)/2)}}
+@media(max-width:560px){.team.five>.member{max-width:100%}}
 /* ---- v54.2 section headers: heading left, intro right (graceful :has fallback) ---- */
 .sec-head:has(.lede){display:grid;grid-template-columns:1.3fr 1fr;column-gap:48px;row-gap:0;align-items:start;max-width:none}
 .sec-head:has(.lede)>.eyebrow{grid-column:1;grid-row:1;margin:0}
